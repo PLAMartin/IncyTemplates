@@ -15,23 +15,11 @@
  *
  * Run with `npm run seed` (wired to `tsx scripts/seed.ts`).
  */
-import { createHash } from "node:crypto";
 import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import catalogue from "../content/seed/catalogue";
 import type { Product } from "../src/types/catalogue";
-
-/**
- * Fixture ids are human-readable slugs (e.g. "product-idea-snapshot"), not
- * valid Postgres uuids. This derives a stable, deterministic uuid-shaped
- * value from each slug (sha256 truncated into the 8-4-4-4-12 hex layout) so
- * re-running the script produces byte-identical output — a real seed
- * migration should be reproducible, not randomised per run.
- */
-function deterministicUuid(seed: string): string {
-  const hash = createHash("sha256").update(seed).digest("hex");
-  return [hash.slice(0, 8), hash.slice(8, 12), hash.slice(12, 16), hash.slice(16, 20), hash.slice(20, 32)].join("-");
-}
+import { deterministicUuid } from "./lib/deterministic-uuid";
 
 function sqlString(value: string | null | undefined): string {
   if (value == null) return "null";

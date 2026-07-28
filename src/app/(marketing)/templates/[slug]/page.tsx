@@ -12,6 +12,7 @@ import { AccessBadge } from "@/components/ui/badge";
 import { QualityStandardList } from "@/components/product/quality-standard-list";
 import { FaqList } from "@/components/product/faq-list";
 import { WaitlistForm } from "@/components/product/waitlist-form";
+import { DownloadForm } from "@/components/product/download-form";
 import { ProductCard } from "@/components/catalogue/product-card";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -49,6 +50,7 @@ export default async function ProductPage({ params }: Props) {
   const faqEntries = buildProductFaq(product);
   const exampleFile = product.files.find((f) => f.file_role === "example");
   const instructionsFile = product.files.find((f) => f.file_role === "instructions" || f.file_role === "facilitator_guide");
+  const templateFile = product.files.find((f) => f.file_role === "template");
 
   const waitlistLabel =
     product.access_type === "free"
@@ -226,10 +228,18 @@ export default async function ProductPage({ params }: Props) {
               {product.access_type === "free" ? "Free" : formatMinorUnits(product.price_minor ?? 0, product.currency_code)}
             </p>
             <p className="mt-1 text-sm text-ink-500">
-              Checkout isn&apos;t live yet — join the waitlist and we&apos;ll email you the moment it is.
+              {product.access_type === "free"
+                ? templateFile
+                  ? "Download instantly — no account needed."
+                  : "Not available for download yet — join the waitlist and we'll email you the moment it is."
+                : "Checkout isn't live yet — join the waitlist and we'll email you the moment it is."}
             </p>
           </div>
-          <WaitlistForm productId={product.id} label={waitlistLabel} source="product-page" />
+          {product.access_type === "free" && templateFile ? (
+            <DownloadForm productId={product.id} fileId={templateFile.id} source="product-page" />
+          ) : (
+            <WaitlistForm productId={product.id} label={waitlistLabel} source="product-page" />
+          )}
         </aside>
       </div>
     </div>
