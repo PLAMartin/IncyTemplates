@@ -25,7 +25,7 @@ export function SiteFooter() {
         <div className="mt-10 border-t border-ink-200 pt-6 text-xs text-ink-500">
           <p>
             {company.legalName} · {company.country} · {" "}
-            <a href={`mailto:${company.supportEmail}`} className="hover:text-ink-900">
+            <a href={`mailto:${company.supportEmail}`} className="underline hover:text-ink-900">
               {company.supportEmail}
             </a>
           </p>
