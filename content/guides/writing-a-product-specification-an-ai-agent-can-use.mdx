@@ -1,0 +1,46 @@
+---
+title: "Writing a Product Specification an AI Agent Can Use"
+slug: "writing-a-product-specification-an-ai-agent-can-use"
+summary: "AI coding agents can build real software from a good specification — but most product specs aren't written for that. Here's what changes."
+author: "Phil Martin"
+publishedAt: "2026-07-22"
+updatedAt: "2026-07-22"
+status: "published"
+seoTitle: "Writing a Product Specification an AI Agent Can Use"
+seoDescription: "How to write a product specification that an AI coding agent can actually build from without guessing — required inputs, non-goals and acceptance criteria."
+relatedProducts:
+  - "mvp-scope-in-one-page"
+  - "product-definition-pack"
+---
+
+AI coding agents have quietly become good enough to build real, working software from a written specification — provided the specification is actually written for that. Most product specs aren't. They're written for a human colleague who already shares six months of context, who will ask a follow-up question in Slack when something's unclear, and who fills every gap with reasonable judgement without you ever noticing there was a gap.
+
+An AI agent doesn't share that context, and it won't quietly fill gaps the way a colleague does — it fills them with something, and you often won't know which assumption it landed on until the output surprises you. The fix isn't to write a longer spec. It's to write a differently structured one.
+
+## Make the gaps visible, not invisible
+
+The core problem with most specs is that ambiguity is invisible until someone hits it. A sentence like "users can filter their results" reads as complete to a person, who fills in "filter by what, exactly?" from experience. An agent will pick something — often something reasonable-sounding and still wrong — and keep going.
+
+The fix is a section most human-facing specs don't bother with: **information the agent must not invent**. Explicitly list the things that are genuinely undecided, rather than letting them hide inside vague language. "The exact filter fields are not yet decided — flag this rather than choosing one" is a strange sentence to write for a human colleague. For an agent, it's the difference between a clarifying question and a confident wrong guess.
+
+Pair it with a section for **information the agent may infer** — the boring, low-stakes decisions (naming conventions, minor UI copy, standard error-handling patterns) where you're genuinely happy for it to use good judgement without asking. Separating "decide freely" from "don't guess" does more for output quality than almost anything else in the document.
+
+## State the objective before the feature list
+
+Agents (and, honestly, human developers) build better software when they understand what a feature is *for*, not just what it should do. A one-line objective — "let a returning customer re-order their last purchase in one action" — gives the agent something to check its own output against. Without it, you get a technically correct implementation of the literal instructions that misses the point entirely, because there was no point stated to miss.
+
+## Write acceptance criteria that are actually testable
+
+"The page should load quickly" is not an acceptance criterion; it's a hope. "The page returns a response in under 500ms for a catalogue of up to 500 products" is. This distinction matters more with an AI agent than with a human, because a human developer will silently interpret "quickly" using their own judgement and existing standards. An agent has no such shared judgement to fall back on, so vague criteria produce genuinely arbitrary results — sometimes fine, sometimes not, with no way to predict which.
+
+Go through every requirement in your spec and ask: could I write a short test that proves this is done? If you can't, the requirement isn't finished yet, whoever — or whatever — is going to build it.
+
+## Include a completed example
+
+If a template or output format exists for the thing you're specifying, include one worked example in full. Agents (and humans) generalise far more reliably from one concrete example than from an abstract description, however precise. This is also the fastest way to catch your own specification mistakes — writing out a full worked example often reveals a gap or contradiction that the general description was quietly hiding.
+
+## Say what "done" means, and what happens next
+
+Close the specification with a short review checklist and a stated next action once the work is complete — who reviews it, what they're checking for, and what happens after that. Without this, both human and AI-built work tends to drift past "done" into an ambiguous, half-finished state that nobody explicitly decided to accept.
+
+The **Product Specification** template in the Product Definition Pack is structured exactly this way — objective, required inputs, explicit non-goals, testable acceptance criteria, a worked example and a review checklist — so you can hand it to a developer or an AI agent without translating it first. If you're still scoping what to build at all, start with **MVP Scope in One Page** before you write the full specification.
