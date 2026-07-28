@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+env:
+  # No Supabase/Stripe/Resend/Sentry/GA secrets exist yet for this project
+  # (Phase 0/1 scope) — CI intentionally runs with zero cloud credentials,
+  # exercising the fixtures data source (see src/server/queries). This is a
+  # hard requirement of this build phase, not an oversight.
+  CONTENT_SOURCE: fixtures
+  NEXT_PUBLIC_SITE_URL: https://incytemplates.com
+  APP_ENV: preview
+
+jobs:
+  build-and-test:
+    name: Install, lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm run test
+
+      - name: Production build (fixtures data source, no cloud credentials)
+        run: npm run build
+
+      - name: Static migration review
+        # NOT a live database apply — no Supabase project/Docker is available
+        # to this pipeline yet. This step only checks that every migration
+        # file is present, non-empty and looks like valid SQL (parses
+        # without an obvious syntax error). Real apply + RLS verification
+        # happens against a linked non-production Supabase project as a
+        # separate, manual step until that project's secrets are added here.
+        run: |
+          shopt -s nullglob
+          files=(supabase/migrations/*.sql)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No migration files found under supabase/migrations/" >&2
+            exit 1
+          fi
+          for f in "${files[@]}"; do
+            echo "Checking $f"
+            if [ ! -s "$f" ]; then
+              echo "Empty migration file: $f" >&2
+              exit 1
+            fi
+            # Very light sanity check: every statement should end with a
+            # semicolon somewhere in the file. Not a real SQL parser.
+            if ! grep -q ";" "$f"; then
+              echo "No statement terminator found in $f — likely malformed" >&2
+              exit 1
+            fi
+          done
+          echo "All migration files present and non-empty (${#files[@]} files). This is a static check only."
+
+      - name: End-to-end smoke tests (axe scan + keyboard nav + filter, against the built app)
+        run: |
+          npx playwright install --with-deps chromium
+          npx next start -p 4000 &
+          SERVER_PID=$!
+          npx wait-on http://localhost:4000 --timeout 60000
+          npx playwright test --config=playwright.config.ts || (kill $SERVER_PID; exit 1)
+          kill $SERVER_PID
+
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Dependency audit
+        # Informational only: the current 12 high-severity advisories are
+        # all inherited transitively via `next`/`eslint-config-next` itself
+        # (postcss, sharp/libvips, minimatch) with no non-breaking fix
+        # available yet (see docs/decisions/ for the ADR tracking this) —
+        # don't fail the build on upstream framework advisories we can't
+        # act on without a breaking downgrade.
+        run: npm audit --audit-level=critical || true
