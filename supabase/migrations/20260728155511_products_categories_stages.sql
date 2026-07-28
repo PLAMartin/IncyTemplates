@@ -52,17 +52,34 @@ comment on column public.it_products.licence_id is
   'DEVIATION FROM SPEC: FK to it_licences added; the spec SQL snippet omitted it.';
 
 -- Spec 21.1: MVP search must cover product name, short description, outcome statement and
--- search keywords via PostgreSQL full-text search. A generated tsvector column keeps the
--- index automatically in sync with the source columns, weighted per section 21.2 ranking
+-- search keywords via PostgreSQL full-text search, weighted per section 21.2 ranking
 -- guidance (title highest, then outcome statement, then keywords, then short description).
-alter table public.it_products
-  add column search_vector tsvector
-  generated always as (
-    setweight(to_tsvector('english', coalesce(name, '')), 'A') ||
-    setweight(to_tsvector('english', coalesce(outcome_statement, '')), 'B') ||
-    setweight(to_tsvector('english', array_to_string(search_keywords, ' ')), 'B') ||
-    setweight(to_tsvector('english', coalesce(short_description, '')), 'C')
-  ) stored;
+--
+-- DEVIATION FROM SPEC (bugfix, not a spec change): to_tsvector(regconfig, text) is STABLE,
+-- not IMMUTABLE, so it cannot be used in a `generated always as` expression (Postgres error
+-- 42P17), and an IMMUTABLE SQL wrapper function around it was also rejected on this Postgres
+-- version. Falling back to the classic, universally-supported pattern instead: a plain
+-- column kept in sync by a BEFORE INSERT/UPDATE trigger, which has no immutability
+-- restriction at all.
+alter table public.it_products add column search_vector tsvector;
+
+create function public.it_products_search_vector_update()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.search_vector :=
+    setweight(to_tsvector('english', coalesce(new.name, '')), 'A') ||
+    setweight(to_tsvector('english', coalesce(new.outcome_statement, '')), 'B') ||
+    setweight(to_tsvector('english', array_to_string(coalesce(new.search_keywords, '{}'), ' ')), 'B') ||
+    setweight(to_tsvector('english', coalesce(new.short_description, '')), 'C');
+  return new;
+end;
+$$;
+
+create trigger it_products_search_vector_trigger
+  before insert or update on public.it_products
+  for each row execute function public.it_products_search_vector_update();
 
 create index it_products_search_vector_idx on public.it_products using gin (search_vector);
 create index it_products_status_idx on public.it_products (status);
