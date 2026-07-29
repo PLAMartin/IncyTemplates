@@ -1,14 +1,17 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { primaryNav, site } from "@/config/site";
 import { ButtonLink } from "@/components/ui/button";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import logo from "../../../public/logo/incy-templates-logo.png";
 
 export function SiteHeader() {
   return (
     <header className="border-b border-ink-200 bg-paper-raised">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className="font-serif text-lg font-semibold text-ink-900">
+        <Link href="/" className="flex items-center gap-2 font-serif text-lg font-semibold text-ink-900">
+          <Image src={logo} alt="" priority className="h-8 w-8" />
           {site.name}
         </Link>
 
