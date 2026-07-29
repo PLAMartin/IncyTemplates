@@ -1,21 +1,19 @@
 "use client";
 
 import { useId, useState, useTransition } from "react";
-import { CircleCheck, CircleAlert, Download } from "lucide-react";
+import { CircleCheck, CircleAlert, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 
-type DownloadFormProps = {
+type ViewFormProps = {
   productId: string;
   fileId: string;
+  slug: string;
   source: string;
   className?: string;
 };
 
-type FormState =
-  | { kind: "idle" }
-  | { kind: "success"; downloadUrl: string }
-  | { kind: "error"; message: string };
+type FormState = { kind: "idle" } | { kind: "success" } | { kind: "error"; message: string };
 
 const CONSENT_TEXT_VERSION = "2026-07-01";
 
@@ -23,7 +21,7 @@ function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-export function DownloadForm({ productId, fileId, source, className }: DownloadFormProps) {
+export function ViewForm({ productId, fileId, slug, source, className }: ViewFormProps) {
   const [email, setEmail] = useState("");
   const [marketingConsent, setMarketingConsent] = useState(false);
   const [state, setState] = useState<FormState>({ kind: "idle" });
@@ -38,13 +36,13 @@ export function DownloadForm({ productId, fileId, source, className }: DownloadF
     setFieldError(null);
 
     if (!isValidEmail(email)) {
-      setFieldError("Enter a valid email address to download this template.");
+      setFieldError("Enter a valid email address to view this template.");
       return;
     }
 
     startTransition(async () => {
       try {
-        const response = await fetch("/api/downloads/free", {
+        const response = await fetch("/api/templates/view", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -63,8 +61,8 @@ export function DownloadForm({ productId, fileId, source, className }: DownloadF
           return;
         }
 
-        setState({ kind: "success", downloadUrl: body.downloadUrl });
-        window.location.href = body.downloadUrl;
+        setState({ kind: "success" });
+        window.location.href = `/templates/${slug}/view`;
       } catch {
         setState({ kind: "error", message: "Something went wrong. Please try again." });
       }
@@ -83,11 +81,11 @@ export function DownloadForm({ productId, fileId, source, className }: DownloadF
       >
         <CircleCheck aria-hidden className="mt-0.5 size-4 shrink-0" />
         <p>
-          Your download should start automatically. If it doesn&apos;t,{" "}
-          <a href={state.downloadUrl} className="underline">
+          Taking you to the template…{" "}
+          <a href={`/templates/${slug}/view`} className="underline">
             click here
-          </a>
-          .
+          </a>{" "}
+          if you&apos;re not redirected.
         </p>
       </div>
     );
@@ -130,12 +128,12 @@ export function DownloadForm({ productId, fileId, source, className }: DownloadF
       </label>
 
       <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
-        <Download aria-hidden className="size-4" />
-        {isPending ? "Downloading…" : "Download"}
+        <Eye aria-hidden className="size-4" />
+        {isPending ? "Loading…" : "View template"}
       </Button>
 
       <div id={statusId} role="status" aria-live="polite" className="sr-only">
-        {isPending ? "Preparing your download…" : ""}
+        {isPending ? "Preparing your template…" : ""}
       </div>
       {state.kind === "error" ? (
         <p role="alert" className="flex items-start gap-2 text-sm text-red-700">

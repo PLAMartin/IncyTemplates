@@ -12,7 +12,7 @@ import { AccessBadge } from "@/components/ui/badge";
 import { QualityStandardList } from "@/components/product/quality-standard-list";
 import { FaqList } from "@/components/product/faq-list";
 import { WaitlistForm } from "@/components/product/waitlist-form";
-import { DownloadForm } from "@/components/product/download-form";
+import { ViewForm } from "@/components/product/view-form";
 import { ProductCard } from "@/components/catalogue/product-card";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -155,13 +155,15 @@ export default async function ProductPage({ params }: Props) {
             </div>
           ) : null}
 
-          <div>
-            <h2 className="text-lg font-semibold text-ink-900">Preview</h2>
-            <p className="mt-2 text-sm text-ink-500">
-              Preview images aren&apos;t available yet for this template — the placeholder cover above stands in until
-              real previews are added.
-            </p>
-          </div>
+          {product.access_type !== "free" ? (
+            <div>
+              <h2 className="text-lg font-semibold text-ink-900">Preview</h2>
+              <p className="mt-2 text-sm text-ink-500">
+                Preview images aren&apos;t available yet for this template — the placeholder cover above stands in
+                until real previews are added.
+              </p>
+            </div>
+          ) : null}
 
           {exampleFile ? (
             <div>
@@ -230,13 +232,13 @@ export default async function ProductPage({ params }: Props) {
             <p className="mt-1 text-sm text-ink-500">
               {product.access_type === "free"
                 ? templateFile
-                  ? "Download instantly — no account needed."
-                  : "Not available for download yet — join the waitlist and we'll email you the moment it is."
+                  ? "View instantly online — no account needed."
+                  : "Not available to view yet — join the waitlist and we'll email you the moment it is."
                 : "Checkout isn't live yet — join the waitlist and we'll email you the moment it is."}
             </p>
           </div>
           {product.access_type === "free" && templateFile ? (
-            <DownloadForm productId={product.id} fileId={templateFile.id} source="product-page" />
+            <ViewForm productId={product.id} fileId={templateFile.id} slug={slug} source="product-page" />
           ) : (
             <WaitlistForm productId={product.id} label={waitlistLabel} source="product-page" />
           )}

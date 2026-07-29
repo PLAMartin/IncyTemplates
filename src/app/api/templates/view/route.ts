@@ -5,13 +5,14 @@ import { getSupabaseServiceRoleClient, hasServiceRoleConfig } from "@/lib/supaba
 import { errorResponse } from "@/server/downloads/errors";
 import { hashValue } from "@/server/downloads/hash";
 import { checkRateLimit } from "@/server/downloads/rate-limit";
+import { resolveFreeTemplateFile } from "@/server/downloads/resolve-free-template-file";
 import { downloadRequestSchema } from "@/server/downloads/schema";
 import { ANONYMOUS_SESSION_COOKIE, ANONYMOUS_SESSION_MAX_AGE_SECONDS, getAnonymousSessionId } from "@/server/downloads/session";
+import { mintViewGrant } from "@/server/downloads/view-grant";
 
 export const runtime = "nodejs";
 
-const BUCKET = "it-free-files";
-const SIGNED_URL_TTL_SECONDS = 300;
+const VIEW_GRANT_TTL_SECONDS = 60 * 60;
 
 function isSameOrigin(request: NextRequest): boolean {
   const origin = request.headers.get("origin");
@@ -32,17 +33,20 @@ export async function POST(request: NextRequest) {
   }
 
   if (!hasServiceRoleConfig()) {
-    return errorResponse(
-      "SERVICE_UNAVAILABLE",
-      "Downloads are not available in this environment.",
-      503,
-    );
+    return errorResponse("SERVICE_UNAVAILABLE", "Viewing templates isn't available in this environment.", 503);
+  }
+
+  // Unlike the IP hash below, the view grant's signature IS the access
+  // control — it must not be minted unsigned, so fail closed here rather
+  // than letting mintViewGrant() throw deeper in the handler.
+  if (!serverEnv.DOWNLOAD_HASH_SECRET) {
+    return errorResponse("SERVICE_UNAVAILABLE", "Viewing templates isn't available in this environment.", 503);
   }
 
   const body = await request.json().catch(() => null);
   const parsed = downloadRequestSchema.safeParse(body);
   if (!parsed.success) {
-    return errorResponse("VALIDATION_ERROR", "The download request was invalid.", 400);
+    return errorResponse("VALIDATION_ERROR", "The request was invalid.", 400);
   }
   const { productId, fileId, email, marketingConsent, consentTextVersion, source } = parsed.data;
 
@@ -54,68 +58,27 @@ export async function POST(request: NextRequest) {
 
   const { allowed } = await checkRateLimit(supabase, { ipHash, sessionId });
   if (!allowed) {
-    return errorResponse("RATE_LIMITED", "Too many download requests. Please try again shortly.", 429);
+    return errorResponse("RATE_LIMITED", "Too many requests. Please try again shortly.", 429);
   }
 
-  const { data: product, error: productError } = await supabase
-    .from("it_products")
-    .select("id, access_type, status")
-    .eq("id", productId)
-    .maybeSingle();
-
-  if (productError) {
-    console.error("Product lookup failed:", productError.message);
-    return errorResponse("INTERNAL_ERROR", "Something went wrong. Please try again.", 500);
+  const resolved = await resolveFreeTemplateFile(supabase, { productId, fileId });
+  if (!resolved.ok) {
+    return errorResponse("PRODUCT_NOT_AVAILABLE", "This template is not currently available to view.", 404);
   }
 
-  const productAvailable = product && product.access_type === "free" && product.status === "published";
-  if (!productAvailable) {
-    return errorResponse("PRODUCT_NOT_AVAILABLE", "This download is not currently available.", 404);
-  }
-
-  const { data: version, error: versionError } = await supabase
-    .from("it_product_versions")
-    .select("id")
-    .eq("product_id", productId)
-    .eq("is_current", true)
-    .maybeSingle();
-
-  if (versionError) {
-    console.error("Product version lookup failed:", versionError.message);
-    return errorResponse("INTERNAL_ERROR", "Something went wrong. Please try again.", 500);
-  }
-
-  if (!version) {
-    return errorResponse("PRODUCT_NOT_AVAILABLE", "This download is not currently available.", 404);
-  }
-
-  const { data: file, error: fileError } = await supabase
-    .from("it_files")
-    .select("id, storage_bucket, storage_path, original_filename")
-    .eq("id", fileId)
-    .eq("product_version_id", version.id)
-    .maybeSingle();
-
-  if (fileError) {
-    console.error("File lookup failed:", fileError.message);
-    return errorResponse("INTERNAL_ERROR", "Something went wrong. Please try again.", 500);
-  }
-
-  if (!file || file.storage_bucket !== BUCKET) {
-    return errorResponse("PRODUCT_NOT_AVAILABLE", "This download is not currently available.", 404);
-  }
+  const viewSource = source ? `${source}-view` : "view";
 
   const { error: requestError } = await supabase.from("it_free_download_requests").insert({
     product_id: productId,
     email: email ?? null,
     marketing_consent: marketingConsent,
     consent_text_version: consentTextVersion ?? null,
-    source: source ?? null,
+    source: viewSource,
     anonymous_session_id: sessionId,
   });
 
   if (requestError) {
-    console.error("Failed to record free download request:", requestError.message);
+    console.error("Failed to record free view request:", requestError.message);
     return errorResponse("INTERNAL_ERROR", "Something went wrong. Please try again.", 500);
   }
 
@@ -126,29 +89,27 @@ export async function POST(request: NextRequest) {
     product_id: productId,
     anonymous_session_id: sessionId,
     email_hash: emailHash,
-    source: source ?? null,
+    source: viewSource,
     user_agent: request.headers.get("user-agent"),
     ip_hash: ipHash,
   });
 
   if (eventError) {
-    console.error("Failed to record download event:", eventError.message);
+    console.error("Failed to record view event:", eventError.message);
     return errorResponse("INTERNAL_ERROR", "Something went wrong. Please try again.", 500);
   }
 
-  const { data: signedUrlData, error: signedUrlError } = await supabase.storage
-    .from(BUCKET)
-    .createSignedUrl(file.storage_path, SIGNED_URL_TTL_SECONDS, {
-      download: file.original_filename ?? true,
-    });
+  const grant = mintViewGrant(serverEnv.DOWNLOAD_HASH_SECRET, { productId, fileId }, VIEW_GRANT_TTL_SECONDS);
 
-  if (signedUrlError || !signedUrlData) {
-    console.error("Failed to create signed URL:", signedUrlError?.message);
-    return errorResponse("INTERNAL_ERROR", "Something went wrong. Please try again.", 500);
-  }
+  const response = NextResponse.json({ ok: true });
 
-  const expiresAt = new Date(Date.now() + SIGNED_URL_TTL_SECONDS * 1000).toISOString();
-  const response = NextResponse.json({ downloadUrl: signedUrlData.signedUrl, expiresAt });
+  response.cookies.set(`it_view_grant_${productId}`, grant, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: VIEW_GRANT_TTL_SECONDS,
+    path: "/",
+  });
 
   if (isNewSession) {
     response.cookies.set(ANONYMOUS_SESSION_COOKIE, sessionId, {
