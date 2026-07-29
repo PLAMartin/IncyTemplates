@@ -1,0 +1,210 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens for Incy Templates.
+ * Brand direction (spec §11): calm, clear, practical, trustworthy — a
+ * document/workshop feel rather than generic SaaS-indigo-on-white. Warm
+ * paper neutrals + ink text + a single confident pine/teal accent used for
+ * actions and stage progression. Proposed direction, not yet signed off —
+ * see docs/decisions/0002-visual-identity-direction.md.
+ */
+:root {
+  --color-paper: #faf8f4;
+  --color-paper-raised: #ffffff;
+  --color-ink-900: #1b1a17;
+  --color-ink-700: #3a3733;
+  --color-ink-500: #6b665f;
+  --color-ink-300: #b3ada2;
+  --color-ink-200: #ddd7cc;
+  --color-ink-100: #eeebe3;
+
+  --color-brand-900: #0d3b34;
+  --color-brand-700: #14574c;
+  --color-brand-600: #1a6e5f;
+  --color-brand-500: #21876f;
+  --color-brand-100: #e3efe9;
+
+  --color-accent-amber-700: #8a5a12;
+  --color-accent-amber-500: #c58a2e;
+  --color-accent-amber-100: #f8ecd6;
+
+  --color-border: var(--color-ink-200);
+  --color-focus-ring: #1a6e5f;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: #15140f;
+    --color-paper-raised: #1d1c17;
+    --color-ink-900: #f4f1e9;
+    --color-ink-700: #d8d3c6;
+    --color-ink-500: #a49e91;
+    --color-ink-300: #5c5850;
+    --color-ink-200: #3a372f;
+    --color-ink-100: #2a2822;
+
+    --color-brand-900: #d3ece4;
+    --color-brand-700: #9fd8c7;
+    --color-brand-600: #6fc3ac;
+    --color-brand-500: #4aab92;
+    --color-brand-100: #16352d;
+
+    --color-accent-amber-700: #f0cf95;
+    --color-accent-amber-500: #d9a446;
+    --color-accent-amber-100: #3a2e14;
+
+    --color-border: var(--color-ink-200);
+    --color-focus-ring: #6fc3ac;
+  }
+}
+
+@theme inline {
+  --color-paper: var(--color-paper);
+  --color-paper-raised: var(--color-paper-raised);
+  --color-ink-900: var(--color-ink-900);
+  --color-ink-700: var(--color-ink-700);
+  --color-ink-500: var(--color-ink-500);
+  --color-ink-300: var(--color-ink-300);
+  --color-ink-200: var(--color-ink-200);
+  --color-ink-100: var(--color-ink-100);
+
+  --color-brand-900: var(--color-brand-900);
+  --color-brand-700: var(--color-brand-700);
+  --color-brand-600: var(--color-brand-600);
+  --color-brand-500: var(--color-brand-500);
+  --color-brand-100: var(--color-brand-100);
+
+  --color-amber-700: var(--color-accent-amber-700);
+  --color-amber-500: var(--color-accent-amber-500);
+  --color-amber-100: var(--color-accent-amber-100);
+
+  --color-border: var(--color-border);
+
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-source-serif);
+
+  /* Spec §11.3: four bands only (0-639 / 640-1023 / 1024-1439 / 1440+). */
+  --breakpoint-sm: 640px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1440px;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink-900);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-serif), ui-serif, Georgia, serif;
+    color: var(--color-ink-900);
+    text-wrap: balance;
+  }
+
+  a {
+    color: var(--color-brand-600);
+  }
+
+  /* Single, consistent focus style everywhere — never rely on browser default alone. */
+  :focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    background: var(--color-paper-raised);
+    color: var(--color-ink-900);
+    padding: 0.75rem 1rem;
+    border-radius: 0 0 var(--radius-sm) 0;
+    border: 1px solid var(--color-border);
+  }
+
+  .skip-link:focus {
+    left: 0;
+  }
+}
+
+/*
+ * Minimal MDX guide-content typography. No @tailwindcss/typography plugin
+ * is installed (deliberately — spec §12.4 prefers a small local
+ * implementation over an extra dependency where one is simple enough), so
+ * this hand-rolled ruleset styles the handful of elements guide Markdown
+ * actually produces.
+ */
+@layer components {
+  .guide-prose {
+    color: var(--color-ink-700);
+    max-width: 65ch;
+  }
+  .guide-prose > * + * {
+    margin-top: 1.25em;
+  }
+  .guide-prose h2 {
+    font-size: 1.375rem;
+    font-weight: 600;
+    margin-top: 2em;
+    scroll-margin-top: 5rem;
+  }
+  .guide-prose h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-top: 1.75em;
+    scroll-margin-top: 5rem;
+  }
+  .guide-prose p {
+    line-height: 1.75;
+  }
+  .guide-prose ul,
+  .guide-prose ol {
+    padding-left: 1.5em;
+  }
+  .guide-prose ul {
+    list-style-type: disc;
+  }
+  .guide-prose ol {
+    list-style-type: decimal;
+  }
+  .guide-prose li + li {
+    margin-top: 0.375em;
+  }
+  .guide-prose a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .guide-prose strong {
+    color: var(--color-ink-900);
+    font-weight: 600;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

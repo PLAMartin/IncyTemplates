@@ -1,0 +1,132 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import rehypeSlug from "rehype-slug";
+import { getAllGuides, getGuideBySlug } from "@/lib/mdx/guides";
+import { extractToc } from "@/lib/mdx/toc";
+import { getBundleBySlug, getProductBySlug } from "@/server/queries";
+import { canonicalUrl } from "@/lib/seo/canonical";
+import { articleJsonLd, breadcrumbJsonLd } from "@/lib/seo/structured-data";
+import { JsonLd } from "@/components/content/json-ld";
+import { Breadcrumbs } from "@/components/product/breadcrumbs";
+import { TableOfContents } from "@/components/content/table-of-contents";
+import { ProductCard } from "@/components/catalogue/product-card";
+import { GuideCard } from "@/components/content/guide-card";
+import type { ProductSummary } from "@/types/catalogue";
+
+type Props = { params: Promise<{ slug: string }> };
+
+export async function generateStaticParams() {
+  const guides = await getAllGuides();
+  return guides.map((guide) => ({ slug: guide.slug }));
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const guide = await getGuideBySlug(slug);
+  if (!guide) return {};
+  const title = guide.seoTitle ?? guide.title;
+  const description = guide.seoDescription ?? guide.summary;
+  return {
+    title,
+    description,
+    alternates: { canonical: canonicalUrl(`/guides/${slug}`) },
+    openGraph: { title, description, type: "article", publishedTime: guide.publishedAt, modifiedTime: guide.updatedAt },
+  };
+}
+
+async function resolveRelatedProduct(slug: string): Promise<ProductSummary | null> {
+  const product = await getProductBySlug(slug);
+  if (product) return product;
+  const bundle = await getBundleBySlug(slug);
+  return bundle;
+}
+
+export default async function GuidePage({ params }: Props) {
+  const { slug } = await params;
+  const guide = await getGuideBySlug(slug);
+  if (!guide) notFound();
+
+  const allGuides = await getAllGuides();
+  const currentIndex = allGuides.findIndex((g) => g.slug === guide.slug);
+  const nextGuide = currentIndex >= 0 ? allGuides[(currentIndex + 1) % allGuides.length] : undefined;
+
+  const relatedSlugs = guide.relatedProducts ?? [];
+  const relatedProducts = (await Promise.all(relatedSlugs.map(resolveRelatedProduct))).filter(
+    (p): p is ProductSummary => Boolean(p),
+  );
+
+  const toc = extractToc(guide.content);
+
+  const path = `/guides/${slug}`;
+  const breadcrumbItems = [
+    { name: "Home", path: "/" },
+    { name: "Guides", path: "/guides" },
+    { name: guide.title, path },
+  ];
+
+  return (
+    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+      <JsonLd data={articleJsonLd(guide, path)} />
+      <JsonLd data={breadcrumbJsonLd(breadcrumbItems)} />
+
+      <Breadcrumbs items={breadcrumbItems.map((b) => ({ name: b.name, href: b.path }))} />
+
+      <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-[3fr_1fr]">
+        <article>
+          <header className="mb-8">
+            <h1 className="font-serif text-3xl font-semibold text-ink-900 sm:text-4xl">{guide.title}</h1>
+            <p className="mt-3 text-lg text-ink-700">{guide.summary}</p>
+            <p className="mt-3 text-sm text-ink-500">
+              By {guide.author} · Published{" "}
+              {new Date(guide.publishedAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+              {guide.updatedAt !== guide.publishedAt
+                ? ` · Updated ${new Date(guide.updatedAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}`
+                : ""}{" "}
+              · {guide.readingTimeMinutes} min read
+            </p>
+          </header>
+
+          <div className="mb-8 lg:hidden">
+            <TableOfContents entries={toc} />
+          </div>
+
+          <div className="guide-prose">
+            <MDXRemote source={guide.content} options={{ mdxOptions: { rehypePlugins: [rehypeSlug] } }} />
+          </div>
+
+          {relatedProducts.length > 0 ? (
+            <div className="mt-12">
+              <h2 className="text-lg font-semibold text-ink-900">Relevant templates</h2>
+              <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {relatedProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {nextGuide && nextGuide.slug !== guide.slug ? (
+            <div className="mt-12">
+              <h2 className="text-lg font-semibold text-ink-900">Read next</h2>
+              <div className="mt-3 max-w-sm">
+                <GuideCard guide={nextGuide} />
+              </div>
+            </div>
+          ) : null}
+
+          <p className="mt-12 text-sm text-ink-500">
+            Written by {guide.author}. <Link href="/about" className="underline hover:text-ink-900">More about Incy Templates.</Link>
+          </p>
+        </article>
+
+        <div className="hidden lg:block">
+          <div className="sticky top-6">
+            <TableOfContents entries={toc} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
