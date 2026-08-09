@@ -153,7 +153,9 @@ export default async function HomePage() {
             <div className="flex items-end justify-between gap-4">
               <div>
                 <h2 className="font-serif text-2xl font-semibold text-ink-900">Product families</h2>
-                <p className="mt-2 text-ink-500">Product Idea Assessor is live today; the rest are in development.</p>
+                <p className="mt-2 text-ink-500">
+                  Product Idea Assessor and Customer Discovery Kit are live today; the rest are in development.
+                </p>
               </div>
               <Link href="/products" className="hidden text-sm font-medium text-brand-600 hover:text-brand-700 sm:block">
                 View all products

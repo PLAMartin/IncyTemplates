@@ -14,12 +14,15 @@ operated by Incyworks Ltd.
 This build targets the **v3 spec's recommended first milestone**
 (`docs/Incytemplates-website-spec-v3.md`, §45): the framework/product-family
 data model, Guide/Template/Tool as distinct first-class output types, a Tool
-registry pattern, and the **Product Idea Assessor** family built fully
-end-to-end (Guide + Template + an anonymous, deterministic interactive Tool)
-alongside journey-stage navigation (`/journey/*`) and a framework catalogue
-(`/products/*`). The other five flagship families are seeded as draft
-"Coming soon" placeholders — visible on listing pages, no published outputs
-yet (see [`docs/decisions/0014`](docs/decisions/0014-draft-flagship-family-public-teasers.md)).
+registry pattern, and two flagship families built fully end-to-end (Guide +
+Template + an anonymous, deterministic interactive Tool each) — **Product
+Idea Assessor** and **Customer Discovery Kit** (see
+[`docs/decisions/0021`](docs/decisions/0021-customer-discovery-kit-family.md))
+— alongside journey-stage navigation (`/journey/*`) and a framework
+catalogue (`/products/*`). The remaining four flagship families are seeded
+as draft "Coming soon" placeholders — visible on listing pages, no
+published outputs yet (see
+[`docs/decisions/0014`](docs/decisions/0014-draft-flagship-family-public-teasers.md)).
 The earlier, v2-era template/bundle catalogue (`/templates`, `/bundles`)
 still exists underneath and is unaffected.
 

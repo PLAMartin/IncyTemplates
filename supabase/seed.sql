@@ -59,10 +59,10 @@ insert into public.it_frameworks (
   priority_score, priority_rationale, source_strength, source_note, flagship,
   display_order, seo_title, seo_description, published_at
 ) values (
-  '1c2a8bbd-308d-3e5c-c08e-30a596a3f716', 'draft', 'Customer Discovery Kit', 'customer-discovery-kit', 'Find out what potential customers actually do and need, without leading them to agree with you.', null, 'A set of customer conversations that produce real evidence instead of polite agreement.',
-  'Founders about to run their first — or next — round of customer discovery.', null, null, null, '503582d1-29fb-9e68-af12-1375bd33ab3a',
-  95, 'Ranked #2 in the source-material opportunity portfolio (spec v3 §37).', null, null, true,
-  2, null, null, null
+  '1c2a8bbd-308d-3e5c-c08e-30a596a3f716', 'published', 'Customer Discovery Kit', 'customer-discovery-kit', 'Find out what potential customers actually do and need, without leading them to agree with you.', 'Founders run interview after interview, but the interviews are shaped by what they already believe: leading questions, pitching before listening, and treating polite interest as evidence. The round feels productive and produces nothing anyone can actually act on.', 'A set of customer conversations that produce real evidence instead of polite agreement.',
+  'Founders about to run their first — or next — round of customer discovery.', 'Use once the Product Idea Assessor says you need more evidence, before you write a business plan or start building anything.', 'Not useful once you already have paying customers to learn from — this is for early, pre-build discovery, not ongoing customer feedback.', 'Plan who to talk to and build a script that asks about people''s past and present, not their hypothetical future (the Customer Interview Planner). Get as far as you can into understanding their situation before you mention your idea at all, ask ''why'' past the first, rehearsed answer, and write down what surprised you immediately after each conversation, logged against your assumptions rather than mixed in with tasks (the Assumption and Evidence Tracker). Keep going until interviews stop surprising you. The Evidence Analyser Tool then scores what you''ve gathered — how many people, how open your questions really were, whether you heard real past behaviour or just opinions, whether anyone showed a costly commitment, and whether a pattern is actually forming — and caps the score when leading questions mean the pattern itself can''t be trusted yet.', '503582d1-29fb-9e68-af12-1375bd33ab3a',
+  95, 'Ranked #2 in the source-material opportunity portfolio (spec v3 §37): the natural next step after Product Idea Assessor, and existing Customer Interview Planner / Assumption and Evidence Tracker templates plus a mature interview-technique guide meant this family could be completed without writing new template content from scratch.', 'strong', 'Developed from A Bit Gamey material on running customer interviews that avoid leading questions and confirmation bias, including the ''ask about the past, not the future'' and ''stop pitching before the interview starts'' techniques.', true,
+  2, 'Customer Discovery Kit — turn customer conversations into real evidence', 'Plan interviews that avoid leading questions, log what you learn separately from what you''re assuming, and score how strong your evidence actually is.', '2026-08-09T09:00:00Z'
 )
 on conflict (id) do update set status = excluded.status, name = excluded.name, slug = excluded.slug,
   short_description = excluded.short_description, problem_statement = excluded.problem_statement,
@@ -156,7 +156,7 @@ on conflict (id) do update set status = excluded.status, name = excluded.name, s
 
 -- it_frameworks next-step links (second pass, see comment above)
 update public.it_frameworks set next_step_framework_id = '1c2a8bbd-308d-3e5c-c08e-30a596a3f716' where id = 'bd063cd6-3bdc-e7a0-47fa-dabc2cd8a448';
-update public.it_frameworks set next_step_framework_id = null where id = '1c2a8bbd-308d-3e5c-c08e-30a596a3f716';
+update public.it_frameworks set next_step_framework_id = '4d32e24c-2646-908d-569c-a9789dfb06e1' where id = '1c2a8bbd-308d-3e5c-c08e-30a596a3f716';
 update public.it_frameworks set next_step_framework_id = null where id = '4d32e24c-2646-908d-569c-a9789dfb06e1';
 update public.it_frameworks set next_step_framework_id = null where id = 'a6f884a5-57d0-cbc7-58cf-9d6cc927f4a6';
 update public.it_frameworks set next_step_framework_id = null where id = '46a94166-2f8a-ceb8-98c3-56610ca412aa';
@@ -284,7 +284,7 @@ insert into public.it_products (
   25, 40, 'beginner', '1.2',
   null, null, 'GBP', '488fbee7-849e-4e17-2d2e-e386ec5328ca', true,
   '2026-06-10T09:00:00Z', null, 'Customer Interview Planner — free template', 'Plan customer interviews that produce real evidence, free, with a ready-to-use script.', '{"placeholder":true}'::jsonb,
-  null, null
+  '1c2a8bbd-308d-3e5c-c08e-30a596a3f716', null
 )
 on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
   status = excluded.status, name = excluded.name, slug = excluded.slug,
@@ -311,7 +311,7 @@ insert into public.it_products (
   15, 20, 'beginner', '1.0',
   null, null, 'GBP', '488fbee7-849e-4e17-2d2e-e386ec5328ca', false,
   '2026-06-12T09:00:00Z', null, 'Assumption and Evidence Tracker — free template', 'Separate what you''re assuming from what you''ve confirmed with evidence, free.', '{"placeholder":true}'::jsonb,
-  null, null
+  '1c2a8bbd-308d-3e5c-c08e-30a596a3f716', null
 )
 on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
   status = excluded.status, name = excluded.name, slug = excluded.slug,
@@ -927,6 +927,60 @@ insert into public.it_products (
   published_at, scheduled_for, seo_title, seo_description, schema_data,
   framework_id, tool_key
 ) values (
+  '16f7ea01-c4e9-2774-946b-a996c991ee9b', 'guide', 'free', 'published', 'Customer Discovery Kit: the Guide', 'customer-discovery-kit', 'How to plan and run customer interviews that produce real evidence, and know when you''ve gathered enough of it.', 'Explains how to plan who to talk to, run interviews that avoid leading questions and premature pitching, log evidence separately from assumptions, and recognise when a real pattern has formed. Read this before the Template or the Tool — both assume the technique this guide teaches.',
+  'A repeatable way to run customer interviews that can actually change your mind, and know when you''ve heard enough.', 'Founders and product people about to run their first — or next — round of customer discovery.', 'Read this first, before the Template or the Tool.', 'Skip straight to the Tool if you''ve already run your interviews and just want to score the evidence you gathered.',
+  8, 12, 'beginner', '1.0',
+  null, null, 'GBP', null, true,
+  '2026-08-09T09:00:00Z', null, 'Customer Discovery Kit guide — run interviews that produce real evidence', 'How to plan and run customer interviews that avoid leading questions, log evidence separately from assumptions, and know when you''ve heard enough.', '{"placeholder":true}'::jsonb,
+  '1c2a8bbd-308d-3e5c-c08e-30a596a3f716', null
+)
+on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
+  status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, full_description = excluded.full_description,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  completion_minutes_min = excluded.completion_minutes_min, completion_minutes_max = excluded.completion_minutes_max,
+  skill_level = excluded.skill_level, current_version = excluded.current_version,
+  price_minor = excluded.price_minor, compare_at_price_minor = excluded.compare_at_price_minor,
+  currency_code = excluded.currency_code, licence_id = excluded.licence_id, featured = excluded.featured,
+  published_at = excluded.published_at, scheduled_for = excluded.scheduled_for, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, schema_data = excluded.schema_data,
+  framework_id = excluded.framework_id, tool_key = excluded.tool_key;
+insert into public.it_products (
+  id, product_type, access_type, status, name, slug, short_description, full_description,
+  outcome_statement, target_audience, when_to_use, when_not_to_use,
+  completion_minutes_min, completion_minutes_max, skill_level, current_version,
+  price_minor, compare_at_price_minor, currency_code, licence_id, featured,
+  published_at, scheduled_for, seo_title, seo_description, schema_data,
+  framework_id, tool_key
+) values (
+  '571eb076-f984-4c5d-eca7-4a81eda90a16', 'tool', 'free', 'published', 'Evidence Analyser', 'customer-discovery-kit-tool', 'Score how strong your customer-discovery evidence actually is, and whether leading questions mean you can''t trust the pattern yet.', 'Answer five questions about the interviews you''ve already run — how many, how open your questions were, what kind of evidence you heard, whether anyone showed real commitment, and how consistent the pattern is — and get a deterministic evidence-strength score, a bias-risk flag, and one concrete next action. Usable anonymously, with no account required.',
+  'An evidence-strength score, a bias-risk flag, and one clear next action.', 'Founders who''ve run some customer interviews and want a structured read on whether the evidence actually holds up.', 'Use after a first round of interviews, before you treat what you heard as a settled pattern.', 'Not a substitute for running the interviews — it scores evidence you already have, it doesn''t gather it for you.',
+  5, 10, 'beginner', '1.0',
+  null, null, 'GBP', null, true,
+  '2026-08-09T09:00:00Z', null, 'Evidence Analyser — free customer-discovery evidence scoring tool', 'Score how strong your customer-interview evidence actually is, free, no account required.', '{"placeholder":true}'::jsonb,
+  '1c2a8bbd-308d-3e5c-c08e-30a596a3f716', 'customer-discovery-kit'
+)
+on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
+  status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, full_description = excluded.full_description,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  completion_minutes_min = excluded.completion_minutes_min, completion_minutes_max = excluded.completion_minutes_max,
+  skill_level = excluded.skill_level, current_version = excluded.current_version,
+  price_minor = excluded.price_minor, compare_at_price_minor = excluded.compare_at_price_minor,
+  currency_code = excluded.currency_code, licence_id = excluded.licence_id, featured = excluded.featured,
+  published_at = excluded.published_at, scheduled_for = excluded.scheduled_for, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, schema_data = excluded.schema_data,
+  framework_id = excluded.framework_id, tool_key = excluded.tool_key;
+insert into public.it_products (
+  id, product_type, access_type, status, name, slug, short_description, full_description,
+  outcome_statement, target_audience, when_to_use, when_not_to_use,
+  completion_minutes_min, completion_minutes_max, skill_level, current_version,
+  price_minor, compare_at_price_minor, currency_code, licence_id, featured,
+  published_at, scheduled_for, seo_title, seo_description, schema_data,
+  framework_id, tool_key
+) values (
   'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', 'bundle', 'paid', 'published', 'Idea Validation Pack', 'idea-validation-pack', 'Nine templates that take you from a raw idea to a documented proceed-revise-pause decision, backed by evidence rather than confidence.', 'The Idea Validation Pack is the complete evidence-led path from a raw idea to a defensible decision. It sequences nine templates — intake, founder fit, problem evidence, competitive alternatives, a team Copy–Improve–Differentiate workshop, assumption ranking, a full interview system, evidence synthesis, and a closing proceed/revise/pause decision — into a single 1–2 week process, instead of leaving you to assemble one from separate free worksheets.',
   'A documented, evidence-based decision on whether to proceed, revise or pause — not just a folder of worksheets.', 'Founders who want a structured, complete path through idea validation rather than assembling their own process from free templates.', 'Use end-to-end over 1–2 weeks when you''re serious about validating a new idea before committing real time or money.', 'If you only need one part of the process — for example, just customer interviews — the free Customer Interview Planner may be enough on its own.',
   240, 480, 'intermediate', '1.0',
@@ -975,7 +1029,7 @@ on conflict (id) do update set product_type = excluded.product_type, access_type
   framework_id = excluded.framework_id, tool_key = excluded.tool_key;
 
 -- it_product_categories (full replace for the products this script manages)
-delete from public.it_product_categories where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
+delete from public.it_product_categories where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('af2edcc3-4630-bbd6-e144-29ff50d794b1', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', '9c66d23e-6490-8df9-1a77-759635564cfc', true);
@@ -1004,11 +1058,13 @@ insert into public.it_product_categories (product_id, category_id, is_primary) v
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('faf677d9-aac4-9684-0c18-37422c44417c', '4af5c43b-4065-4251-cd7e-09d868b59f60', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('ba929ce1-8f41-1834-0a4f-ae45b80fff7f', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
+insert into public.it_product_categories (product_id, category_id, is_primary) values ('16f7ea01-c4e9-2774-946b-a996c991ee9b', '9c66d23e-6490-8df9-1a77-759635564cfc', true);
+insert into public.it_product_categories (product_id, category_id, is_primary) values ('571eb076-f984-4c5d-eca7-4a81eda90a16', '9c66d23e-6490-8df9-1a77-759635564cfc', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb', 'e11948c4-e14f-706e-2968-269c8566f9f6', true);
 
 -- it_product_stages (full replace for the products this script manages)
-delete from public.it_product_stages where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
+delete from public.it_product_stages where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('af2edcc3-4630-bbd6-e144-29ff50d794b1', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', '8f0f32b0-bba6-e3a0-a144-46ebfbcab4c0', true);
@@ -1037,6 +1093,8 @@ insert into public.it_product_stages (product_id, stage_id, is_primary) values (
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('faf677d9-aac4-9684-0c18-37422c44417c', '631ab1c8-889b-c8a5-a382-6aa9044bc3ab', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('ba929ce1-8f41-1834-0a4f-ae45b80fff7f', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
+insert into public.it_product_stages (product_id, stage_id, is_primary) values ('16f7ea01-c4e9-2774-946b-a996c991ee9b', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
+insert into public.it_product_stages (product_id, stage_id, is_primary) values ('571eb076-f984-4c5d-eca7-4a81eda90a16', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb', 'cf668b0e-b443-8f64-21ed-80ac162bfc1e', true);
 

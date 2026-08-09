@@ -11,17 +11,17 @@ import { test, expect } from "@playwright/test";
 
 test("draft framework shows only as a public teaser, never full editorial detail", async ({ page }) => {
   await page.goto("/products");
-  const teaserCard = page.getByRole("link", { name: /Customer Discovery Kit/ });
+  const teaserCard = page.getByRole("link", { name: /Better Decision Maker/ });
   await expect(teaserCard).toBeVisible();
   await expect(teaserCard).toContainText("Coming soon");
 
-  await page.goto("/journey/validate");
-  await expect(page.getByRole("link", { name: /Customer Discovery Kit/ })).toBeVisible();
+  await page.goto("/journey/decide");
+  await expect(page.getByRole("link", { name: /Better Decision Maker/ })).toBeVisible();
 });
 
 test("visiting a draft framework's own page shows the in-development state, not full detail", async ({ page }) => {
-  await page.goto("/products/customer-discovery-kit");
-  await expect(page.getByRole("heading", { name: "Customer Discovery Kit" })).toBeVisible();
+  await page.goto("/products/better-decision-maker");
+  await expect(page.getByRole("heading", { name: "Better Decision Maker" })).toBeVisible();
   await expect(page.getByText(/still in development/i)).toBeVisible();
   // No "Ways to use this" outputs section (Guide/Template/Tool cards) exists for a draft
   // family with no published outputs.
@@ -37,4 +37,22 @@ test("the published Product Idea Assessor family page shows full detail and its 
   await expect(page.getByText("Learn how")).toBeVisible();
   await expect(page.getByText("Do it yourself")).toBeVisible();
   await expect(page.getByText("Do it interactively")).toBeVisible();
+});
+
+test("the published Customer Discovery Kit family page shows full detail, its outputs, and links on to its next step", async ({
+  page,
+}) => {
+  await page.goto("/products/customer-discovery-kit");
+  await expect(page.getByRole("heading", { name: "Customer Discovery Kit", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  // Two Templates were reassigned to this family (Customer Interview Planner and Assumption
+  // and Evidence Tracker) — both should render under the Template column.
+  await expect(page.getByRole("link", { name: /Customer Interview Planner/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Assumption and Evidence Tracker/ })).toBeVisible();
+  // Recommended next step per its `next_step_framework_slug`.
+  await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Better Decision Maker/ })).toBeVisible();
 });

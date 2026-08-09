@@ -267,16 +267,19 @@ export function toSummary(product: Product): ProductSummary {
 
 // ---------------------------------------------------------------------------
 // Frameworks (spec v3 §14.3, §37) — the reusable method/problem/outcome layer
-// above individual Guide/Template/Tool outputs. Product Idea Assessor is the
-// first canonical family, fully populated and published; the other five
-// flagship families (spec v3 §37.1 Tier 1) are seeded as minimal, draft,
-// flagship placeholders per the product-owner decision recorded in
-// docs/decisions — visible as public "Coming soon" teasers (via
+// above individual Guide/Template/Tool outputs. Product Idea Assessor and
+// Customer Discovery Kit are fully populated and published, each with a
+// complete Guide/Template/Tool set (see docs/decisions/0021 for how Customer
+// Discovery Kit reused existing v2-era template/guide content). The
+// remaining four flagship families (spec v3 §37.1 Tier 1) are seeded as
+// minimal, draft, flagship placeholders per the product-owner decision
+// recorded in docs/decisions — visible as public "Coming soon" teasers (via
 // `it_frameworks_teasers`/`getFrameworkTeasers`), not full pages, and with
 // no child Guide/Template/Tool rows yet.
 // ---------------------------------------------------------------------------
 
 export const PRODUCT_IDEA_ASSESSOR_FRAMEWORK_ID = "framework-product-idea-assessor";
+export const CUSTOMER_DISCOVERY_KIT_FRAMEWORK_ID = "framework-customer-discovery-kit";
 
 export const frameworks: Framework[] = [
   {
@@ -310,28 +313,34 @@ export const frameworks: Framework[] = [
     next_step_framework_slug: "customer-discovery-kit",
   },
   {
-    id: "framework-customer-discovery-kit",
-    status: "draft",
+    id: CUSTOMER_DISCOVERY_KIT_FRAMEWORK_ID,
+    status: "published",
     name: "Customer Discovery Kit",
     slug: "customer-discovery-kit",
     short_description: "Find out what potential customers actually do and need, without leading them to agree with you.",
-    problem_statement: null,
+    problem_statement:
+      "Founders run interview after interview, but the interviews are shaped by what they already believe: leading questions, pitching before listening, and treating polite interest as evidence. The round feels productive and produces nothing anyone can actually act on.",
     outcome_statement: "A set of customer conversations that produce real evidence instead of polite agreement.",
     target_audience: "Founders about to run their first — or next — round of customer discovery.",
-    when_to_use: null,
-    when_not_to_use: null,
-    method_summary: null,
+    when_to_use: "Use once the Product Idea Assessor says you need more evidence, before you write a business plan or start building anything.",
+    when_not_to_use:
+      "Not useful once you already have paying customers to learn from — this is for early, pre-build discovery, not ongoing customer feedback.",
+    method_summary:
+      "Plan who to talk to and build a script that asks about people's past and present, not their hypothetical future (the Customer Interview Planner). Get as far as you can into understanding their situation before you mention your idea at all, ask 'why' past the first, rehearsed answer, and write down what surprised you immediately after each conversation, logged against your assumptions rather than mixed in with tasks (the Assumption and Evidence Tracker). Keep going until interviews stop surprising you. The Evidence Analyser Tool then scores what you've gathered — how many people, how open your questions really were, whether you heard real past behaviour or just opinions, whether anyone showed a costly commitment, and whether a pattern is actually forming — and caps the score when leading questions mean the pattern itself can't be trusted yet.",
     journey_stage: stageRef("validate"),
     priority_score: 95,
-    priority_rationale: "Ranked #2 in the source-material opportunity portfolio (spec v3 §37).",
-    source_strength: null,
-    source_note: null,
+    priority_rationale:
+      "Ranked #2 in the source-material opportunity portfolio (spec v3 §37): the natural next step after Product Idea Assessor, and existing Customer Interview Planner / Assumption and Evidence Tracker templates plus a mature interview-technique guide meant this family could be completed without writing new template content from scratch.",
+    source_strength: "strong",
+    source_note:
+      "Developed from A Bit Gamey material on running customer interviews that avoid leading questions and confirmation bias, including the 'ask about the past, not the future' and 'stop pitching before the interview starts' techniques.",
     flagship: true,
     display_order: 2,
-    seo_title: null,
-    seo_description: null,
-    published_at: null,
-    next_step_framework_slug: null,
+    seo_title: "Customer Discovery Kit — turn customer conversations into real evidence",
+    seo_description:
+      "Plan interviews that avoid leading questions, log what you learn separately from what you're assuming, and score how strong your evidence actually is.",
+    published_at: "2026-08-09T09:00:00Z",
+    next_step_framework_slug: "better-decision-maker",
   },
   {
     id: "framework-better-decision-maker",
@@ -705,7 +714,7 @@ const freeProducts: Product[] = [
     stages: [stageRef("validate")],
     formats: ["markdown", "pdf"],
     is_placeholder: true,
-    framework_id: null,
+    framework_id: CUSTOMER_DISCOVERY_KIT_FRAMEWORK_ID,
     tool_key: null,
     licence: standardLicence,
     quality_standard: {
@@ -766,7 +775,7 @@ const freeProducts: Product[] = [
     stages: [stageRef("validate")],
     formats: ["markdown"],
     is_placeholder: true,
-    framework_id: null,
+    framework_id: CUSTOMER_DISCOVERY_KIT_FRAMEWORK_ID,
     tool_key: null,
     licence: standardLicence,
     quality_standard: {
@@ -1676,11 +1685,99 @@ const productIdeaAssessorFamilyOutputs: Product[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Customer Discovery Kit family outputs (spec v3 §14.7, §37) — the Guide and
+// Tool that, together with the existing `customer-interview-planner` and
+// `assumption-and-evidence-tracker` Templates above (reassigned to this
+// framework), complete the family's Guide -> Template -> Tool set. See
+// docs/decisions/0021 for why this family reused existing v2-era template
+// and guide content rather than writing new templates from scratch. The
+// Guide's body lives in content/guides/customer-discovery-kit.mdx; this row
+// is metadata joined to that file by matching slug.
+// ---------------------------------------------------------------------------
+
+const customerDiscoveryKitFamilyOutputs: Product[] = [
+  {
+    id: "customer-discovery-kit-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "Customer Discovery Kit: the Guide",
+    slug: "customer-discovery-kit",
+    short_description: "How to plan and run customer interviews that produce real evidence, and know when you've gathered enough of it.",
+    full_description:
+      "Explains how to plan who to talk to, run interviews that avoid leading questions and premature pitching, log evidence separately from assumptions, and recognise when a real pattern has formed. Read this before the Template or the Tool — both assume the technique this guide teaches.",
+    outcome_statement: "A repeatable way to run customer interviews that can actually change your mind, and know when you've heard enough.",
+    target_audience: "Founders and product people about to run their first — or next — round of customer discovery.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you've already run your interviews and just want to score the evidence you gathered.",
+    completion_minutes_min: 8,
+    completion_minutes_max: 12,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-09T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("customer-research")],
+    stages: [stageRef("validate")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: CUSTOMER_DISCOVERY_KIT_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "Customer Discovery Kit guide — run interviews that produce real evidence",
+    seo_description:
+      "How to plan and run customer interviews that avoid leading questions, log evidence separately from assumptions, and know when you've heard enough.",
+  },
+  {
+    id: "customer-discovery-kit-tool",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "Evidence Analyser",
+    slug: "customer-discovery-kit-tool",
+    short_description: "Score how strong your customer-discovery evidence actually is, and whether leading questions mean you can't trust the pattern yet.",
+    full_description:
+      "Answer five questions about the interviews you've already run — how many, how open your questions were, what kind of evidence you heard, whether anyone showed real commitment, and how consistent the pattern is — and get a deterministic evidence-strength score, a bias-risk flag, and one concrete next action. Usable anonymously, with no account required.",
+    outcome_statement: "An evidence-strength score, a bias-risk flag, and one clear next action.",
+    target_audience: "Founders who've run some customer interviews and want a structured read on whether the evidence actually holds up.",
+    when_to_use: "Use after a first round of interviews, before you treat what you heard as a settled pattern.",
+    when_not_to_use: "Not a substitute for running the interviews — it scores evidence you already have, it doesn't gather it for you.",
+    completion_minutes_min: 5,
+    completion_minutes_max: 10,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-09T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("customer-research")],
+    stages: [stageRef("validate")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: CUSTOMER_DISCOVERY_KIT_FRAMEWORK_ID,
+    tool_key: "customer-discovery-kit",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "Evidence Analyser — free customer-discovery evidence scoring tool",
+    seo_description: "Score how strong your customer-interview evidence actually is, free, no account required.",
+  },
+];
+
 export const products: Product[] = [
   ...freeProducts,
   ...ideaValidationItems,
   ...productDefinitionItems,
   ...productIdeaAssessorFamilyOutputs,
+  ...customerDiscoveryKitFamilyOutputs,
 ];
 
 // ---------------------------------------------------------------------------
