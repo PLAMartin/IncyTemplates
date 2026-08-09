@@ -3,6 +3,7 @@ import { customerDiscoveryKitTool } from "./customer-discovery-kit";
 import { betterDecisionMakerTool } from "./better-decision-maker";
 import { mvpScoperTool } from "./mvp-scoper";
 import { productNamingSystemTool } from "./product-naming-system";
+import { firstCustomersPlannerTool } from "./first-customers-planner";
 import type { ToolDefinition } from "./types";
 import { ToolNotAvailableError } from "./types";
 
@@ -18,6 +19,7 @@ const TOOL_REGISTRY: Record<string, ToolDefinition<unknown, unknown>> = {
   [betterDecisionMakerTool.key]: betterDecisionMakerTool as ToolDefinition<unknown, unknown>,
   [mvpScoperTool.key]: mvpScoperTool as ToolDefinition<unknown, unknown>,
   [productNamingSystemTool.key]: productNamingSystemTool as ToolDefinition<unknown, unknown>,
+  [firstCustomersPlannerTool.key]: firstCustomersPlannerTool as ToolDefinition<unknown, unknown>,
 };
 
 /** Returns the Tool definition for `toolKey`, or null if none is registered. */

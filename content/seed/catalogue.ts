@@ -267,18 +267,19 @@ export function toSummary(product: Product): ProductSummary {
 
 // ---------------------------------------------------------------------------
 // Frameworks (spec v3 §14.3, §37) — the reusable method/problem/outcome layer
-// above individual Guide/Template/Tool outputs. Product Idea Assessor,
-// Customer Discovery Kit, Better Decision Maker, MVP Scoper and Product
-// Naming System are fully populated and published, each with a complete
-// Guide/Template/Tool set (see docs/decisions/0021 for how Customer
-// Discovery Kit and docs/decisions/0023 for how MVP Scoper each reused
-// existing v2-era template content, and docs/decisions/0022 for Better
-// Decision Maker and docs/decisions/0024 for Product Naming System, both
-// built entirely from new content). The remaining flagship family (spec v3
-// §37.1 Tier 1) is seeded as a minimal, draft, flagship placeholder per the
-// product-owner decision recorded in docs/decisions — visible as a public
-// "Coming soon" teaser (via `it_frameworks_teasers`/`getFrameworkTeasers`),
-// not a full page, and with no child Guide/Template/Tool rows yet.
+// above individual Guide/Template/Tool outputs. All six spec v3 §37.1 Tier 1
+// flagship families are now fully populated and published, each with a
+// complete Guide/Template/Tool set: Product Idea Assessor, Customer
+// Discovery Kit (docs/decisions/0021, reused existing v2-era template
+// content), Better Decision Maker (docs/decisions/0022, entirely new
+// content), MVP Scoper (docs/decisions/0023, reused an existing template),
+// Product Naming System (docs/decisions/0024, entirely new content), and
+// First Customers Planner (docs/decisions/0025, entirely new content, and
+// the last of the six — see that ADR for what changes now that no draft
+// flagship family remains). No frameworks in this seed are draft any more;
+// the `it_frameworks_teasers` view / `getFrameworkTeasers` "Coming soon"
+// path (spec v3 §41, docs/decisions/0014) stays in place in code for
+// whenever a future, non-flagship or newly-scoped framework needs it.
 // ---------------------------------------------------------------------------
 
 export const PRODUCT_IDEA_ASSESSOR_FRAMEWORK_ID = "framework-product-idea-assessor";
@@ -286,6 +287,7 @@ export const CUSTOMER_DISCOVERY_KIT_FRAMEWORK_ID = "framework-customer-discovery
 export const BETTER_DECISION_MAKER_FRAMEWORK_ID = "framework-better-decision-maker";
 export const MVP_SCOPER_FRAMEWORK_ID = "framework-mvp-scoper";
 export const PRODUCT_NAMING_SYSTEM_FRAMEWORK_ID = "framework-product-naming-system";
+export const FIRST_CUSTOMERS_PLANNER_FRAMEWORK_ID = "framework-first-customers-planner";
 
 export const frameworks: Framework[] = [
   {
@@ -437,27 +439,33 @@ export const frameworks: Framework[] = [
     next_step_framework_slug: "first-customers-planner",
   },
   {
-    id: "framework-first-customers-planner",
-    status: "draft",
+    id: FIRST_CUSTOMERS_PLANNER_FRAMEWORK_ID,
+    status: "published",
     name: "First Customers Planner",
     slug: "first-customers-planner",
     short_description: "Plan how you'll find your first customers instead of hoping they find you.",
-    problem_statement: null,
+    problem_statement:
+      "Founders launch and wait for customers to find them, or spread thin across every channel at once — instead of starting from warm leads, committing to one channel long enough to get a real answer, and writing outreach specific enough to actually work.",
     outcome_statement: "A prioritised plan for reaching a first set of real customers.",
     target_audience: "Founders approaching launch who don't yet have a customer-acquisition plan.",
-    when_to_use: null,
-    when_not_to_use: null,
-    method_summary: null,
+    when_to_use: "Use once you have a named product ready to put in front of real people.",
+    when_not_to_use: "Not useful before you have a real, named product to put in front of people — this plans outreach, it doesn't validate the idea itself.",
+    method_summary:
+      "Start with warm leads — people who've already shown some signal — and exhaust that list before spending energy on cold outreach. Pick the single channel that best matches where your audience already spends attention and your own strengths as a founder, and commit to it long enough to get a real answer before adding a second one. Write outreach specific enough to the recipient that it couldn't have been sent to anyone else. Track named prospects and what happened with each, not just a vanity signup target.",
     journey_stage: stageRef("launch"),
     priority_score: 90,
-    priority_rationale: "Ranked #7 in the source-material opportunity portfolio (spec v3 §37).",
-    source_strength: null,
-    source_note: null,
+    priority_rationale:
+      "Ranked #7 in the source-material opportunity portfolio (spec v3 §37) and the sixth and final family in the Tier 1 flagship launch order — the natural close of the founder journey this platform covers, from assessing an idea through to finding the people who'll actually use it.",
+    source_strength: "strong",
+    source_note:
+      "Developed from A Bit Gamey material on cold outreach and driving product demand, including starting from warm leads and writing outreach specific enough to work.",
     flagship: true,
     display_order: 6,
-    seo_title: null,
-    seo_description: null,
-    published_at: null,
+    seo_title: "First Customers Planner — find your first customers instead of waiting for them",
+    seo_description:
+      "How to plan customer acquisition for a new product: starting warm, picking one channel, personalised outreach, and tracking real people by name.",
+    published_at: "2026-08-09T09:00:00Z",
+    // Last family in the flagship journey — nothing further to recommend on to.
     next_step_framework_slug: null,
   },
 ];
@@ -2152,6 +2160,144 @@ const productNamingSystemFamilyOutputs: Product[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// First Customers Planner family outputs (spec v3 §14.7, §37) — Guide,
+// Template and Tool all newly written for this family, the same situation as
+// Better Decision Maker and Product Naming System: no existing v2-era
+// content covered customer acquisition (see docs/decisions/0025). The
+// Guide's body lives in content/guides/first-customers-planner.mdx, joined
+// to this row by matching slug; the Template's body lives in
+// content/seed/free-files/first-10-customers-plan.md. This is the sixth and
+// last flagship family — see docs/decisions/0025 for what that means for
+// the "draft flagship teaser" test coverage.
+// ---------------------------------------------------------------------------
+
+const firstCustomersPlannerFamilyOutputs: Product[] = [
+  {
+    id: "first-customers-planner-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "First Customers Planner: the Guide",
+    slug: "first-customers-planner",
+    short_description: "A plan for finding your first real customers — starting warm, picking one channel, and getting specific.",
+    full_description:
+      "Explains how to start from warm leads, commit to one acquisition channel long enough to get a real answer, write outreach specific enough to actually work, and track named prospects rather than a vanity target. Read this before the Template or the Tool — both assume the technique this guide teaches.",
+    outcome_statement: "A repeatable way to find first customers deliberately instead of waiting for them to show up.",
+    target_audience: "Founders approaching launch who don't yet have a customer-acquisition plan.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you already have a specific channel in mind and just want a scored fit check.",
+    completion_minutes_min: 8,
+    completion_minutes_max: 12,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-09T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("go-to-market")],
+    stages: [stageRef("launch")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: FIRST_CUSTOMERS_PLANNER_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "First Customers Planner guide — find your first customers instead of waiting for them",
+    seo_description: "How to plan customer acquisition for a new product: starting warm, picking one channel, personalised outreach, and tracking real people by name.",
+  },
+  {
+    id: "first-10-customers-plan",
+    product_type: "template",
+    access_type: "free",
+    status: "published",
+    name: "First 10 Customers Plan",
+    slug: "first-10-customers-plan",
+    short_description: "Build a warm-lead list, commit to one channel, and track named prospects instead of a vanity signup target.",
+    full_description:
+      "A structured plan for finding first customers: a warm-lead list, the one acquisition channel you've committed to with an outreach script specific enough to work, and a running log of named prospects and what happened with each.",
+    outcome_statement: "A prioritised plan for reaching a first set of real customers.",
+    target_audience: "Founders approaching launch who don't yet have a customer-acquisition plan.",
+    when_to_use: "Use once you have a named product ready to put in front of real people.",
+    when_not_to_use: "Not useful before you have a real, named product to put in front of people — this plans outreach, it doesn't validate the idea itself.",
+    completion_minutes_min: 30,
+    completion_minutes_max: 45,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-09T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("go-to-market")],
+    stages: [stageRef("launch")],
+    formats: ["markdown"],
+    is_placeholder: true,
+    framework_id: FIRST_CUSTOMERS_PLANNER_FRAMEWORK_ID,
+    tool_key: null,
+    licence: standardLicence,
+    quality_standard: {
+      purpose: true,
+      instructions: true,
+      thinkingPrompts: true,
+      evidenceFields: true,
+      decisionOutcome: true,
+      nextStep: true,
+    },
+    files: [
+      {
+        id: "first-10-customers-plan-md",
+        file_role: "template",
+        file_format: "markdown",
+        display_name: "First 10 Customers Plan (Markdown, AI-agent-ready)",
+        is_public_preview: false,
+      },
+    ],
+    seo_title: "First 10 Customers Plan — free customer-acquisition planning template",
+    seo_description: "Build a warm-lead list, commit to one channel, and track named prospects instead of a vanity signup target, free.",
+  },
+  {
+    id: "first-customers-planner-tool",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "Channel Selector",
+    slug: "first-customers-planner-tool",
+    short_description: "Score how well a specific acquisition channel fits your situation, and get a concrete next step.",
+    full_description:
+      "Pick the channel you're evaluating — cold outreach, content marketing, communities and forums, or your existing network — and answer four questions about your situation: audience presence, founder fit, effort to start, and repeatability. Get a fit score, a strongest and weakest factor, and one concrete next step. Usable anonymously, with no account required.",
+    outcome_statement: "A fit score for a specific acquisition channel, a named strongest and weakest factor, and one clear next step.",
+    target_audience: "Founders deciding which single channel to commit to for finding first customers.",
+    when_to_use: "Use once you have a specific channel in mind and want a structured read on whether it actually fits your situation.",
+    when_not_to_use: "Not a substitute for actually running the channel — it scores fit on paper, it doesn't replace a real first attempt.",
+    completion_minutes_min: 5,
+    completion_minutes_max: 5,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-09T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("go-to-market")],
+    stages: [stageRef("launch")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: FIRST_CUSTOMERS_PLANNER_FRAMEWORK_ID,
+    tool_key: "first-customers-planner",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "Channel Selector — free customer-acquisition channel fit tool",
+    seo_description: "Score how well a specific acquisition channel fits your situation, free, no account required.",
+  },
+];
+
 export const products: Product[] = [
   ...freeProducts,
   ...ideaValidationItems,
@@ -2161,6 +2307,7 @@ export const products: Product[] = [
   ...betterDecisionMakerFamilyOutputs,
   ...mvpScoperFamilyOutputs,
   ...productNamingSystemFamilyOutputs,
+  ...firstCustomersPlannerFamilyOutputs,
 ];
 
 // ---------------------------------------------------------------------------
