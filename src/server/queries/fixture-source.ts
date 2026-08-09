@@ -5,11 +5,21 @@ import type {
   CatalogueFilters,
   CatalogueResult,
   Category,
+  Framework,
+  FrameworkTeaser,
   Product,
   ProductSummary,
   Stage,
 } from "@/types/catalogue";
 import type { CatalogueSource } from "./types";
+
+/** Display order for framework-outputs cards (spec §8.4: Guide, Template, Tool, then Bundle). */
+const OUTPUT_TYPE_ORDER: Record<ProductSummary["product_type"], number> = {
+  guide: 0,
+  template: 1,
+  tool: 2,
+  bundle: 3,
+};
 
 const DEFAULT_PAGE_SIZE = 12;
 
@@ -49,7 +59,10 @@ export class FixtureCatalogueSource implements CatalogueSource {
   }
 
   async getFeaturedFreeProducts(limit = 3): Promise<Product[]> {
-    const free = this.publishedProducts().filter((p) => p.access_type === "free");
+    // Scoped to product_type "template" — this powers the "Featured free templates"
+    // sections (homepage, /templates/free), which now share `catalogue.products` with
+    // guide/tool rows since v3; those have their own dedicated homepage/index sections.
+    const free = this.publishedProducts().filter((p) => p.access_type === "free" && p.product_type === "template");
     const featured = free.filter((p) => p.featured);
     const rest = free.filter((p) => !p.featured);
     return [...featured, ...rest].slice(0, limit);
@@ -63,6 +76,14 @@ export class FixtureCatalogueSource implements CatalogueSource {
 
   async searchCatalogue(filters: CatalogueFilters): Promise<CatalogueResult> {
     let items = this.publishedCatalogueSummaries();
+
+    // Default scope is template + bundle (this method backs /templates and its sub-pages,
+    // whose pre-v3 behaviour this preserves) — guide/tool rows only appear when a caller
+    // explicitly asks for that type (e.g. /tools/page.tsx passing `type: "tool"`), never by
+    // default alongside templates.
+    if (!filters.type) {
+      items = items.filter((p) => p.product_type === "template" || p.product_type === "bundle");
+    }
 
     if (filters.access) {
       items = items.filter((p) => p.access_type === filters.access);
@@ -96,7 +117,13 @@ export class FixtureCatalogueSource implements CatalogueSource {
   }
 
   async getProductBySlug(slug: string): Promise<Product | null> {
-    const product = catalogue.products.find((p) => p.slug === slug && p.status === "published");
+    // Scoped to product_type "template" to match SupabaseCatalogueSource and the
+    // /templates/[slug] page's assumptions (download/view flow, template-specific
+    // fields) — matches the v2 behaviour this method always had, made explicit now that
+    // guide/tool rows exist alongside templates in `catalogue.products`.
+    const product = catalogue.products.find(
+      (p) => p.slug === slug && p.status === "published" && p.product_type === "template",
+    );
     return product ?? null;
   }
 
@@ -126,6 +153,56 @@ export class FixtureCatalogueSource implements CatalogueSource {
       .sort((a, b) => b.score - a.score)
       .slice(0, limit)
       .map((s) => s.product);
+  }
+
+  // --- v3: framework/product-family layer --------------------------------
+
+  private sortedFrameworks(): Framework[] {
+    return [...catalogue.frameworks].sort((a, b) => a.display_order - b.display_order);
+  }
+
+  async getFrameworks(opts?: { journeyStage?: string }): Promise<Framework[]> {
+    let frameworks = this.sortedFrameworks().filter((f) => f.status === "published");
+    if (opts?.journeyStage) {
+      frameworks = frameworks.filter((f) => f.journey_stage?.slug === opts.journeyStage);
+    }
+    return frameworks;
+  }
+
+  async getFrameworkTeasers(): Promise<FrameworkTeaser[]> {
+    return this.sortedFrameworks()
+      .filter((f) => f.status === "published" || (f.status === "draft" && f.flagship))
+      .map((f) => ({
+        id: f.id,
+        name: f.name,
+        slug: f.slug,
+        short_description: f.short_description,
+        outcome_statement: f.outcome_statement,
+        status: f.status,
+        journey_stage: f.journey_stage,
+      }));
+  }
+
+  async getFrameworkBySlug(slug: string): Promise<Framework | null> {
+    const framework = catalogue.frameworks.find((f) => f.slug === slug && f.status === "published");
+    return framework ?? null;
+  }
+
+  async getFrameworkById(id: string): Promise<Framework | null> {
+    const framework = catalogue.frameworks.find((f) => f.id === id && f.status === "published");
+    return framework ?? null;
+  }
+
+  async getFrameworkOutputs(frameworkId: string): Promise<ProductSummary[]> {
+    const outputs = this.publishedCatalogueSummaries().filter((p) => p.framework_id === frameworkId);
+    return outputs.sort((a, b) => OUTPUT_TYPE_ORDER[a.product_type] - OUTPUT_TYPE_ORDER[b.product_type]);
+  }
+
+  async getProductByToolKey(toolKey: string): Promise<Product | null> {
+    const product = catalogue.products.find(
+      (p) => p.tool_key === toolKey && p.status === "published" && p.product_type === "tool",
+    );
+    return product ?? null;
   }
 }
 

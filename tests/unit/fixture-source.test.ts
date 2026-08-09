@@ -47,12 +47,22 @@ describe("FixtureCatalogueSource visibility filtering", () => {
     }
   });
 
-  it("searchCatalogue total matches only published templates + bundles", async () => {
+  it("searchCatalogue total matches only published templates + bundles (guide/tool rows excluded by default)", async () => {
     const publishedCount =
-      catalogue.products.filter((p) => p.status === "published").length +
+      catalogue.products.filter((p) => p.status === "published" && p.product_type === "template").length +
       catalogue.bundles.filter((b) => b.status === "published").length;
     const result = await source.searchCatalogue({ page: 1 });
     expect(result.total).toBe(publishedCount);
+  });
+
+  it("searchCatalogue with an explicit type filter can still return guide/tool rows", async () => {
+    const publishedTools = catalogue.products.filter((p) => p.status === "published" && p.product_type === "tool").length;
+    const result = await source.searchCatalogue({ page: 1, type: "tool" });
+    expect(result.total).toBe(publishedTools);
+    expect(result.total).toBeGreaterThan(0);
+    for (const item of result.items) {
+      expect(item.product_type).toBe("tool");
+    }
   });
 
   it("getFeaturedFreeProducts only returns published free products", async () => {

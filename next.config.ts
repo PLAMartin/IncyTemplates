@@ -47,6 +47,20 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      // v3: the Copy-Improve-Differentiate method page (formerly "Proven-Better-New") is
+      // retired in favour of the Product Idea Assessor guide, which its prose was migrated
+      // into (content/guides/product-idea-assessor.mdx). Permanent redirect so any existing
+      // internal/external links to the old URL keep working (spec v3 §26.3's slug-redirect
+      // requirement) — the `source` path below is the legacy URL and must stay unchanged.
+      {
+        source: "/methods/proven-better-new",
+        destination: "/guides/product-idea-assessor",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

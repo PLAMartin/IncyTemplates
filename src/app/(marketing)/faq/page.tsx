@@ -41,9 +41,9 @@ const QUESTIONS = [
     answer: "No. Browsing, searching and reading every template and guide on this site requires no account.",
   },
   {
-    question: "What's the Proven–Better–New method?",
+    question: "What's the Copy–Improve–Differentiate method?",
     answer:
-      "It's how we classify an idea — Proven, Better or New — to work out how much evidence you need before committing to it. Read the full explanation on the Proven–Better–New method page.",
+      "It's how we classify an idea — Copy, Improve or Differentiate — to work out how much evidence you need before committing to it. Read the full explanation in the Product Idea Assessor guide.",
   },
   {
     question: "How do I get in touch?",

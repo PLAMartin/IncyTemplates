@@ -1,26 +1,34 @@
 # Incy Templates
 
-Incy Templates creates practical, thoughtfully designed templates that help
-people work more clearly, quickly and effectively. From business planning
-and product development to personal organisation, every template is made to
-be easy to use, simple to adapt and useful.
+Incy Templates is a practical product-development platform: reusable
+frameworks/product families (e.g. Product Idea Assessor), each with up to
+three complementary outputs — a Guide to learn how, a Template to do it
+yourself, and a Tool to do it interactively. It also carries a catalogue of
+standalone templates and bundles from the platform's earlier iteration.
 
 This repository is the source for [incytemplates.com](https://incytemplates.com),
 operated by Incyworks Ltd.
 
 ## Current milestone
 
-This build targets **Phase 0 (Foundation) + Phase 1 (Public catalogue)**
-only, per the full technical spec at
-[`docs/Incytemplates-website-spec-v2.md`](docs/Incytemplates-website-spec-v2.md)
-(see its §40/§45). That means: a deployable, read-only, SEO-complete
-marketing site and template catalogue backed by a real Supabase schema —
-homepage, categories, journey stages, product/bundle/guide pages, search.
-**No Stripe checkout, no customer accounts/library, and no admin CRUD UI
-yet** — those are Phases 2-4, listed but not built. Product/bundle pages use
-a waitlist email-capture CTA in the meantime. See
-[`docs/decisions/`](docs/decisions/) for every deviation and judgment call
-made along the way.
+This build targets the **v3 spec's recommended first milestone**
+(`docs/Incytemplates-website-spec-v3.md`, §45): the framework/product-family
+data model, Guide/Template/Tool as distinct first-class output types, a Tool
+registry pattern, and the **Product Idea Assessor** family built fully
+end-to-end (Guide + Template + an anonymous, deterministic interactive Tool)
+alongside journey-stage navigation (`/journey/*`) and a framework catalogue
+(`/products/*`). The other five flagship families are seeded as draft
+"Coming soon" placeholders — visible on listing pages, no published outputs
+yet (see [`docs/decisions/0014`](docs/decisions/0014-draft-flagship-family-public-teasers.md)).
+The earlier, v2-era template/bundle catalogue (`/templates`, `/bundles`)
+still exists underneath and is unaffected.
+
+**No Stripe checkout, no customer accounts/library, no saved Tool runs, and
+no admin CRUD UI yet** — those remain out of scope for this milestone per
+the spec's own phasing. Product/bundle pages still use a waitlist
+email-capture CTA. See [`docs/decisions/`](docs/decisions/) for every
+deviation and judgment call made along the way, particularly `0013`–`0020`
+for the v3 work specifically.
 
 ## Tech stack
 

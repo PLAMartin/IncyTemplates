@@ -8,7 +8,7 @@
  * content").
  *
  * JUDGEMENT CALL (documented per plan's "seed-catalogue judgment calls"):
- * "Proven–Better–New Assessment" appears both as a standalone free product
+ * "Copy–Improve–Differentiate Assessment" appears both as a standalone free product
  * AND in the spec's literal Idea Validation Pack item list. Re-using the
  * same product in both places would make the bundle's "combined price"
  * calculation nonsensical (you can't sell the same free item for money as
@@ -35,12 +35,25 @@
  * upload). Product/file records deliberately omit any image URL field so
  * the UI renders its designed placeholder cover state rather than a broken
  * `<img>`.
+ *
+ * v3 additions (see docs/Incytemplates-website-spec-v3.md and docs/decisions):
+ * - `stages` now holds the v3 7-stage journey (idea/validate/decide/design/
+ *   build/launch/improve), replacing the v2 8-stage taxonomy. Every existing
+ *   product's `stages` reference was remapped to the nearest new stage.
+ * - `frameworks` is new: the reusable method/problem/outcome layer above
+ *   individual Guide/Template/Tool outputs. Product Idea Assessor is fully
+ *   populated and published; the other five flagship families are minimal,
+ *   draft, flagship placeholders (public "Coming soon" teasers only).
+ * - `products` gained `guide`/`tool`-typed rows for the Product Idea
+ *   Assessor family, and the existing `proven-better-new-assessment`
+ *   Template was reassigned into that same framework rather than duplicated.
  */
 
 import type {
   Bundle,
   BundleItem,
   Category,
+  Framework,
   Licence,
   Product,
   ProductSummary,
@@ -104,65 +117,63 @@ export const categories: Category[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Stages (spec §7.1 — 8 journey stages)
+// Stages (spec v3 §7/§8/§14.6 — 7 canonical journey stages, replacing the v2
+// 8-stage taxonomy: find-a-problem, evaluate-an-idea, understand-customers,
+// define-the-product, test-demand, plan-the-mvp, prepare-to-launch,
+// review-and-improve. Every product's `stages` reference below was remapped
+// to the nearest new stage — see docs/decisions for the mapping table and
+// the one deliberate exception (proceed-revise-pause-decision -> decide).
 // ---------------------------------------------------------------------------
 
 export const stages: Stage[] = [
   {
-    id: "stage-find-a-problem",
-    name: "Find a problem",
-    slug: "find-a-problem",
-    description: "Identify a problem worth solving before you commit to a solution.",
+    id: "stage-idea",
+    name: "Idea",
+    slug: "idea",
+    description: "Find and frame a problem worth solving.",
     display_order: 1,
   },
   {
-    id: "stage-evaluate-an-idea",
-    name: "Evaluate an idea",
-    slug: "evaluate-an-idea",
-    description: "Decide how much confidence an idea deserves before you invest in it.",
+    id: "stage-validate",
+    name: "Validate",
+    slug: "validate",
+    description: "Gather evidence on the problem, the idea and your customers before committing.",
     display_order: 2,
   },
   {
-    id: "stage-understand-customers",
-    name: "Understand customers",
-    slug: "understand-customers",
-    description: "Talk to real customers and turn conversations into evidence.",
+    id: "stage-decide",
+    name: "Decide",
+    slug: "decide",
+    description: "Reach a documented decision on whether and how to proceed.",
     display_order: 3,
   },
   {
-    id: "stage-define-the-product",
-    name: "Define the product",
-    slug: "define-the-product",
+    id: "stage-design",
+    name: "Design",
+    slug: "design",
     description: "Turn a validated idea into a precise, buildable product definition.",
     display_order: 4,
   },
   {
-    id: "stage-test-demand",
-    name: "Test demand",
-    slug: "test-demand",
-    description: "Find out whether people will actually pay or commit before you build.",
+    id: "stage-build",
+    name: "Build",
+    slug: "build",
+    description: "Scope and build the smallest useful version worth testing.",
     display_order: 5,
   },
   {
-    id: "stage-plan-the-mvp",
-    name: "Plan the MVP",
-    slug: "plan-the-mvp",
-    description: "Scope the smallest version of the product worth building first.",
+    id: "stage-launch",
+    name: "Launch",
+    slug: "launch",
+    description: "Get the product, support and go-to-market ready, then release it.",
     display_order: 6,
   },
   {
-    id: "stage-prepare-to-launch",
-    name: "Prepare to launch",
-    slug: "prepare-to-launch",
-    description: "Get the product, support and go-to-market ready before release.",
-    display_order: 7,
-  },
-  {
-    id: "stage-review-and-improve",
-    name: "Review and improve",
-    slug: "review-and-improve",
+    id: "stage-improve",
+    name: "Improve",
+    slug: "improve",
     description: "Review progress on a regular cadence and decide what to do next.",
-    display_order: 8,
+    display_order: 7,
   },
 ];
 
@@ -224,6 +235,8 @@ export function toSummary(product: Product): ProductSummary {
     stages: stgs,
     formats,
     is_placeholder,
+    framework_id,
+    tool_key,
   } = product;
   return {
     id,
@@ -247,8 +260,176 @@ export function toSummary(product: Product): ProductSummary {
     stages: stgs,
     formats,
     is_placeholder,
+    framework_id,
+    tool_key,
   };
 }
+
+// ---------------------------------------------------------------------------
+// Frameworks (spec v3 §14.3, §37) — the reusable method/problem/outcome layer
+// above individual Guide/Template/Tool outputs. Product Idea Assessor is the
+// first canonical family, fully populated and published; the other five
+// flagship families (spec v3 §37.1 Tier 1) are seeded as minimal, draft,
+// flagship placeholders per the product-owner decision recorded in
+// docs/decisions — visible as public "Coming soon" teasers (via
+// `it_frameworks_teasers`/`getFrameworkTeasers`), not full pages, and with
+// no child Guide/Template/Tool rows yet.
+// ---------------------------------------------------------------------------
+
+export const PRODUCT_IDEA_ASSESSOR_FRAMEWORK_ID = "framework-product-idea-assessor";
+
+export const frameworks: Framework[] = [
+  {
+    id: PRODUCT_IDEA_ASSESSOR_FRAMEWORK_ID,
+    status: "published",
+    name: "Product Idea Assessor",
+    slug: "product-idea-assessor",
+    short_description: "Work out how much evidence your idea actually needs before you commit real time or money to it.",
+    problem_statement:
+      "Founders routinely over-invest in ideas that needed more validation, and under-invest in ideas that needed less — because nothing tells them how much scepticism a given idea actually deserves before they start.",
+    outcome_statement:
+      "A Copy/Improve/Differentiate classification, a scored read on how strong your evidence is, and a clear next action.",
+    target_audience: "Solo founders and early-stage teams deciding how cautiously to approach a specific idea.",
+    when_to_use: "Use as soon as you can state the idea in a sentence, before you've written a business plan or built anything.",
+    when_not_to_use:
+      "Not a substitute for actually talking to customers — it tells you how much evidence you need, not whether you already have it.",
+    method_summary:
+      "Classify the idea as Copy (a working model applied to a new context), Improve (a specific improvement on an existing, working approach) or Differentiate (asking people to adopt a genuinely new behaviour). Each category carries a different risk profile and needs a different amount of evidence before you commit. Answer four evidence questions — problem evidence, behaviour evidence, differentiation clarity and target specificity — and the assessor combines your classification with those answers into a readiness verdict and a concrete next step.",
+    journey_stage: stageRef("validate"),
+    priority_score: 96,
+    priority_rationale:
+      "Ranked #1 in the source-material opportunity portfolio (spec v3 §37): broad audience fit, strong existing source material, and it establishes the reusable Guide/Template/Tool pattern every later family follows.",
+    source_strength: "strong",
+    source_note: "Developed from A Bit Gamey material on testing product ideas before building, including the Copy–Improve–Differentiate classification.",
+    flagship: true,
+    display_order: 1,
+    seo_title: "Product Idea Assessor — is this idea worth pursuing?",
+    seo_description:
+      "Classify your idea as Copy, Improve or Differentiate and get a scored, evidence-based read on whether it's ready to proceed.",
+    published_at: "2026-08-01T09:00:00Z",
+    next_step_framework_slug: "customer-discovery-kit",
+  },
+  {
+    id: "framework-customer-discovery-kit",
+    status: "draft",
+    name: "Customer Discovery Kit",
+    slug: "customer-discovery-kit",
+    short_description: "Find out what potential customers actually do and need, without leading them to agree with you.",
+    problem_statement: null,
+    outcome_statement: "A set of customer conversations that produce real evidence instead of polite agreement.",
+    target_audience: "Founders about to run their first — or next — round of customer discovery.",
+    when_to_use: null,
+    when_not_to_use: null,
+    method_summary: null,
+    journey_stage: stageRef("validate"),
+    priority_score: 95,
+    priority_rationale: "Ranked #2 in the source-material opportunity portfolio (spec v3 §37).",
+    source_strength: null,
+    source_note: null,
+    flagship: true,
+    display_order: 2,
+    seo_title: null,
+    seo_description: null,
+    published_at: null,
+    next_step_framework_slug: null,
+  },
+  {
+    id: "framework-better-decision-maker",
+    status: "draft",
+    name: "Better Decision Maker",
+    slug: "better-decision-maker",
+    short_description: "Given the evidence you have, work out what you should actually do.",
+    problem_statement: null,
+    outcome_statement: "A documented decision, reasoned through rather than made on instinct alone.",
+    target_audience: "Founders facing an important decision under uncertainty.",
+    when_to_use: null,
+    when_not_to_use: null,
+    method_summary: null,
+    journey_stage: stageRef("decide"),
+    priority_score: 94,
+    priority_rationale: "Ranked #3 in the source-material opportunity portfolio (spec v3 §37).",
+    source_strength: null,
+    source_note: null,
+    flagship: true,
+    display_order: 3,
+    seo_title: null,
+    seo_description: null,
+    published_at: null,
+    next_step_framework_slug: null,
+  },
+  {
+    id: "framework-mvp-scoper",
+    status: "draft",
+    name: "MVP Scoper",
+    slug: "mvp-scoper",
+    short_description: "Work out the smallest useful version of your product worth building first.",
+    problem_statement: null,
+    outcome_statement: "A scoped MVP with what's in, what's explicitly out, and the riskiest question it needs to answer.",
+    target_audience: "Founders and small product teams about to start building.",
+    when_to_use: null,
+    when_not_to_use: null,
+    method_summary: null,
+    journey_stage: stageRef("build"),
+    priority_score: 92,
+    priority_rationale: "Ranked #5 in the source-material opportunity portfolio (spec v3 §37).",
+    source_strength: null,
+    source_note: null,
+    flagship: true,
+    display_order: 4,
+    seo_title: null,
+    seo_description: null,
+    published_at: null,
+    next_step_framework_slug: null,
+  },
+  {
+    id: "framework-product-naming-system",
+    status: "draft",
+    name: "Product Naming System",
+    slug: "product-naming-system",
+    short_description: "Choose a product name using weighted criteria instead of whoever argues loudest in the room.",
+    problem_statement: null,
+    outcome_statement: "A shortlist of names scored against the criteria that actually matter for this product.",
+    target_audience: "Founders and product teams naming a new product.",
+    when_to_use: null,
+    when_not_to_use: null,
+    method_summary: null,
+    journey_stage: stageRef("design"),
+    priority_score: 93,
+    priority_rationale: "Ranked #4 in the source-material opportunity portfolio (spec v3 §37).",
+    source_strength: null,
+    source_note: null,
+    flagship: true,
+    display_order: 5,
+    seo_title: null,
+    seo_description: null,
+    published_at: null,
+    next_step_framework_slug: null,
+  },
+  {
+    id: "framework-first-customers-planner",
+    status: "draft",
+    name: "First Customers Planner",
+    slug: "first-customers-planner",
+    short_description: "Plan how you'll find your first customers instead of hoping they find you.",
+    problem_statement: null,
+    outcome_statement: "A prioritised plan for reaching a first set of real customers.",
+    target_audience: "Founders approaching launch who don't yet have a customer-acquisition plan.",
+    when_to_use: null,
+    when_not_to_use: null,
+    method_summary: null,
+    journey_stage: stageRef("launch"),
+    priority_score: 90,
+    priority_rationale: "Ranked #7 in the source-material opportunity portfolio (spec v3 §37).",
+    source_strength: null,
+    source_note: null,
+    flagship: true,
+    display_order: 6,
+    seo_title: null,
+    seo_description: null,
+    published_at: null,
+    next_step_framework_slug: null,
+  },
+];
 
 // ---------------------------------------------------------------------------
 // Free products (spec §37 — 8 free products)
@@ -272,7 +453,7 @@ const freeProducts: Product[] = [
       "Solo founders and early-stage teams who have an idea but haven't written it down in a form anyone else could evaluate.",
     when_to_use: "Use this in the first hour of taking an idea seriously, before you've spent time building or researching.",
     when_not_to_use:
-      "Not for ideas you've already validated with real customers — move on to the Proven–Better–New Assessment instead.",
+      "Not for ideas you've already validated with real customers — move on to the Copy–Improve–Differentiate Assessment instead.",
     completion_minutes_min: 15,
     completion_minutes_max: 25,
     skill_level: "beginner",
@@ -284,9 +465,11 @@ const freeProducts: Product[] = [
     published_at: "2026-06-02T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-strategy")],
-    stages: [stageRef("evaluate-an-idea")],
+    stages: [stageRef("validate")],
     formats: ["markdown", "pdf"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: {
       purpose: true,
@@ -322,14 +505,14 @@ const freeProducts: Product[] = [
     product_type: "template",
     access_type: "free",
     status: "published",
-    name: "Proven–Better–New Assessment",
+    name: "Copy–Improve–Differentiate Assessment",
     slug: "proven-better-new-assessment",
     short_description:
-      "Classify your idea as Proven, Better or New so you know how much evidence you actually need before committing.",
+      "Classify your idea as Copy, Improve or Differentiate so you know how much evidence you actually need before committing.",
     full_description:
-      "The Proven–Better–New method (see /methods/proven-better-new) separates ideas that copy a working model, ideas that improve on an existing one, and ideas that introduce genuinely new behaviour. Each category carries a different risk profile and needs a different amount of validation before you commit real time or money. This worksheet walks you through the classification and hands you the evidence checklist that follows from your answer.",
+      "The Copy–Improve–Differentiate method (see the Product Idea Assessor guide) separates ideas that copy a working model, ideas that improve on an existing one, and ideas that introduce genuinely new behaviour. Each category carries a different risk profile and needs a different amount of validation before you commit real time or money. This worksheet walks you through the classification and hands you the evidence checklist that follows from your answer.",
     outcome_statement:
-      "A clear verdict — Proven, Better or New — plus the specific evidence that verdict requires before you proceed.",
+      "A clear verdict — Copy, Improve or Differentiate — plus the specific evidence that verdict requires before you proceed.",
     target_audience: "Founders and product people deciding how cautiously to approach an idea.",
     when_to_use: "Use immediately after the Product Idea Snapshot, before writing a business plan or building anything.",
     when_not_to_use:
@@ -345,9 +528,11 @@ const freeProducts: Product[] = [
     published_at: "2026-06-02T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-strategy")],
-    stages: [stageRef("evaluate-an-idea")],
+    stages: [stageRef("validate")],
     formats: ["markdown", "pdf"],
     is_placeholder: true,
+    framework_id: PRODUCT_IDEA_ASSESSOR_FRAMEWORK_ID,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: {
       purpose: true,
@@ -363,7 +548,7 @@ const freeProducts: Product[] = [
         id: "proven-better-new-assessment-md",
         file_role: "template",
         file_format: "markdown",
-        display_name: "Proven–Better–New Assessment (Markdown, AI-agent-ready)",
+        display_name: "Copy–Improve–Differentiate Assessment (Markdown, AI-agent-ready)",
         is_public_preview: false,
       },
       {
@@ -374,9 +559,9 @@ const freeProducts: Product[] = [
         is_public_preview: true,
       },
     ],
-    seo_title: "Proven–Better–New Assessment — free idea evaluation template",
+    seo_title: "Copy–Improve–Differentiate Assessment — free idea evaluation template",
     seo_description:
-      "Classify an idea as Proven, Better or New and get the evidence checklist that follows, free.",
+      "Classify an idea as Copy, Improve or Differentiate and get the evidence checklist that follows, free.",
   },
   {
     id: "problem-definition-worksheet",
@@ -406,9 +591,11 @@ const freeProducts: Product[] = [
     published_at: "2026-06-05T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("customer-research")],
-    stages: [stageRef("find-a-problem")],
+    stages: [stageRef("idea")],
     formats: ["markdown", "pdf"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: {
       purpose: true,
@@ -466,9 +653,11 @@ const freeProducts: Product[] = [
     published_at: null,
     scheduled_for: "2026-08-18T09:00:00Z",
     categories: [catRef("product-strategy")],
-    stages: [stageRef("find-a-problem")],
+    stages: [stageRef("idea")],
     formats: ["markdown", "pdf"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: {
       purpose: true,
@@ -513,9 +702,11 @@ const freeProducts: Product[] = [
     published_at: "2026-06-10T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("customer-research")],
-    stages: [stageRef("understand-customers")],
+    stages: [stageRef("validate")],
     formats: ["markdown", "pdf"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: {
       purpose: true,
@@ -572,9 +763,11 @@ const freeProducts: Product[] = [
     published_at: "2026-06-12T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("customer-research")],
-    stages: [stageRef("understand-customers")],
+    stages: [stageRef("validate")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: {
       purpose: true,
@@ -623,9 +816,11 @@ const freeProducts: Product[] = [
     published_at: "2026-06-15T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-development")],
-    stages: [stageRef("plan-the-mvp")],
+    stages: [stageRef("build")],
     formats: ["markdown", "pdf"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: {
       purpose: true,
@@ -680,9 +875,11 @@ const freeProducts: Product[] = [
     published_at: null,
     scheduled_for: null,
     categories: [catRef("founder-management")],
-    stages: [stageRef("review-and-improve")],
+    stages: [stageRef("improve")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: {
       purpose: true,
@@ -732,9 +929,11 @@ const ideaValidationItems: Product[] = [
     published_at: "2026-06-18T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-strategy")],
-    stages: [stageRef("evaluate-an-idea")],
+    stages: [stageRef("validate")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, instructions: true },
     files: [
@@ -769,9 +968,11 @@ const ideaValidationItems: Product[] = [
     published_at: null,
     scheduled_for: null,
     categories: [catRef("product-strategy")],
-    stages: [stageRef("evaluate-an-idea")],
+    stages: [stageRef("validate")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, instructions: true, thinkingPrompts: true },
     files: [
@@ -804,9 +1005,11 @@ const ideaValidationItems: Product[] = [
     published_at: "2026-06-18T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("customer-research")],
-    stages: [stageRef("find-a-problem")],
+    stages: [stageRef("idea")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, instructions: true, evidenceFields: true },
     files: [
@@ -839,9 +1042,11 @@ const ideaValidationItems: Product[] = [
     published_at: "2026-06-19T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-strategy")],
-    stages: [stageRef("find-a-problem")],
+    stages: [stageRef("idea")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, instructions: true, evidenceFields: true },
     files: [
@@ -855,14 +1060,14 @@ const ideaValidationItems: Product[] = [
     product_type: "template",
     access_type: "paid",
     status: "unlisted",
-    name: "Proven–Better–New Assessment (Pro)",
+    name: "Copy–Improve–Differentiate Assessment (Pro)",
     slug: "proven-better-new-assessment-pro",
-    short_description: "The full Proven–Better–New workbook with worked scoring, facilitator notes and a team-workshop edition.",
-    full_description: "The paid, deeper edition of the free Proven–Better–New Assessment: adds a weighted scoring model, facilitator notes for running the assessment as a team workshop, and worked examples for all three classifications.",
-    outcome_statement: "A team-facilitated Proven/Better/New verdict with a documented evidence plan.",
+    short_description: "The full Copy–Improve–Differentiate workbook with worked scoring, facilitator notes and a team-workshop edition.",
+    full_description: "The paid, deeper edition of the free Copy–Improve–Differentiate Assessment: adds a weighted scoring model, facilitator notes for running the assessment as a team workshop, and worked examples for all three classifications.",
+    outcome_statement: "A team-facilitated Copy/Improve/Differentiate verdict with a documented evidence plan.",
     target_audience: "Teams (not solo founders) working through the Idea Validation Pack together.",
     when_to_use: "Use as part of the Idea Validation Pack, in place of the free assessment, when working as a team.",
-    when_not_to_use: "If you're working solo, the free Proven–Better–New Assessment is enough.",
+    when_not_to_use: "If you're working solo, the free Copy–Improve–Differentiate Assessment is enough.",
     completion_minutes_min: 40,
     completion_minutes_max: 60,
     skill_level: "intermediate",
@@ -874,13 +1079,15 @@ const ideaValidationItems: Product[] = [
     published_at: "2026-06-19T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-strategy")],
-    stages: [stageRef("evaluate-an-idea")],
+    stages: [stageRef("validate")],
     formats: ["markdown", "pdf"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, evidenceFields: true, facilitatorEdition: true },
     files: [
-      { id: "proven-better-new-assessment-pro-md", file_role: "template", file_format: "markdown", display_name: "Proven–Better–New Assessment Pro (Markdown)", is_public_preview: false },
+      { id: "proven-better-new-assessment-pro-md", file_role: "template", file_format: "markdown", display_name: "Copy–Improve–Differentiate Assessment Pro (Markdown)", is_public_preview: false },
       { id: "proven-better-new-assessment-pro-facilitator", file_role: "facilitator_guide", file_format: "pdf", display_name: "Facilitator guide for team workshops", is_public_preview: false },
     ],
     seo_title: null,
@@ -910,9 +1117,11 @@ const ideaValidationItems: Product[] = [
     published_at: "2026-06-20T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-strategy")],
-    stages: [stageRef("evaluate-an-idea")],
+    stages: [stageRef("validate")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, instructions: true, evidenceFields: true, decisionOutcome: true },
     files: [
@@ -945,9 +1154,11 @@ const ideaValidationItems: Product[] = [
     published_at: "2026-06-20T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("customer-research")],
-    stages: [stageRef("understand-customers")],
+    stages: [stageRef("validate")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, instructions: true, evidenceFields: true, aiAgentEdition: true },
     files: [
@@ -980,9 +1191,11 @@ const ideaValidationItems: Product[] = [
     published_at: "2026-06-20T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("customer-research")],
-    stages: [stageRef("understand-customers")],
+    stages: [stageRef("validate")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, instructions: true, evidenceFields: true, decisionOutcome: true },
     files: [
@@ -999,7 +1212,7 @@ const ideaValidationItems: Product[] = [
     name: "Proceed–Revise–Pause Decision",
     slug: "proceed-revise-pause-decision",
     short_description: "The closing decision template: proceed, revise or pause, with the reasoning documented for future reference.",
-    full_description: "The final step of the Idea Validation Pack. Pulls together the Proven/Better/New verdict, the assumption log and the evidence synthesis into a single documented decision — proceed, revise, or pause — with the reasoning recorded so it can be revisited later.",
+    full_description: "The final step of the Idea Validation Pack. Pulls together the Copy/Improve/Differentiate verdict, the assumption log and the evidence synthesis into a single documented decision — proceed, revise, or pause — with the reasoning recorded so it can be revisited later.",
     outcome_statement: "A written, evidence-backed proceed/revise/pause decision with a clear next action.",
     target_audience: "Teams finishing the Idea Validation Pack.",
     when_to_use: "Use as the last step, once evidence synthesis is complete.",
@@ -1015,9 +1228,15 @@ const ideaValidationItems: Product[] = [
     published_at: "2026-06-20T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-strategy")],
-    stages: [stageRef("evaluate-an-idea")],
+    // v3 journey remap exception: this product's own content ("proceed, revise or
+    // pause, with reasoning documented") is a decision output, not an idea
+    // evaluation -- the otherwise-uniform evaluate-an-idea -> validate remap doesn't
+    // fit here.
+    stages: [stageRef("decide")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, instructions: true, decisionOutcome: true, nextStep: true, reviewDate: true },
     files: [
@@ -1057,9 +1276,11 @@ const productDefinitionItems: Product[] = [
     published_at: "2026-07-01T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-development")],
-    stages: [stageRef("define-the-product")],
+    stages: [stageRef("design")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, instructions: true, decisionOutcome: true },
     files: [
@@ -1092,9 +1313,11 @@ const productDefinitionItems: Product[] = [
     published_at: "2026-07-01T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-development")],
-    stages: [stageRef("define-the-product")],
+    stages: [stageRef("design")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, instructions: true, thinkingPrompts: true },
     files: [
@@ -1127,9 +1350,11 @@ const productDefinitionItems: Product[] = [
     published_at: "2026-07-02T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-development")],
-    stages: [stageRef("define-the-product")],
+    stages: [stageRef("design")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, instructions: true, evidenceFields: true },
     files: [
@@ -1162,9 +1387,11 @@ const productDefinitionItems: Product[] = [
     published_at: "2026-07-02T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-development")],
-    stages: [stageRef("define-the-product")],
+    stages: [stageRef("design")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, instructions: true, decisionOutcome: true },
     files: [
@@ -1197,9 +1424,11 @@ const productDefinitionItems: Product[] = [
     published_at: "2026-07-03T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-development")],
-    stages: [stageRef("define-the-product")],
+    stages: [stageRef("design")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, instructions: true, decisionOutcome: true },
     files: [
@@ -1232,9 +1461,11 @@ const productDefinitionItems: Product[] = [
     published_at: "2026-07-03T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-development")],
-    stages: [stageRef("plan-the-mvp")],
+    stages: [stageRef("build")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, instructions: true, decisionOutcome: true, nextStep: true },
     files: [
@@ -1267,9 +1498,11 @@ const productDefinitionItems: Product[] = [
     published_at: "2026-07-04T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-development")],
-    stages: [stageRef("define-the-product")],
+    stages: [stageRef("design")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, inputs: true, instructions: true, decisionOutcome: true, aiAgentEdition: true },
     files: [
@@ -1302,9 +1535,11 @@ const productDefinitionItems: Product[] = [
     published_at: "2026-07-04T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-development")],
-    stages: [stageRef("define-the-product")],
+    stages: [stageRef("design")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, instructions: true, decisionOutcome: true },
     files: [
@@ -1337,9 +1572,11 @@ const productDefinitionItems: Product[] = [
     published_at: "2026-07-05T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("go-to-market")],
-    stages: [stageRef("prepare-to-launch")],
+    stages: [stageRef("launch")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: { purpose: true, instructions: true, decisionOutcome: true, nextStep: true },
     files: [
@@ -1350,7 +1587,101 @@ const productDefinitionItems: Product[] = [
   },
 ];
 
-export const products: Product[] = [...freeProducts, ...ideaValidationItems, ...productDefinitionItems];
+// ---------------------------------------------------------------------------
+// Product Idea Assessor family outputs (spec v3 §14.7, §39.3) — the Guide and
+// Tool that, together with the existing `proven-better-new-assessment`
+// Template above (reassigned to this framework), complete the flagship
+// family's Guide -> Template -> Tool set. The Guide's body lives in
+// content/guides/product-idea-assessor.mdx; this row is metadata joined to
+// that file by matching slug (spec §2.9's hybrid content model — no separate
+// content_path field needed while there's exactly one join key).
+// ---------------------------------------------------------------------------
+
+const productIdeaAssessorFamilyOutputs: Product[] = [
+  {
+    id: "product-idea-assessor-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "Product Idea Assessor: the Guide",
+    slug: "product-idea-assessor",
+    short_description:
+      "How to classify an idea as Copy, Improve or Differentiate, and why that classification should decide how much evidence you gather next.",
+    full_description:
+      "Explains the Copy–Improve–Differentiate method end to end, with the reasoning behind each category and the single most useful test for each. Read this before using the Template or the Tool — both assume you understand the classification this guide teaches.",
+    outcome_statement: "Understand which of the three categories your idea falls into, and why that changes how much evidence you need.",
+    target_audience: "Founders and product people who want to understand the method before applying it.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you already understand Copy/Improve/Differentiate and just want a scored result.",
+    completion_minutes_min: 8,
+    completion_minutes_max: 12,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-01T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-strategy")],
+    stages: [stageRef("validate")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: PRODUCT_IDEA_ASSESSOR_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "Product Idea Assessor guide — the Copy–Improve–Differentiate method",
+    seo_description:
+      "How to classify an idea as Copy, Improve or Differentiate, and why that classification should decide how much evidence you gather next.",
+  },
+  {
+    id: "product-idea-assessor-tool",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "Product Idea Assessor",
+    slug: "product-idea-assessor-tool",
+    short_description:
+      "Answer a few questions about your idea and get a scored evidence-quality readiness verdict — proceed, gather more evidence, or pause.",
+    full_description:
+      "The interactive version of the Copy–Improve–Differentiate Assessment. Classify your idea, answer four evidence questions, and get a deterministic score, a named strongest and weakest area, and one concrete next evidence action — usable anonymously, with no account required.",
+    outcome_statement: "A scored readiness verdict — ready to proceed, gather more evidence, or high risk — plus one clear next action.",
+    target_audience: "Founders who want an immediate, structured read on a specific idea.",
+    when_to_use: "Use once you can state the idea in a sentence and have some evidence to answer honestly.",
+    when_not_to_use: "Not a substitute for the underlying customer evidence — it scores the evidence you already have, it doesn't gather it for you.",
+    completion_minutes_min: 5,
+    completion_minutes_max: 10,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-01T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-strategy")],
+    stages: [stageRef("validate")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: PRODUCT_IDEA_ASSESSOR_FRAMEWORK_ID,
+    tool_key: "product-idea-assessor",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "Product Idea Assessor — free interactive idea assessment tool",
+    seo_description:
+      "Answer a few questions and get a scored, evidence-based readiness verdict on your product idea, free, no account required.",
+  },
+];
+
+export const products: Product[] = [
+  ...freeProducts,
+  ...ideaValidationItems,
+  ...productDefinitionItems,
+  ...productIdeaAssessorFamilyOutputs,
+];
 
 // ---------------------------------------------------------------------------
 // Bundles (spec §37 — 2 paid bundles, 9 items each)
@@ -1375,7 +1706,7 @@ export const bundles: Bundle[] = [
     short_description:
       "Nine templates that take you from a raw idea to a documented proceed-revise-pause decision, backed by evidence rather than confidence.",
     full_description:
-      "The Idea Validation Pack is the complete evidence-led path from a raw idea to a defensible decision. It sequences nine templates — intake, founder fit, problem evidence, competitive alternatives, a team Proven–Better–New workshop, assumption ranking, a full interview system, evidence synthesis, and a closing proceed/revise/pause decision — into a single 1–2 week process, instead of leaving you to assemble one from separate free worksheets.",
+      "The Idea Validation Pack is the complete evidence-led path from a raw idea to a defensible decision. It sequences nine templates — intake, founder fit, problem evidence, competitive alternatives, a team Copy–Improve–Differentiate workshop, assumption ranking, a full interview system, evidence synthesis, and a closing proceed/revise/pause decision — into a single 1–2 week process, instead of leaving you to assemble one from separate free worksheets.",
     outcome_statement:
       "A documented, evidence-based decision on whether to proceed, revise or pause — not just a folder of worksheets.",
     target_audience: "Founders who want a structured, complete path through idea validation rather than assembling their own process from free templates.",
@@ -1392,9 +1723,11 @@ export const bundles: Bundle[] = [
     published_at: "2026-06-22T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-strategy")],
-    stages: [stageRef("evaluate-an-idea")],
+    stages: [stageRef("validate")],
     formats: ["markdown", "pdf"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: {
       purpose: true,
@@ -1447,9 +1780,11 @@ export const bundles: Bundle[] = [
     published_at: "2026-07-06T09:00:00Z",
     scheduled_for: null,
     categories: [catRef("product-development")],
-    stages: [stageRef("define-the-product")],
+    stages: [stageRef("design")],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     licence: standardLicence,
     quality_standard: {
       purpose: true,
@@ -1476,6 +1811,6 @@ export const bundles: Bundle[] = [
   },
 ];
 
-export const catalogue = { products, bundles, categories, stages, licences };
+export const catalogue = { products, bundles, categories, stages, licences, frameworks };
 
 export default catalogue;

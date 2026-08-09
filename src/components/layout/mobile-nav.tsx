@@ -65,11 +65,11 @@ export function MobileNav({ links }: { links: NavLink[] }) {
             Sign in
           </Link>
           <Link
-            href="/templates"
+            href="/tools/product-idea-assessor"
             onClick={() => dialogRef.current?.close()}
             className="mt-2 flex min-h-11 items-center justify-center rounded-md bg-brand-600 px-4 text-base font-medium text-white hover:bg-brand-700"
           >
-            Browse templates
+            Assess an idea
           </Link>
         </nav>
       </dialog>

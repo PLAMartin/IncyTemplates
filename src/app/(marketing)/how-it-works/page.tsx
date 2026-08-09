@@ -19,7 +19,7 @@ const STEPS = [
   },
   {
     title: "3. Decide",
-    body: "A good template doesn't just get filled in — it leads somewhere. Templates that support a decision (like the Proven–Better–New Assessment) are structured to end in a stated conclusion, not just a completed worksheet.",
+    body: "A good template doesn't just get filled in — it leads somewhere. Templates that support a decision (like the Copy–Improve–Differentiate Assessment) are structured to end in a stated conclusion, not just a completed worksheet.",
   },
   {
     title: "4. Continue",

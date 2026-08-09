@@ -31,6 +31,8 @@ const product: Product = {
   stages: [{ slug: "define-the-product", name: "Define the product" }],
   formats: ["markdown"],
   is_placeholder: true,
+  framework_id: null,
+  tool_key: null,
   full_description: null,
   target_audience: null,
   when_to_use: null,

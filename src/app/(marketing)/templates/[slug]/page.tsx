@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getFeaturedBundle, getProductBySlug, getRelatedProducts } from "@/server/queries";
+import { getFeaturedBundle, getFrameworkById, getFrameworkOutputs, getProductBySlug, getRelatedProducts } from "@/server/queries";
 import { canonicalUrl } from "@/lib/seo/canonical";
 import { productJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo/structured-data";
 import { buildProductFaq } from "@/lib/content/product-faq";
@@ -13,7 +14,7 @@ import { QualityStandardList } from "@/components/product/quality-standard-list"
 import { FaqList } from "@/components/product/faq-list";
 import { WaitlistForm } from "@/components/product/waitlist-form";
 import { ViewForm } from "@/components/product/view-form";
-import { ProductCard } from "@/components/catalogue/product-card";
+import { ProductCard, productHref } from "@/components/catalogue/product-card";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -37,10 +38,15 @@ export default async function ProductPage({ params }: Props) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const [related, featuredBundle] = await Promise.all([
+  const [related, featuredBundle, framework] = await Promise.all([
     getRelatedProducts(product.id, 4),
     getFeaturedBundle(),
+    product.framework_id ? getFrameworkById(product.framework_id) : Promise.resolve(null),
   ]);
+
+  const sameFamilyOutputs = framework
+    ? (await getFrameworkOutputs(framework.id)).filter((o) => o.id !== product.id)
+    : [];
 
   const bundleUpgrade =
     featuredBundle && featuredBundle.categories.some((c) => product.categories.some((pc) => pc.slug === c.slug))
@@ -85,6 +91,31 @@ export default async function ProductPage({ params }: Props) {
             ) : null}
             <p className="mt-2 text-ink-500">{product.short_description}</p>
           </div>
+
+          {framework ? (
+            <p className="text-sm text-ink-500">
+              Part of the{" "}
+              <Link href={`/products/${framework.slug}`} className="font-medium text-brand-600 underline hover:text-brand-700">
+                {framework.name}
+              </Link>{" "}
+              family.
+              {sameFamilyOutputs.length > 0 ? (
+                <>
+                  {" "}
+                  Also see:{" "}
+                  {sameFamilyOutputs.map((o, index) => (
+                    <span key={o.id}>
+                      {index > 0 ? ", " : ""}
+                      <Link href={productHref(o)} className="font-medium text-brand-600 underline hover:text-brand-700">
+                        {o.name}
+                      </Link>
+                    </span>
+                  ))}
+                  .
+                </>
+              ) : null}
+            </p>
+          ) : null}
 
           <CoverPlaceholder name={product.name} productType={product.product_type} className="max-w-xl" />
 
@@ -214,7 +245,7 @@ export default async function ProductPage({ params }: Props) {
 
           {related.length > 0 ? (
             <div>
-              <h2 className="text-lg font-semibold text-ink-900">Related templates</h2>
+              <h2 className="text-lg font-semibold text-ink-900">You might also find useful</h2>
               <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {related.map((r) => (
                   <ProductCard key={r.id} product={r} />

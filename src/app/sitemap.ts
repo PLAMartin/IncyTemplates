@@ -1,19 +1,22 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/config/site";
-import { getCategories, getStages, searchCatalogue } from "@/server/queries";
+import { getCategories, getFrameworks, getStages, searchCatalogue } from "@/server/queries";
 import { getAllGuides } from "@/lib/mdx/guides";
+import { productHref } from "@/components/catalogue/product-card";
 import type { ProductSummary } from "@/types/catalogue";
 
 const STATIC_PATHS = [
   "/",
+  "/products",
+  "/journey",
   "/templates",
   "/templates/free",
   "/templates/paid",
   "/templates/categories",
   "/templates/stages",
+  "/tools",
   "/bundles",
   "/guides",
-  "/methods/proven-better-new",
   "/about",
   "/how-it-works",
   "/pricing",
@@ -43,9 +46,10 @@ async function getAllPublishedSummaries(): Promise<ProductSummary[]> {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [categories, stages, guides, catalogueItems] = await Promise.all([
+  const [categories, stages, frameworks, guides, catalogueItems] = await Promise.all([
     getCategories(),
     getStages(),
+    getFrameworks(),
     getAllGuides(),
     getAllPublishedSummaries(),
   ]);
@@ -61,14 +65,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
   for (const stage of stages) {
     entries.push({ url: `${site.url}/templates/stages/${stage.slug}`, lastModified: now });
+    entries.push({ url: `${site.url}/journey/${stage.slug}`, lastModified: now });
+  }
+  for (const framework of frameworks) {
+    entries.push({
+      url: `${site.url}/products/${framework.slug}`,
+      lastModified: framework.published_at ? new Date(framework.published_at) : now,
+    });
   }
   for (const guide of guides) {
     entries.push({ url: `${site.url}/guides/${guide.slug}`, lastModified: new Date(guide.updatedAt) });
   }
   for (const item of catalogueItems) {
-    const path = item.product_type === "bundle" ? `/bundles/${item.slug}` : `/templates/${item.slug}`;
+    // Guide-type it_products rows are intentionally skipped here — their canonical URL and
+    // lastModified come from the MDX front matter via `guides` above, not the DB row.
+    if (item.product_type === "guide") continue;
     entries.push({
-      url: `${site.url}${path}`,
+      url: `${site.url}${productHref(item)}`,
       lastModified: item.published_at ? new Date(item.published_at) : now,
     });
   }
