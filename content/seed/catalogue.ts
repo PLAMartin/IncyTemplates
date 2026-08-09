@@ -268,14 +268,15 @@ export function toSummary(product: Product): ProductSummary {
 // ---------------------------------------------------------------------------
 // Frameworks (spec v3 §14.3, §37) — the reusable method/problem/outcome layer
 // above individual Guide/Template/Tool outputs. Product Idea Assessor,
-// Customer Discovery Kit and Better Decision Maker are fully populated and
-// published, each with a complete Guide/Template/Tool set (see
-// docs/decisions/0021 for how Customer Discovery Kit reused existing
-// v2-era template/guide content, and docs/decisions/0022 for Better
-// Decision Maker, built entirely from new content). The remaining three
-// flagship families (spec v3 §37.1 Tier 1) are seeded as minimal, draft,
-// flagship placeholders per the product-owner decision recorded in
-// docs/decisions — visible as public "Coming soon" teasers (via
+// Customer Discovery Kit, Better Decision Maker and MVP Scoper are fully
+// populated and published, each with a complete Guide/Template/Tool set
+// (see docs/decisions/0021 for how Customer Discovery Kit and
+// docs/decisions/0023 for how MVP Scoper each reused existing v2-era
+// template content, and docs/decisions/0022 for Better Decision Maker,
+// built entirely from new content). The remaining two flagship families
+// (spec v3 §37.1 Tier 1) are seeded as minimal, draft, flagship
+// placeholders per the product-owner decision recorded in docs/decisions —
+// visible as public "Coming soon" teasers (via
 // `it_frameworks_teasers`/`getFrameworkTeasers`), not full pages, and with
 // no child Guide/Template/Tool rows yet.
 // ---------------------------------------------------------------------------
@@ -283,6 +284,7 @@ export function toSummary(product: Product): ProductSummary {
 export const PRODUCT_IDEA_ASSESSOR_FRAMEWORK_ID = "framework-product-idea-assessor";
 export const CUSTOMER_DISCOVERY_KIT_FRAMEWORK_ID = "framework-customer-discovery-kit";
 export const BETTER_DECISION_MAKER_FRAMEWORK_ID = "framework-better-decision-maker";
+export const MVP_SCOPER_FRAMEWORK_ID = "framework-mvp-scoper";
 
 export const frameworks: Framework[] = [
   {
@@ -376,28 +378,33 @@ export const frameworks: Framework[] = [
     next_step_framework_slug: "mvp-scoper",
   },
   {
-    id: "framework-mvp-scoper",
-    status: "draft",
+    id: MVP_SCOPER_FRAMEWORK_ID,
+    status: "published",
     name: "MVP Scoper",
     slug: "mvp-scoper",
     short_description: "Work out the smallest useful version of your product worth building first.",
-    problem_statement: null,
+    problem_statement:
+      "Every candidate feature seems reasonable in isolation, so 'reasonable' features quietly accumulate into a build that takes months instead of weeks — without anyone making a deliberate decision to let that happen.",
     outcome_statement: "A scoped MVP with what's in, what's explicitly out, and the riskiest question it needs to answer.",
     target_audience: "Founders and small product teams about to start building.",
-    when_to_use: null,
-    when_not_to_use: null,
-    method_summary: null,
+    when_to_use: "Use once you have a validated problem and a decision to proceed, before development starts.",
+    when_not_to_use: "Not useful before you've decided to proceed — scope a decision, not an unvalidated idea.",
+    method_summary:
+      "Start from your riskiest open question — the one assumption you're least sure of — and let it drive scope more than anything else. For each candidate feature, separate genuine necessity (the product fails to deliver its core value without it) from nice-to-have (people just wouldn't notice). Weigh build effort honestly, especially for nice-but-cheap features, where most scope creep actually hides. Before committing engineering time to anything, ask whether it could be delivered manually first — a concierge process, a spreadsheet — and reserve real build effort for what you've already confirmed matters.",
     journey_stage: stageRef("build"),
     priority_score: 92,
-    priority_rationale: "Ranked #5 in the source-material opportunity portfolio (spec v3 §37).",
-    source_strength: null,
-    source_note: null,
+    priority_rationale:
+      "Ranked #5 in the source-material opportunity portfolio (spec v3 §37): the natural next step once Better Decision Maker has produced a decision to proceed — this family is where that decision turns into a buildable scope.",
+    source_strength: "strong",
+    source_note:
+      "Developed from A Bit Gamey material on minimum viable products and 80/20 app development, including deciding what to build first and what to explicitly leave out.",
     flagship: true,
     display_order: 4,
-    seo_title: null,
-    seo_description: null,
-    published_at: null,
-    next_step_framework_slug: null,
+    seo_title: "MVP Scoper — decide what belongs in your first release",
+    seo_description:
+      "How to scope a minimum viable product: necessity, your riskiest open question, build effort, and what you can fake instead of building.",
+    published_at: "2026-08-09T09:00:00Z",
+    next_step_framework_slug: "product-naming-system",
   },
   {
     id: "framework-product-naming-system",
@@ -837,7 +844,7 @@ const freeProducts: Product[] = [
     stages: [stageRef("build")],
     formats: ["markdown", "pdf"],
     is_placeholder: true,
-    framework_id: null,
+    framework_id: MVP_SCOPER_FRAMEWORK_ID,
     tool_key: null,
     licence: standardLicence,
     quality_standard: {
@@ -1918,6 +1925,91 @@ const betterDecisionMakerFamilyOutputs: Product[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// MVP Scoper family outputs (spec v3 §14.7, §37) — the Guide and Tool that,
+// together with the existing `mvp-scope-in-one-page` Template above
+// (reassigned to this framework — not the separate, paid `mvp-scope`
+// template that belongs to the Product Definition Pack, see
+// docs/decisions/0023), complete the family's Guide -> Template -> Tool
+// set. The Guide's body lives in content/guides/mvp-scoper.mdx, joined to
+// this row by matching slug.
+// ---------------------------------------------------------------------------
+
+const mvpScoperFamilyOutputs: Product[] = [
+  {
+    id: "mvp-scoper-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "MVP Scoper: the Guide",
+    slug: "mvp-scoper",
+    short_description: "A repeatable way to decide what's in, what's out, and what you can fake instead of building.",
+    full_description:
+      "Explains how to let your riskiest open question drive scope, separate genuine necessity from nice-to-have, weigh build effort honestly, and ask what could be delivered manually before committing engineering time. Read this before the Template or the Tool — both assume the technique this guide teaches.",
+    outcome_statement: "A repeatable way to decide what belongs in a first release before 'just one more feature' doubles the timeline.",
+    target_audience: "Founders and small product teams about to start building.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you already have a specific feature in mind and just want a scored verdict.",
+    completion_minutes_min: 8,
+    completion_minutes_max: 12,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-09T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-development")],
+    stages: [stageRef("build")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: MVP_SCOPER_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "MVP Scoper guide — decide what belongs in your first release",
+    seo_description: "How to scope a minimum viable product: necessity, your riskiest open question, build effort, and what you can fake instead of building.",
+  },
+  {
+    id: "mvp-scoper-tool",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "Scope Decider",
+    slug: "mvp-scoper-tool",
+    short_description: "Score a candidate feature as Keep, Defer or Remove — and catch the ones you could fake instead of building.",
+    full_description:
+      "Answer four questions about one candidate feature — how necessary it is, how relevant it is to your riskiest open question, how much effort it would take, and whether you could deliver it manually instead — and get a Keep, Defer or Remove verdict plus one concrete next step. Usable anonymously, with no account required.",
+    outcome_statement: "A Keep, Defer or Remove verdict for a candidate feature, plus one clear next step.",
+    target_audience: "Founders and small product teams deciding what belongs in a first release.",
+    when_to_use: "Use once per candidate feature you're unsure about, while scoping a first release.",
+    when_not_to_use: "Not a replacement for the one-page scope itself — it scores one feature at a time, it doesn't produce the full page.",
+    completion_minutes_min: 5,
+    completion_minutes_max: 5,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-09T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-development")],
+    stages: [stageRef("build")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: MVP_SCOPER_FRAMEWORK_ID,
+    tool_key: "mvp-scoper",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "Scope Decider — free Keep/Defer/Remove MVP scoping tool",
+    seo_description: "Score a candidate feature as Keep, Defer or Remove, free, no account required.",
+  },
+];
+
 export const products: Product[] = [
   ...freeProducts,
   ...ideaValidationItems,
@@ -1925,6 +2017,7 @@ export const products: Product[] = [
   ...productIdeaAssessorFamilyOutputs,
   ...customerDiscoveryKitFamilyOutputs,
   ...betterDecisionMakerFamilyOutputs,
+  ...mvpScoperFamilyOutputs,
 ];
 
 // ---------------------------------------------------------------------------
