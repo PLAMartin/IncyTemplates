@@ -9,6 +9,7 @@ import { Breadcrumbs } from "@/components/product/breadcrumbs";
 import { AccessBadge } from "@/components/ui/badge";
 import { ProductCard } from "@/components/catalogue/product-card";
 import { ProductIdeaAssessorRunner } from "@/components/tools/product-idea-assessor/tool-runner";
+import { CustomerDiscoveryKitRunner } from "@/components/tools/customer-discovery-kit/tool-runner";
 
 type Props = { params: Promise<{ toolKey: string }> };
 
@@ -19,6 +20,7 @@ type Props = { params: Promise<{ toolKey: string }> };
  */
 const TOOL_RUNNERS: Record<string, ComponentType> = {
   "product-idea-assessor": ProductIdeaAssessorRunner,
+  "customer-discovery-kit": CustomerDiscoveryKitRunner,
 };
 
 export async function generateStaticParams() {

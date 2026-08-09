@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { findToolDefinition, getToolDefinition } from "@/lib/tools/registry";
 import { ToolNotAvailableError } from "@/lib/tools/types";
 import { PRODUCT_IDEA_ASSESSOR_TOOL_KEY } from "@/lib/tools/product-idea-assessor";
+import { CUSTOMER_DISCOVERY_KIT_TOOL_KEY } from "@/lib/tools/customer-discovery-kit";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -38,5 +39,19 @@ describe("tool registry", () => {
     const definition = getToolDefinition(PRODUCT_IDEA_ASSESSOR_TOOL_KEY);
     const parsed = definition.inputSchema.safeParse({ classification: "not-a-real-classification" });
     expect(parsed.success).toBe(false);
+  });
+
+  it("resolves the second registered tool (Customer Discovery Kit) independently of the first", () => {
+    const definition = getToolDefinition(CUSTOMER_DISCOVERY_KIT_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      interviewCount: "more_than_ten",
+      questionStyle: "mostly_open",
+      evidenceType: "consistent_past_behaviour",
+      commitmentSignal: "money_or_switching_cost",
+      patternConsistency: "strong_pattern",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { evidenceStrengthScore: number };
+    expect(parsedResult.evidenceStrengthScore).toBe(100);
   });
 });
