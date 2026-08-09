@@ -4,8 +4,21 @@ import { AccessBadge } from "@/components/ui/badge";
 import { formatMinorUnits } from "@/lib/money/bundle-savings";
 import type { ProductSummary } from "@/types/catalogue";
 
-export function productHref(product: Pick<ProductSummary, "product_type" | "slug">): string {
-  return product.product_type === "bundle" ? `/bundles/${product.slug}` : `/templates/${product.slug}`;
+export function productHref(product: Pick<ProductSummary, "product_type" | "slug" | "tool_key">): string {
+  switch (product.product_type) {
+    case "bundle":
+      return `/bundles/${product.slug}`;
+    case "guide":
+      return `/guides/${product.slug}`;
+    case "tool":
+      // Tools route by their stable tool_key (spec v3 §12.3), not the product slug —
+      // tool_key is the registry lookup key; falls back to slug if ever unset (shouldn't
+      // happen, `tool_requires_key` enforces it at the DB level).
+      return `/tools/${product.tool_key ?? product.slug}`;
+    case "template":
+    default:
+      return `/templates/${product.slug}`;
+  }
 }
 
 export function ProductCard({ product }: { product: ProductSummary }) {

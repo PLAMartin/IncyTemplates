@@ -47,6 +47,19 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      // v3: the Proven-Better-New method page is retired in favour of the Product Idea
+      // Assessor guide, which its prose was migrated into (content/guides/
+      // product-idea-assessor.mdx). Permanent redirect so any existing internal/external
+      // links to the old URL keep working (spec v3 §26.3's slug-redirect requirement).
+      {
+        source: "/methods/proven-better-new",
+        destination: "/guides/product-idea-assessor",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

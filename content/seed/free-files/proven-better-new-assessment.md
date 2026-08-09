@@ -1,10 +1,10 @@
-# Proven–Better–New Assessment
+# Copy–Improve–Differentiate Assessment
 
 > **Placeholder content.** This file stands in for the finished template while Phase 2 (free downloads) is built end-to-end. It follows the real structure and metadata but the section content below is illustrative, not final copy — see `is_placeholder: true` on this product in `content/seed/catalogue.ts`.
 
 ## Objective
 
-A clear verdict — Proven, Better or New — plus the specific evidence that verdict requires before you proceed.
+A clear verdict — Copy, Improve or Differentiate — plus the specific evidence that verdict requires before you proceed.
 
 ## Intended user
 
@@ -12,7 +12,7 @@ Founders and product people deciding how cautiously to approach an idea.
 
 ## Situation
 
-Classify your idea as Proven, Better or New so you know how much evidence you actually need before committing.
+Classify your idea as Copy, Improve or Differentiate so you know how much evidence you actually need before committing.
 
 Use immediately after the Product Idea Snapshot, before writing a business plan or building anything.
 

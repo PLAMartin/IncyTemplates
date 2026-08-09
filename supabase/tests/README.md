@@ -27,6 +27,10 @@ or against a linked project with `supabase test db --linked`.
   read their own `it_orders`/`it_entitlements` rows but not another customer's, using two
   faked `auth.uid()` sessions in the same transaction (the `set_config('request.jwt.claim.sub', ...)`
   technique documented by Supabase for testing RLS).
+- `it_frameworks_rls_test.sql` -- anon can read published frameworks (full detail) via
+  `it_frameworks` but not draft/candidate ones; anon can additionally read published and
+  draft-*flagship* frameworks (narrow field set only) via the `it_frameworks_teasers` view,
+  but not draft-non-flagship or candidate frameworks even through the view.
 
 ## Known environment-dependence
 

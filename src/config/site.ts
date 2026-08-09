@@ -14,7 +14,7 @@ export const company = {
 
 export const site = {
   name: "Incy Templates",
-  tagline: "Practical, field-tested templates that help founders make the next important decision.",
+  tagline: "Practical tools for turning ideas into products.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://incytemplates.com",
 } as const;
 
@@ -23,38 +23,50 @@ export type NavLink = {
   href: string;
 };
 
+// Spec v3 §8.1's recommended 6-item primary nav. "Free templates" and "Bundles" drop out
+// of the primary row (still reachable via /templates/free, /bundles and the footer) to make
+// room for the new Products/Tools entries without crowding the header.
 export const primaryNav: NavLink[] = [
-  { label: "Templates", href: "/templates" },
-  { label: "Free templates", href: "/templates/free" },
-  { label: "Bundles", href: "/bundles" },
-  { label: "How it works", href: "/how-it-works" },
+  { label: "Products", href: "/products" },
   { label: "Guides", href: "/guides" },
+  { label: "Templates", href: "/templates" },
+  { label: "Tools", href: "/tools" },
+  { label: "How it works", href: "/how-it-works" },
   { label: "About", href: "/about" },
+];
+
+/** Journey-stage links for the header/footer "Product journey" navigation (spec v3 §7/§8.3). */
+export const JOURNEY_STAGE_LINKS: NavLink[] = [
+  { label: "Idea", href: "/journey/idea" },
+  { label: "Validate", href: "/journey/validate" },
+  { label: "Decide", href: "/journey/decide" },
+  { label: "Design", href: "/journey/design" },
+  { label: "Build", href: "/journey/build" },
+  { label: "Launch", href: "/journey/launch" },
+  { label: "Improve", href: "/journey/improve" },
 ];
 
 export const footerNav: { heading: string; links: NavLink[] }[] = [
   {
-    heading: "Templates",
-    links: [
-      { label: "All templates", href: "/templates" },
-      { label: "Free templates", href: "/templates/free" },
-      { label: "Bundles", href: "/bundles" },
-      { label: "Categories", href: "/templates/categories" },
-      { label: "Journey stages", href: "/templates/stages" },
-    ],
+    heading: "Product journey",
+    links: JOURNEY_STAGE_LINKS,
   },
   {
-    heading: "Learn",
+    heading: "Browse",
     links: [
+      { label: "All products", href: "/products" },
       { label: "Guides", href: "/guides" },
-      { label: "How it works", href: "/how-it-works" },
-      { label: "Proven–Better–New method", href: "/methods/proven-better-new" },
-      { label: "About Incy Templates", href: "/about" },
+      { label: "Templates", href: "/templates" },
+      { label: "Tools", href: "/tools" },
+      { label: "Bundles", href: "/bundles" },
+      { label: "Source: A Bit Gamey", href: "/about#source" },
     ],
   },
   {
     heading: "Support",
     links: [
+      { label: "How it works", href: "/how-it-works" },
+      { label: "About Incy Templates", href: "/about" },
       { label: "Help", href: "/help" },
       { label: "FAQ", href: "/faq" },
       { label: "Contact", href: "/contact" },

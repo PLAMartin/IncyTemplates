@@ -3,7 +3,7 @@ import type { AccessType, CatalogueFilters, FileFormat, ProductType } from "@/ty
 export type RawSearchParams = { [key: string]: string | string[] | undefined };
 
 const ACCESS_VALUES: readonly AccessType[] = ["free", "paid"];
-const TYPE_VALUES: readonly ProductType[] = ["template", "bundle"];
+const TYPE_VALUES: readonly ProductType[] = ["guide", "template", "tool", "bundle"];
 const SORT_VALUES = ["recommended", "newest", "popular", "price-asc", "price-desc"] as const;
 const FORMAT_VALUES: readonly FileFormat[] = [
   "pdf", "docx", "xlsx", "pptx", "markdown", "notion", "miro",

@@ -47,8 +47,8 @@ export function SiteHeader() {
           >
             Sign in
           </Link>
-          <ButtonLink href="/templates" className="hidden lg:inline-flex">
-            Browse templates
+          <ButtonLink href="/tools/product-idea-assessor" className="hidden lg:inline-flex">
+            Assess an idea
           </ButtonLink>
           <MobileNav links={primaryNav} />
         </div>

@@ -18,6 +18,11 @@ export const guideFrontmatterSchema = z.object({
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
   relatedProducts: z.array(z.string()).optional(),
+  // Spec v3 §23.4 requires a framework reference on every Guide's front matter — stored as
+  // the framework's slug, not its DB id (see the type's doc comment in src/types/catalogue.ts
+  // for why). Kept optional here (not every existing guide has been assigned a framework yet
+  // this pass — only the new Product Idea Assessor guide does).
+  frameworkSlug: z.string().optional(),
 });
 
 export type GuideFrontmatterInput = z.infer<typeof guideFrontmatterSchema>;

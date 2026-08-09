@@ -1,6 +1,13 @@
-import { FileText, Layers } from "lucide-react";
+import { BookOpen, FileText, Layers, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import type { ProductType } from "@/types/catalogue";
+
+const PRODUCT_TYPE_ICONS: Record<ProductType, typeof FileText> = {
+  guide: BookOpen,
+  template: FileText,
+  tool: Wrench,
+  bundle: Layers,
+};
 
 /**
  * No real cover/preview images exist yet (spec §17 Storage buckets and the
@@ -36,11 +43,10 @@ export function CoverPlaceholder({
         }}
       />
       <div className="relative flex flex-col items-center gap-2 px-4 text-center">
-        {productType === "bundle" ? (
-          <Layers aria-hidden className="size-8 text-brand-700" />
-        ) : (
-          <FileText aria-hidden className="size-8 text-brand-700" />
-        )}
+        {(() => {
+          const Icon = PRODUCT_TYPE_ICONS[productType];
+          return <Icon aria-hidden className="size-8 text-brand-700" />;
+        })()}
         <span className="text-sm font-medium text-brand-900">{name}</span>
       </div>
     </div>

@@ -25,6 +25,8 @@ function makeProduct(overrides: Partial<ProductSummary>): ProductSummary {
     stages: [{ slug: "evaluate-an-idea", name: "Evaluate an idea" }],
     formats: ["markdown"],
     is_placeholder: true,
+    framework_id: null,
+    tool_key: null,
     ...overrides,
   };
 }

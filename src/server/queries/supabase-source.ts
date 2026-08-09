@@ -24,6 +24,9 @@ import type {
   CatalogueResult,
   Category,
   FileFormat,
+  Framework,
+  FrameworkStatus,
+  FrameworkTeaser,
   Licence,
   Product,
   ProductFile,
@@ -31,6 +34,14 @@ import type {
   Stage,
 } from "@/types/catalogue";
 import type { CatalogueSource } from "./types";
+
+/** Display order for framework-outputs cards (spec §8.4: Guide, Template, Tool, then Bundle). */
+const OUTPUT_TYPE_ORDER: Record<ProductSummary["product_type"], number> = {
+  guide: 0,
+  template: 1,
+  tool: 2,
+  bundle: 3,
+};
 
 const DEFAULT_PAGE_SIZE = 12;
 
@@ -68,7 +79,7 @@ type LicenceRow = {
 // against the actual response shape once a project is linked.
 type ProductRow = {
   id: string;
-  product_type: "template" | "bundle";
+  product_type: "guide" | "template" | "tool" | "bundle";
   access_type: "free" | "paid";
   status: "draft" | "scheduled" | "published" | "unlisted" | "archived";
   name: string;
@@ -92,6 +103,8 @@ type ProductRow = {
   seo_title: string | null;
   seo_description: string | null;
   schema_data: Record<string, unknown> | null;
+  framework_id: string | null;
+  tool_key: string | null;
   licence: LicenceRow | null;
   it_product_categories?: { category: CategoryRow | null }[] | null;
   it_product_stages?: { stage: StageRow | null }[] | null;
@@ -188,6 +201,8 @@ function mapProduct(row: ProductRow): Product {
     stages,
     formats,
     is_placeholder,
+    framework_id: row.framework_id,
+    tool_key: row.tool_key,
     licence: row.licence ? mapLicence(row.licence) : null,
     // TODO(verify-against-live-schema): quality_standard isn't selected in
     // PRODUCT_SELECT below yet — add `quality_standard` to the select list
@@ -205,13 +220,13 @@ function toSummary(product: Product): ProductSummary {
     id, product_type, access_type, status, name, slug, short_description, outcome_statement,
     completion_minutes_min, completion_minutes_max, skill_level, price_minor,
     compare_at_price_minor, currency_code, featured, published_at, scheduled_for,
-    categories, stages, formats, is_placeholder,
+    categories, stages, formats, is_placeholder, framework_id, tool_key,
   } = product;
   return {
     id, product_type, access_type, status, name, slug, short_description, outcome_statement,
     completion_minutes_min, completion_minutes_max, skill_level, price_minor,
     compare_at_price_minor, currency_code, featured, published_at, scheduled_for,
-    categories, stages, formats, is_placeholder,
+    categories, stages, formats, is_placeholder, framework_id, tool_key,
   };
 }
 
@@ -226,12 +241,82 @@ const PRODUCT_SELECT = `
   outcome_statement, target_audience, when_to_use, when_not_to_use,
   completion_minutes_min, completion_minutes_max, skill_level, current_version,
   price_minor, compare_at_price_minor, currency_code, featured, published_at, scheduled_for,
-  seo_title, seo_description, schema_data,
+  seo_title, seo_description, schema_data, framework_id, tool_key,
   licence:it_licences ( id, name, slug, summary, commercial_use_allowed, client_work_allowed, redistribution_allowed ),
   it_product_categories ( category:it_categories ( id, name, slug, description, display_order ) ),
   it_product_stages ( stage:it_stages ( id, name, slug, description, display_order ) ),
   it_product_versions ( is_current, it_files ( id, file_role, file_format, display_name, is_public_preview ) )
 `;
+
+// TODO(verify-against-live-schema): confirm the embed alias for journey_stage
+// (`journey_stage:it_stages(...)`) resolves against the `journey_stage_id` FK the same way
+// `licence:it_licences(...)` does above.
+type FrameworkRow = {
+  id: string;
+  status: FrameworkStatus;
+  name: string;
+  slug: string;
+  short_description: string;
+  problem_statement: string | null;
+  outcome_statement: string;
+  target_audience: string | null;
+  when_to_use: string | null;
+  when_not_to_use: string | null;
+  method_summary: string | null;
+  priority_score: number | null;
+  priority_rationale: string | null;
+  source_strength: string | null;
+  source_note: string | null;
+  flagship: boolean;
+  display_order: number;
+  seo_title: string | null;
+  seo_description: string | null;
+  published_at: string | null;
+  journey_stage: StageRow | null;
+  next_step: { slug: string } | null;
+};
+
+// TODO(verify-against-live-schema): the self-referencing FK embed alias below
+// (`next_step:it_frameworks!next_step_framework_id(...)`) follows the same
+// `!constraint_or_column_hint` pattern used for it_bundle_items' two-FK embed elsewhere in
+// this file — PostgREST needs the hint to disambiguate a self-join, and the exact accepted
+// hint syntax (`next_step_framework_id` vs a generated constraint name) hasn't been
+// confirmed against a live project.
+const FRAMEWORK_SELECT = `
+  id, status, name, slug, short_description, problem_statement, outcome_statement,
+  target_audience, when_to_use, when_not_to_use, method_summary,
+  priority_score, priority_rationale, source_strength, source_note, flagship, display_order,
+  seo_title, seo_description, published_at,
+  journey_stage:it_stages ( id, name, slug, description, display_order ),
+  next_step:it_frameworks!next_step_framework_id ( slug )
+`;
+
+function mapFramework(row: FrameworkRow): Framework {
+  return {
+    id: row.id,
+    status: row.status,
+    name: row.name,
+    slug: row.slug,
+    short_description: row.short_description,
+    problem_statement: row.problem_statement,
+    outcome_statement: row.outcome_statement,
+    target_audience: row.target_audience,
+    when_to_use: row.when_to_use,
+    when_not_to_use: row.when_not_to_use,
+    method_summary: row.method_summary,
+    journey_stage: row.journey_stage ? { slug: row.journey_stage.slug, name: row.journey_stage.name } : null,
+    priority_score: row.priority_score,
+    priority_rationale: row.priority_rationale,
+    source_strength: row.source_strength,
+    source_note: row.source_note,
+    flagship: row.flagship,
+    display_order: row.display_order,
+    seo_title: row.seo_title,
+    seo_description: row.seo_description,
+    published_at: row.published_at,
+    next_step_framework_slug: row.next_step?.slug ?? null,
+  };
+}
 
 export class SupabaseCatalogueSource implements CatalogueSource {
   private client: SupabaseClient;
@@ -261,11 +346,15 @@ export class SupabaseCatalogueSource implements CatalogueSource {
   }
 
   async getFeaturedFreeProducts(limit = 3): Promise<Product[]> {
+    // Scoped to product_type "template" — this powers the "Featured free templates"
+    // sections (homepage, /templates/free); guide/tool rows have their own dedicated
+    // homepage/index sections and shouldn't appear here too.
     const { data, error } = await this.client
       .from("it_products")
       .select(PRODUCT_SELECT)
       .eq("status", "published")
       .eq("access_type", "free")
+      .eq("product_type", "template")
       .order("featured", { ascending: false })
       .order("published_at", { ascending: false })
       .limit(limit);
@@ -329,7 +418,14 @@ export class SupabaseCatalogueSource implements CatalogueSource {
       .eq("status", "published");
 
     if (filters.access) query = query.eq("access_type", filters.access);
-    if (filters.type) query = query.eq("product_type", filters.type);
+    if (filters.type) {
+      query = query.eq("product_type", filters.type);
+    } else {
+      // Default scope is template + bundle (this method backs /templates and its
+      // sub-pages) — guide/tool rows only appear when a caller explicitly asks for that
+      // type (e.g. /tools/page.tsx passing `type: "tool"`), never by default.
+      query = query.in("product_type", ["template", "bundle"]);
+    }
 
     if (filters.category) {
       const productIds = await this.productIdsForCategory(filters.category);
@@ -482,5 +578,105 @@ export class SupabaseCatalogueSource implements CatalogueSource {
       .limit(limit);
     if (error) throw error;
     return (data as unknown as ProductRow[]).map(mapProduct);
+  }
+
+  // --- v3: framework/product-family layer --------------------------------
+
+  async getFrameworks(opts?: { journeyStage?: string }): Promise<Framework[]> {
+    let query = this.client
+      .from("it_frameworks")
+      .select(FRAMEWORK_SELECT)
+      .eq("status", "published")
+      .order("display_order", { ascending: true });
+    if (opts?.journeyStage) {
+      // TODO(verify-against-live-schema): filtering on an embedded relationship's column
+      // via dot notation (`journey_stage.slug`) requires the `!inner` join hint to work as
+      // a genuine filter rather than just shaping the embed — confirm against a live project.
+      query = query.eq("journey_stage.slug", opts.journeyStage);
+    }
+    const { data, error } = await query;
+    if (error) throw error;
+    let frameworks = (data as unknown as FrameworkRow[]).map(mapFramework);
+    if (opts?.journeyStage) {
+      // Defensive re-filter in case the embedded-relationship filter above only shapes the
+      // embed rather than restricting rows (see TODO above) — cheap, and correct either way.
+      frameworks = frameworks.filter((f) => f.journey_stage?.slug === opts.journeyStage);
+    }
+    return frameworks;
+  }
+
+  async getFrameworkTeasers(): Promise<FrameworkTeaser[]> {
+    const { data, error } = await this.client
+      .from("it_frameworks_teasers")
+      .select("id, name, slug, short_description, outcome_statement, status, journey_stage_slug, journey_stage_name, display_order")
+      .order("display_order", { ascending: true });
+    if (error) throw error;
+    type TeaserRow = {
+      id: string;
+      name: string;
+      slug: string;
+      short_description: string;
+      outcome_statement: string;
+      status: FrameworkStatus;
+      journey_stage_slug: string | null;
+      journey_stage_name: string | null;
+    };
+    return (data as unknown as TeaserRow[]).map((row) => ({
+      id: row.id,
+      name: row.name,
+      slug: row.slug,
+      short_description: row.short_description,
+      outcome_statement: row.outcome_statement,
+      status: row.status,
+      journey_stage: row.journey_stage_slug ? { slug: row.journey_stage_slug, name: row.journey_stage_name! } : null,
+    }));
+  }
+
+  async getFrameworkBySlug(slug: string): Promise<Framework | null> {
+    const { data, error } = await this.client
+      .from("it_frameworks")
+      .select(FRAMEWORK_SELECT)
+      .eq("slug", slug)
+      .eq("status", "published")
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) return null;
+    return mapFramework(data as unknown as FrameworkRow);
+  }
+
+  async getFrameworkById(id: string): Promise<Framework | null> {
+    const { data, error } = await this.client
+      .from("it_frameworks")
+      .select(FRAMEWORK_SELECT)
+      .eq("id", id)
+      .eq("status", "published")
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) return null;
+    return mapFramework(data as unknown as FrameworkRow);
+  }
+
+  async getFrameworkOutputs(frameworkId: string): Promise<ProductSummary[]> {
+    const { data, error } = await this.client
+      .from("it_products")
+      .select(PRODUCT_SELECT)
+      .eq("framework_id", frameworkId)
+      .eq("status", "published");
+    if (error) throw error;
+    const outputs = (data as unknown as ProductRow[]).map((row) => toSummary(mapProduct(row)));
+    return outputs.sort((a, b) => OUTPUT_TYPE_ORDER[a.product_type] - OUTPUT_TYPE_ORDER[b.product_type]);
+  }
+
+  async getProductByToolKey(toolKey: string): Promise<Product | null> {
+    const { data, error } = await this.client
+      .from("it_products")
+      .select(PRODUCT_SELECT)
+      .eq("tool_key", toolKey)
+      .eq("status", "published")
+      .eq("product_type", "tool")
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) return null;
+    return mapProduct(data as unknown as ProductRow);
   }
 }

@@ -5,7 +5,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import rehypeSlug from "rehype-slug";
 import { getAllGuides, getGuideBySlug } from "@/lib/mdx/guides";
 import { extractToc } from "@/lib/mdx/toc";
-import { getBundleBySlug, getProductBySlug } from "@/server/queries";
+import { getBundleBySlug, getFrameworkBySlug, getFrameworkOutputs, getProductBySlug } from "@/server/queries";
 import { canonicalUrl } from "@/lib/seo/canonical";
 import { articleJsonLd, breadcrumbJsonLd } from "@/lib/seo/structured-data";
 import { JsonLd } from "@/components/content/json-ld";
@@ -57,6 +57,9 @@ export default async function GuidePage({ params }: Props) {
     (p): p is ProductSummary => Boolean(p),
   );
 
+  const framework = guide.frameworkSlug ? await getFrameworkBySlug(guide.frameworkSlug) : null;
+  const sameFamilyOutputs = framework ? (await getFrameworkOutputs(framework.id)).filter((o) => o.slug !== guide.slug) : [];
+
   const toc = extractToc(guide.content);
 
   const path = `/guides/${slug}`;
@@ -86,6 +89,15 @@ export default async function GuidePage({ params }: Props) {
                 : ""}{" "}
               · {guide.readingTimeMinutes} min read
             </p>
+            {framework ? (
+              <p className="mt-3 text-sm text-ink-500">
+                Part of the{" "}
+                <Link href={`/products/${framework.slug}`} className="font-medium text-brand-600 underline hover:text-brand-700">
+                  {framework.name}
+                </Link>{" "}
+                family.
+              </p>
+            ) : null}
           </header>
 
           <div className="mb-8 lg:hidden">
@@ -95,6 +107,18 @@ export default async function GuidePage({ params }: Props) {
           <div className="guide-prose">
             <MDXRemote source={guide.content} options={{ mdxOptions: { rehypePlugins: [rehypeSlug] } }} />
           </div>
+
+          {sameFamilyOutputs.length > 0 ? (
+            <div className="mt-12 rounded-md border border-ink-200 bg-paper-raised p-6">
+              <h2 className="text-lg font-semibold text-ink-900">Ready to apply this?</h2>
+              <p className="mt-1 text-sm text-ink-500">Same family, different depth — pick whichever fits what you need right now.</p>
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {sameFamilyOutputs.map((output) => (
+                  <ProductCard key={output.id} product={output} />
+                ))}
+              </div>
+            </div>
+          ) : null}
 
           {relatedProducts.length > 0 ? (
             <div className="mt-12">

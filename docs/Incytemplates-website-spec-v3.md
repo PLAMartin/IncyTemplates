@@ -1,0 +1,3307 @@
+# Incy Templates — Technical Development Specification
+
+**Document status:** Draft v3.0  
+**Prepared for:** Incyworks Ltd  
+**Canonical domain:** `https://incytemplates.com`  
+**GitHub repository:** `https://github.com/PLAMartin/IncyTemplates`  
+**Default branch:** `main`  
+**Primary purpose:** Implementation specification for an AI coding agent  
+**Last updated:** 9 August 2026  
+
+### v3.0 change summary
+
+- Repositions Incy Templates from a template store to a framework/product-family platform.
+- Makes **Guide, Template and Tool** first-class output types.
+- Organises public navigation around **Idea → Validate → Decide → Design → Build → Launch → Improve**.
+- Adds structured A Bit Gamey source provenance and an editorial post → framework → output pipeline.
+- Adds the ranked 25-product opportunity portfolio derived from the 258-post archive.
+- Defines six flagship launch families, led by **Product Idea Assessor**.
+- Adds interactive Tool architecture, Tool-run persistence/privacy and type-specific publication validation.
+- Changes the recommended first milestone to prove one complete Guide → Template → Tool family before adding commerce.
+
+---
+
+## 1. Document purpose
+
+
+This document defines the product model, information architecture, technical architecture, data model, user journeys, security rules, integrations, implementation phases and acceptance criteria for the Incy Templates website.
+
+**Version 3 changes the fundamental product model.** Incy Templates is not primarily a digital-template store. It is a practical product-development platform that turns reusable methods into three primary output types:
+
+- **Guides** — explain how to approach and apply a method.
+- **Templates** — provide a structured starting point for doing the work.
+- **Tools** — interactively perform part of the work, using user inputs to produce analysis, recommendations or structured outputs.
+
+These outputs are organised around reusable **frameworks/product families** and the task the user is trying to complete. A framework may have one, two or all three output types. Supporting formats such as worksheets, checklists, scorecards, decision trees and worked examples are treated as forms of Template or embedded supporting content rather than top-level product types.
+
+A major source of Incy Templates intellectual content is the **A Bit Gamey** archive. The current source corpus is the 30 July 2026 Substack export in the private GitHub repository `PLAMartin/ABitGamey`, containing 258 published posts. Posts are source material; they are not automatically products. The intended pipeline is:
+
+```text
+A Bit Gamey posts
+      ↓
+reusable principle / method
+      ↓
+framework / product family
+      ↓
+Guide + Template + Tool, where each format adds genuine value
+```
+
+The website must:
+
+1. Help visitors identify the next useful product-development task or decision.
+2. Let visitors browse by journey stage, problem/outcome and output type.
+3. Present Guides, Templates and Tools as complementary ways to use the same underlying framework.
+4. Allow useful free resources and interactive tools to be used with minimal friction.
+5. Allow paid outputs and bundles to be purchased securely where appropriate.
+6. Give customers a persistent library for purchased or saved resources and current versions.
+7. Support downloadable formats including AI-agent-ready Markdown where appropriate.
+8. Support browser-based interactive Tools without requiring every framework to become software.
+9. Preserve provenance from approved Incy Templates frameworks and outputs back to relevant A Bit Gamey source posts.
+10. Provide an efficient administrative and editorial workflow for reviewing, approving, publishing and updating product families and outputs.
+11. Be designed so that saved work, AI-assisted completion, decision history and team workflows can be expanded later without rebuilding the core platform.
+
+The first canonical product family should be **Product Idea Assessor**, built from the Proven–Better–New and customer-evidence material. It should establish the reusable Guide → Template → Tool interaction and technical patterns for subsequent product families.
+
+---
+
+## 2. Important assumptions
+
+
+The coding agent should proceed using these assumptions unless explicitly changed by the product owner.
+
+### 2.1 Domain
+
+- `incytemplates.com` is the canonical production domain.
+- `www.incytemplates.com` redirects permanently to `incytemplates.com`.
+- If `incytemplate.com` is also owned, it should redirect permanently to `incytemplates.com`.
+- Canonical tags, sitemap entries and Open Graph URLs must use `https://incytemplates.com`.
+
+### 2.2 Company
+
+The service is operated by **Incyworks Ltd**, based in the United Kingdom.
+
+All legal text, invoice details and footer information must be configuration-driven rather than hard-coded throughout the application.
+
+### 2.3 Repositories and source material
+
+The production application repository is:
+
+- `https://github.com/PLAMartin/IncyTemplates`
+- Default branch: `main`
+
+The principal editorial source repository is:
+
+- `https://github.com/PLAMartin/ABitGamey`
+- Default branch: `master`
+- Source export: `www/content/substack-raw 30.7.26/`
+- Individual post bodies: `www/content/substack-raw 30.7.26/posts/`
+- Catalogue: `www/content/substack-raw 30.7.26/posts.csv`
+
+The A Bit Gamey repository is a **source**, not a runtime dependency. Production pages must not require live reads from GitHub. Approved framework and provenance metadata should be copied or generated into the IncyTemplates content model at build/editorial time.
+
+The coding agent must inspect and preserve existing files, history and configuration before scaffolding or refactoring the application. It must not create a replacement repository.
+
+### 2.4 Preferred technology stack
+
+- Next.js App Router
+- TypeScript
+- React
+- Tailwind CSS
+- Vercel
+- Supabase Postgres
+- Supabase Auth
+- Supabase Storage
+- Stripe Checkout
+- Stripe webhooks
+- Resend transactional email
+- Google Analytics 4
+- GitHub
+
+### 2.5 Product model
+
+The primary public output types are:
+
+| Type | Definition | Typical result |
+|---|---|---|
+| **Guide** | Practical explanation of how to approach a problem, with steps, examples and prompts. | User understands what to do and why. |
+| **Template** | Ready-made structure the user completes or adapts. Includes worksheets, checklists, scorecards, canvases and decision trees. | User leaves with a structured artefact or decision record. |
+| **Tool** | Interactive experience taking user inputs and producing analysis, calculations, recommendations or structured output. | User gets a result faster or makes a structured decision. |
+| **Bundle** | Commercial or curated collection of related outputs or product families. | User gets a complete journey or use-case pack. |
+
+A **framework/product family** sits above these outputs. Examples: Product Idea Assessor, Better Decisions, Product Naming System. A family is not itself a downloadable file; it represents the method, user problem and promised outcome shared by its outputs.
+
+Guides, Templates and Tools are not compulsory for every family. Use the simplest format that genuinely improves the user's outcome.
+
+### 2.6 Commercial model
+
+The MVP architecture supports:
+
+- Free Guides
+- Free or paid Templates
+- Free or paid Tools
+- Paid bundles
+- One-time payments
+- Discount codes managed through Stripe
+- Optional zero-value promotional purchases
+
+Initial launch should favour **useful free entry points** and delay monetisation complexity where it would slow learning. Paid access is more appropriate for deeper bundles, advanced tools, exports, saved work or specialist editions than for putting every useful idea behind a paywall.
+
+The MVP does **not** require subscriptions, recurring billing, a multi-vendor marketplace, native mobile apps, public user profiles or affiliate payouts.
+
+### 2.7 Accounts and tool use
+
+- Browsing and reading Guides does not require an account.
+- Free Templates should normally be downloadable without creating a password.
+- Free Tools should normally be usable without an account for a single session unless abuse or privacy considerations require otherwise.
+- Saving Tool runs, maintaining history, accessing paid resources and persistent libraries may require authentication.
+- Paid purchases should result in a persistent customer library.
+- Passwordless magic-link access is preferred.
+
+### 2.8 Currency and tax
+
+- Default display currency: GBP.
+- Currency must use ISO 4217 codes.
+- Monetary values must be integer minor units.
+- Stripe is the payment processor.
+- Tax behaviour must be configurable.
+- The product owner must decide before paid launch whether to use Stripe Tax, Stripe Managed Payments, another merchant-of-record service or direct VAT handling.
+
+### 2.9 Content and provenance
+
+Use a hybrid model:
+
+- Framework/product-family metadata, output metadata, customers, purchases, entitlements and Tool-run metadata in Supabase.
+- Approved Guides, methods and long-form content in repository-managed Markdown/MDX.
+- Template files and paid export files in private Supabase Storage.
+- Public preview assets in a public bucket or static assets.
+- Tool implementations in application code, referenced by a stable `tool_key` from product metadata.
+- A Bit Gamey source-post provenance stored as structured metadata linking frameworks to source post IDs, titles and repository paths.
+
+AI-generated drafts must not become approved products automatically. Human approval remains a deliberate editorial action.
+
+---
+
+## 3. Product vision
+
+
+### 3.1 Positioning
+
+Primary working proposition:
+
+> **Practical tools for turning ideas into products.**
+
+Supporting line:
+
+> Guides show you how. Templates give you a starting point. Tools help you do the work.
+
+Alternative campaign line:
+
+> From idea to customer, one useful tool at a time.
+
+### 3.2 Product journey
+
+The top-level journey is task-oriented rather than file-format-oriented:
+
+```text
+IDEA → VALIDATE → DECIDE → DESIGN → BUILD → LAUNCH → IMPROVE
+```
+
+These stages should be treated as navigational aids, not a rigid methodology. A user may enter at any point and skip stages.
+
+### 3.3 Product principles
+
+1. **Outcome before format**  
+   Start with the user's problem, decision or next action, not whether the answer is a PDF, spreadsheet or web app.
+
+2. **Framework before output**  
+   Consolidate related source posts into a reusable method before creating Guide, Template or Tool outputs.
+
+3. **Do not productise every post**  
+   A Bit Gamey is a rich source of ideas, examples and evidence. Multiple posts may feed one product family; some posts should remain editorial content only.
+
+4. **Guide → Template → Tool is a depth model, not a quota**  
+   Add interactivity only where scoring, calculation, branching, comparison or repeated use materially helps.
+
+5. **A decision, result or next action**  
+   Every product family must promise a useful user outcome.
+
+6. **Evidence before confidence**  
+   Product-development outputs should distinguish assumptions, opinions, behaviours and evidence.
+
+7. **Examples reduce uncertainty**  
+   Important templates and tools should include worked examples and interpretation guidance.
+
+8. **Minimum useful complexity**  
+   Prefer a small, understandable workflow over an oversized framework.
+
+9. **Source provenance matters**  
+   Approved product families should retain links to the A Bit Gamey posts and other sources that materially shaped them.
+
+10. **AI-compatible, not AI-dependent**  
+    Deterministic workflows should remain deterministic. Use AI where interpretation or synthesis is genuinely helpful, and make generated content distinguishable from user facts.
+
+11. **No dark patterns**  
+    Pricing, email consent, tool limits and download rules must be clear.
+
+### 3.4 Initial flagship journey
+
+The first launch portfolio should demonstrate a coherent founder journey:
+
+1. **Product Idea Assessor** — Is this idea worth pursuing?
+2. **Customer Discovery Kit** — What do potential customers actually do and need?
+3. **Better Decision Maker** — Given the evidence, what should I do?
+4. **MVP Scoper** — What is the smallest useful test/build?
+5. **Product Naming System** — What should I call it?
+6. **First Customers Planner** — How do I find the first customers?
+
+This is intentionally narrower than the complete 25-product opportunity backlog.
+
+---
+
+## 4. Target users
+
+
+### 4.1 Primary users
+
+- Solo founders
+- Experienced professionals starting a first or next business
+- Indie makers
+- Small product teams
+- Early-stage founders creating digital products or services
+- Startup advisers and coaches who want reusable practical frameworks
+
+### 4.2 Secondary users
+
+- University enterprise programmes
+- Accelerators and incubators
+- Product managers
+- Innovation teams
+- Freelance product consultants
+
+### 4.3 Core jobs to be done
+
+Users commonly need to:
+
+- Generate or compare product ideas.
+- Decide whether an idea is worth pursuing.
+- Define the real problem.
+- Gather customer evidence without leading interviewees.
+- Separate assumptions, opinions and evidence.
+- Compare alternatives and business models.
+- Make an important decision under uncertainty.
+- Scope an MVP around the riskiest uncertainty.
+- Position and name a product.
+- Develop a pricing hypothesis.
+- Find initial customers.
+- Plan and review a launch.
+- Improve engagement or product-market fit.
+- Turn their thinking into structured context an AI coding or business agent can use.
+
+### 4.4 User preference assumption
+
+The primary audience values **speed, clarity and a useful result** more than academic completeness. Incy Templates should feel like a practical working companion rather than a course library or enterprise consulting methodology.
+
+---
+
+## 5. Scope
+
+
+## 5.1 MVP scope
+
+The MVP includes:
+
+- Marketing homepage
+- Journey-stage navigation: Idea, Validate, Decide, Design, Build, Launch, Improve
+- Product-family catalogue
+- Output-type navigation and filtering: Guide, Template, Tool
+- Product-family pages combining related outputs
+- Individual Guide pages
+- Individual Template pages/download flows
+- Interactive Tool pages for approved MVP tools
+- Search and filtering
+- Free-resource access with minimal friction
+- Stripe Checkout for approved paid outputs/bundles
+- Stripe webhook fulfilment
+- Customer authentication and library
+- Secure paid downloads
+- Saved Tool runs for authenticated users where a Tool supports persistence
+- Order history and account management
+- About, Help, FAQ, Contact and legal pages
+- Source/provenance presentation for A Bit Gamey-derived product families
+- Admin/editorial workflow for frameworks, outputs, source links and publication
+- SEO metadata, sitemap and structured data
+- Transactional emails
+- Analytics events
+- Automated tests
+- CI/CD and production deployment
+
+## 5.2 First-release product scope
+
+Implement the common product-family architecture, then launch with up to six flagship families:
+
+1. Product Idea Assessor
+2. Customer Discovery Kit
+3. Better Decision Maker
+4. MVP Scoper
+5. Product Naming System
+6. First Customers Planner
+
+At least the first family must demonstrate all three output types. Others may launch with Guide + Template first if the Tool would delay validation.
+
+## 5.3 Phase 1.1 enhancements
+
+- Product/Market Fit Tracker
+- Pricing Your Product
+- Product Idea Generator
+- Business Model Chooser
+- Decision Framework Picker
+- Product Positioning Builder
+- Customer Demand Test
+- Product Prioritisation Tool
+- Next Step Finder questionnaire
+- Related-product recommendation graph
+- Save-for-later
+- Testimonials and feedback quotes
+- Organisation/team licences
+- Free-resource email nurture sequences
+
+## 5.4 Phase 2 scope
+
+- Saved workspaces across multiple product families
+- Decision and experiment history
+- Assumption-to-evidence tracking across tools
+- Guided next-step recommendations based on completed work
+- AI-assisted completion and critique where appropriate
+- Export structured Tool results to Markdown, DOCX and PDF
+- Team collaboration
+- Adviser/facilitator accounts
+- Reusable context passed between tools with explicit user control
+
+## 5.5 Explicit exclusions from MVP
+
+Do not implement unless separately approved:
+
+- Multi-vendor creator marketplace
+- Creator payouts
+- Public community forum
+- Real-time collaborative document editing
+- Native iOS/Android apps
+- Cryptocurrency payments
+- Subscription membership
+- Complex LMS/course functionality
+- Public API
+- Affiliate tracking
+- User-generated marketplace uploads
+- Automated legal, tax, financial or investment advice
+- Automatic publication of AI-generated products
+
+---
+
+## 6. Success measures
+
+
+Instrument product-family and output-level metrics from launch.
+
+### 6.1 Acquisition
+
+- Unique visitors
+- Organic search visits
+- A Bit Gamey → IncyTemplates referrals
+- Landing-page conversion
+- Guide → Template click-through
+- Guide → Tool click-through
+- Journey page → product-family click-through
+
+### 6.2 Product-family engagement
+
+- Product-family page view
+- Guide read/completion proxy
+- Template preview
+- Template download
+- Tool start
+- Tool completion
+- Tool result viewed
+- Tool result exported
+- Tool run saved
+- Next-step recommendation click-through
+- Cross-output usage within the same family
+
+### 6.3 Free-resource performance
+
+- Free resource started
+- Free resource completed/downloaded
+- Optional email supplied
+- Marketing consent granted
+- Repeat free user
+- Free → paid conversion
+- Free Guide → Tool conversion
+
+### 6.4 Commerce
+
+- Checkout started/completed/abandoned
+- Revenue
+- Average order value
+- Conversion by product family and output type
+- Conversion by bundle
+- Discount-code usage
+- Refund rate
+
+### 6.5 Customer value
+
+- Account activation
+- Library visit
+- Repeat purchase
+- Repeat Tool use
+- Saved-run revisit
+- Product update interaction
+- Progression to a recommended next family
+
+### 6.6 Content portfolio measures
+
+- Frameworks approved from source material
+- Outputs published per framework
+- Source posts reused across approved families
+- Product families with verified user demand
+- Products retired or simplified based on low usage
+
+### 6.7 North-star qualitative measure
+
+The primary user-research question remains:
+
+> **Did this help you make a useful decision or take a sensible next action?**
+
+Where relevant, a secondary question should ask whether the result changed what the user intended to do.
+
+---
+
+## 7. Information architecture
+
+
+## 7.1 Public sitemap
+
+```text
+/
+├── products
+│   └── [framework-slug]
+├── journey
+│   ├── idea
+│   ├── validate
+│   ├── decide
+│   ├── design
+│   ├── build
+│   ├── launch
+│   └── improve
+├── guides
+│   └── [guide-slug]
+├── templates
+│   ├── free
+│   └── [template-slug]
+├── tools
+│   └── [tool-slug]
+├── bundles
+│   └── [bundle-slug]
+├── finder
+├── about
+├── how-it-works
+├── source
+│   └── a-bit-gamey
+├── help
+├── faq
+├── contact
+├── sign-in
+├── auth
+│   └── callback
+├── checkout
+│   ├── success
+│   └── cancelled
+├── legal
+│   ├── terms
+│   ├── privacy
+│   ├── cookies
+│   ├── licences
+│   └── refunds
+├── accessibility
+├── sitemap.xml
+└── robots.txt
+```
+
+### 7.2 Product-family page model
+
+`/products/[framework-slug]` is the canonical landing page for a reusable method/outcome. It should contain:
+
+- Problem solved
+- Promised outcome
+- When to use / not use
+- Framework summary
+- Available outputs: Guide / Template / Tool
+- Recommended starting output
+- Worked example or case study
+- Source/provenance section
+- Related and next-step families
+
+Individual output pages remain independently indexable where useful.
+
+### 7.3 Authenticated sitemap
+
+```text
+/account
+├── library
+│   └── [entitlement-id]
+├── work
+│   └── [tool-run-id]
+├── orders
+│   └── [order-id]
+├── profile
+├── email-preferences
+└── security
+```
+
+### 7.4 Admin sitemap
+
+```text
+/admin
+├── dashboard
+├── frameworks
+│   ├── new
+│   └── [framework-id]
+├── products
+│   ├── new
+│   └── [product-id]
+├── source-posts
+├── bundles
+├── files
+├── journey-stages
+├── guides
+├── tools
+├── orders
+├── customers
+├── downloads
+├── tool-runs
+├── enquiries
+├── feedback
+├── audit-log
+└── settings
+```
+
+### 7.5 Internal source taxonomy versus public navigation
+
+The 16-category A Bit Gamey taxonomy is useful for editorial analysis but should **not** become the primary public site navigation. Public navigation should answer “What are you trying to do next?” The source taxonomy remains available as internal metadata for discovery and portfolio analysis.
+
+---
+
+## 8. Navigation
+
+
+### 8.1 Desktop header
+
+Recommended primary navigation:
+
+- **Products**
+- **Guides**
+- **Templates**
+- **Tools**
+- **How it works**
+- **About**
+
+Products opens or leads to a task-oriented view grouped by:
+
+- Idea
+- Validate
+- Decide
+- Design
+- Build
+- Launch
+- Improve
+
+Right-side actions:
+
+- Search
+- Sign in / Account
+- Primary CTA during initial launch: **Assess an idea**
+
+### 8.2 Mobile navigation
+
+Use an accessible drawer with all primary links, journey stages, search and account access.
+
+### 8.3 Footer
+
+Include:
+
+- Product journey
+- Guides
+- Templates
+- Tools
+- Source: A Bit Gamey
+- About Incy Templates
+- Contact
+- Help
+- Terms
+- Privacy
+- Cookies
+- Licences
+- Refund policy
+- Accessibility
+- Company information
+- Newsletter form
+- Active social links
+
+### 8.4 Output-type language
+
+Use consistent microcopy:
+
+- **Guide — Learn how**
+- **Template — Do it yourself**
+- **Tool — Do it interactively**
+
+Do not refer to all outputs generically as “templates” in navigation or analytics.
+
+---
+
+## 9. Core user journeys
+
+
+## 9.1 Discover a product family by task
+
+1. Visitor lands on homepage, A Bit Gamey referral, search result or journey page.
+2. Visitor identifies a task such as “Assess an idea”.
+3. Product-family page explains the problem, outcome and method.
+4. User chooses the appropriate depth:
+   - Read Guide
+   - Use/download Template
+   - Start Tool
+5. On completion, show one sensible next step, not a wall of recommendations.
+
+## 9.2 Read a Guide and continue into action
+
+1. Visitor reads a Guide.
+2. Contextual CTA appears at the point where action is natural.
+3. CTA links to the same family's Template or Tool.
+4. Guide and Tool share terminology and examples.
+5. Analytics records the cross-output transition.
+
+## 9.3 Download a free Template
+
+1. Visitor reviews purpose, intended user, completion time, preview and example.
+2. Visitor selects **Get template**.
+3. Download is available immediately.
+4. Optional email and separate marketing-consent checkbox may be offered.
+5. Server creates a short-lived signed URL.
+6. Thank-you state recommends instructions and one next-step family.
+
+A visitor must not be forced to subscribe to marketing to access a free Template.
+
+## 9.4 Use a free Tool anonymously
+
+1. Visitor opens a published free Tool.
+2. Tool clearly explains inputs, expected time and what result will be produced.
+3. User completes structured steps.
+4. Server/client validates inputs.
+5. Tool calculates or generates the result.
+6. Result distinguishes user-provided facts, deterministic calculations and AI-generated interpretation where applicable.
+7. User may copy/export the result where supported.
+8. Optional sign-in prompt is shown only for saving history or continuing later.
+9. Anonymous Tool-run data follows the configured retention policy.
+
+## 9.5 Save a Tool run
+
+1. User completes or partially completes a Tool.
+2. User selects **Save**.
+3. If not authenticated, request magic-link sign-in.
+4. After authentication, safely associate the run with the profile.
+5. Saved run appears under `/account/work`.
+6. User can reopen, duplicate, export or delete it according to Tool capabilities.
+
+## 9.6 Buy a paid output without an existing account
+
+1. Visitor selects Buy on a Template, Tool or bundle.
+2. Server validates publication state and current Stripe price.
+3. Stripe Checkout collects email/payment.
+4. Verified webhook creates or links customer, order, entitlements and confirmation email.
+5. Success page waits for fulfilment status.
+6. Customer receives magic-link access where required.
+7. Entitled downloadable resources and paid Tool access appear in the library.
+
+Fulfilment must be driven by verified Stripe webhooks, not the redirect alone.
+
+## 9.7 Buy a bundle
+
+- Bundle may include Templates, paid Tools, Guides/editions or complete product families.
+- Entitlements are expanded idempotently.
+- Existing entitlements are not duplicated.
+- Bundle page shows a recommended sequence based on the product journey.
+
+## 9.8 Existing customer
+
+- Owned output: show **Open** or **Use tool** rather than Buy.
+- If a family has another unowned output, show it as an optional complement.
+- Bundle upgrades must account for already-owned products if discount logic is implemented.
+
+## 9.9 Admin creates a framework/product family
+
+1. Admin/editor creates a framework draft.
+2. Defines problem, audience, promised outcome, journey stage and method.
+3. Links relevant approved source posts.
+4. Records priority score and editorial rationale.
+5. Defines which outputs are justified: Guide, Template, Tool.
+6. Creates output drafts only for approved formats.
+7. Reviews source fidelity, unsupported claims, duplication and licensing.
+8. Publishes family and selected outputs.
+
+## 9.10 Admin updates an output
+
+- Create a new version where appropriate.
+- Preserve historical files/tool result schema compatibility as required.
+- Existing entitled customers receive current versions according to entitlement policy.
+- Record release notes and audit history.
+
+---
+
+## 10. Page requirements
+
+
+## 10.1 Homepage
+
+### Purpose
+
+Explain the proposition, show the journey from idea to customer, demonstrate the three output types and drive visitors into one concrete task.
+
+### Required sections
+
+1. **Hero**
+   - Headline: practical tools for turning ideas into products
+   - Supporting copy explaining Guide / Template / Tool
+   - Primary CTA: **Assess an idea**
+   - Secondary CTA: **Explore all products**
+
+2. **How Incy Templates helps**
+   - Guide — understand what to do
+   - Template — structure the work
+   - Tool — do the work interactively
+
+3. **Product journey**
+   - Idea
+   - Validate
+   - Decide
+   - Design
+   - Build
+   - Launch
+   - Improve
+
+4. **Flagship product: Product Idea Assessor**
+
+5. **Featured product families**
+
+6. **How it works**
+   - Choose a task
+   - Learn the method
+   - Apply it
+   - Decide what to do next
+
+7. **From A Bit Gamey to useful tools**
+   - Explain that long-form ideas and practical experience are distilled into reusable methods, not simply republished.
+
+8. **Real Incyworks case study/example**
+
+9. **Latest/relevant Guides**
+
+10. **Newsletter** with separate consent
+
+11. **Final CTA**
+
+### Acceptance criteria
+
+- Proposition understandable without scrolling.
+- Guide/Template/Tool distinction visible early.
+- A concrete free action is visible above or close to the fold.
+- Core content and links work without client JavaScript.
+- Decorative motion respects reduced-motion preference.
+
+## 10.2 Product-family catalogue
+
+Required filters:
+
+- Journey stage
+- Output available: Guide / Template / Tool
+- Free / paid
+- Completion time
+- Topic/category as secondary metadata
+
+Sort:
+
+- Recommended
+- Highest priority/editorial fit
+- Newest
+- Most used/popular when enough data exists
+
+Use crawlable page-based navigation and query parameters. Avoid creating unlimited indexable filter combinations.
+
+## 10.3 Product-family page
+
+Required content:
+
+- Family name
+- Outcome-oriented headline
+- Problem solved
+- Intended user
+- When to use / not use
+- Method/framework summary
+- Available outputs with clear roles
+- Recommended starting point
+- Worked example
+- Source/provenance references
+- Related/next-step families
+- FAQ where genuinely useful
+- Breadcrumbs and SEO metadata
+
+## 10.4 Guide page
+
+- Title and outcome
+- Summary
+- Author
+- Publication/updated dates
+- Reading time
+- Table of contents
+- Main content
+- Examples
+- Contextual links to same-family Template and Tool
+- Source references/provenance
+- Next recommended family
+- Article structured data
+
+## 10.5 Template page
+
+- Template name and family
+- Outcome
+- Free/paid state
+- Formats
+- Version and last updated
+- Completion time
+- Intended users
+- When to use / not use
+- Required inputs
+- What is included
+- Preview and completed example
+- Instructions
+- Licence/refund summary where relevant
+- Download/Open CTA
+- Same-family Guide and Tool
+
+## 10.6 Tool page
+
+Required:
+
+- Tool name and product family
+- Clear promised result
+- Inputs required
+- Approximate effort/time, not a completion-time promise
+- Privacy/saving explanation
+- Start/continue action
+- Step/progress indication for multi-step Tools
+- Validation and recoverable error states
+- Result screen with interpretation
+- Copy/export/save controls where supported
+- Explanation of calculations/scoring at an appropriate level
+- Clear labels for AI-generated interpretation if present
+- Same-family Guide and Template
+- Worked example
+- Accessibility requirements for all interactive controls
+
+## 10.7 Bundle page
+
+Show outcome, included families/outputs, recommended order, price, factual saving, owned items, licence and bundle-specific guidance.
+
+## 10.8 Customer library
+
+Views:
+
+- Purchased/saved products
+- Templates
+- Tools
+- Saved Tool runs
+- Bundles
+- Recently updated
+- Archived
+
+Cards show family, output type, version/access state and relevant action: Read, Download, Use, Continue or Open.
+
+## 10.9 Account pages
+
+Retain profile, email preferences, security, data export/deletion and account linking requirements from v2. Transactional, product-update, educational and marketing email preferences must remain distinct.
+
+## 10.10 Admin dashboard
+
+Add to existing commerce/support dashboard:
+
+- Frameworks awaiting review
+- Source posts linked/unlinked
+- Output candidates by priority score
+- Tools with failed runs above threshold
+- Products requiring source/licence review
+- Funnel from Guide → Template/Tool
+
+Admin routes remain server-authorised and audited.
+
+---
+
+## 11. Visual and interaction design
+
+## 11.1 Brand character
+
+The design should feel:
+
+- Calm
+- Clear
+- Practical
+- Trustworthy
+- Modern
+- Friendly without being childish
+- Structured without resembling enterprise consulting software
+
+## 11.2 Design direction
+
+- Generous whitespace
+- Strong typographic hierarchy
+- High-contrast body text
+- Cards used selectively
+- Simple diagrams and template previews
+- Limited decorative effects
+- Consistent iconography
+- Rounded corners used moderately
+- Clear distinction between free, paid and owned states
+
+## 11.3 Responsive breakpoints
+
+Use mobile-first responsive behaviour.
+
+Suggested breakpoints:
+
+- Small: 0–639 px
+- Medium: 640–1023 px
+- Large: 1024–1439 px
+- Extra large: 1440 px and above
+
+Do not depend on exact pixel widths for essential behaviour.
+
+## 11.4 Accessibility
+
+Target WCAG 2.2 AA.
+
+Required:
+
+- Semantic headings
+- Keyboard-operable navigation
+- Visible focus indicators
+- Accessible names for controls
+- Form labels
+- Error summaries
+- Sufficient colour contrast
+- Meaning not conveyed by colour alone
+- Skip-to-content link
+- Accessible dialogs
+- Reduced-motion support
+- Alt text for meaningful images
+- Empty alt text for decorative images
+- Captions or transcripts for instructional video
+- Logical tab order
+- Minimum touch-target sizing
+- Screen-reader announcements for important asynchronous state changes
+
+---
+
+## 12. Technical architecture
+
+
+## 12.1 High-level architecture
+
+```text
+Browser
+   |
+   v
+Next.js application on Vercel
+   |
+   +--> Supabase Auth
+   +--> Supabase Postgres
+   +--> Supabase Storage
+   +--> Stripe Checkout and webhooks
+   +--> Resend transactional email
+   +--> Google Analytics 4
+
+Editorial/build-time source pipeline
+   |
+   +--> private GitHub: PLAMartin/ABitGamey
+   +--> approved framework/source metadata
+   v
+IncyTemplates repository/content + Supabase metadata
+```
+
+The production application must not make public runtime requests to the private A Bit Gamey repository.
+
+## 12.2 Application pattern
+
+Use one Next.js application for:
+
+- Public marketing and journey pages
+- Product-family pages
+- Guide pages
+- Template pages/downloads
+- Interactive Tool pages
+- Authenticated customer/work area
+- Admin/editorial area
+- Route handlers for Stripe, downloads, Tool persistence, contact and callbacks
+
+Use React Server Components by default. Client Components are appropriate for interactive Tools, filters, dialogs, checkout state, account preferences, consent management and admin uploads.
+
+## 12.3 Tool architecture
+
+Tools must use a registry pattern rather than arbitrary database-supplied executable code.
+
+Suggested design:
+
+```text
+it_products.tool_key = "product-idea-assessor"
+        ↓
+server/client tool registry
+        ↓
+typed input schema + versioned calculation/service logic
+        ↓
+result schema + renderer
+```
+
+Requirements:
+
+- Tool code is version controlled in the IncyTemplates repository.
+- Database configuration may provide copy, weights and safe parameters but never arbitrary executable JavaScript.
+- Inputs/results use versioned schemas.
+- Deterministic calculations are implemented locally/server-side, not delegated to an LLM.
+- AI interpretation is an optional service layer with explicit provenance and failure handling.
+- Paid Tool access is enforced server-side before protected calculations/results where relevant.
+
+## 12.4 Rendering strategy
+
+Static/cached server rendering:
+
+- Homepage
+- Journey pages
+- Product-family pages
+- Guide pages
+- Template marketing pages
+- Public Tool marketing/introduction states
+- Bundles
+- Marketing/legal pages
+
+Dynamic rendering:
+
+- Tool execution where server state is needed
+- Saved Tool runs
+- Account/admin pages
+- Checkout and entitlement state
+- Order history
+
+On publication/update, revalidate affected family, output, journey, catalogue, homepage and sitemap routes.
+
+## 12.5 Suggested dependencies
+
+Retain v2 dependencies and add only as needed for interactive Tools. Every Tool must have explicit typed schemas, tests and result-state handling. Do not introduce a generic form-builder or workflow engine until at least three Tools demonstrate a stable shared pattern.
+
+---
+
+## 13. Repository structure
+
+
+All application code, migrations, approved product content, Tool definitions, tests and deployment configuration must be committed to `https://github.com/PLAMartin/IncyTemplates`.
+
+Recommended target structure:
+
+```text
+incytemplates/
+├── .github/workflows/
+├── content/
+│   ├── frameworks/
+│   ├── guides/
+│   ├── methods/
+│   ├── source-provenance/
+│   └── pages/
+├── docs/
+│   ├── decisions/
+│   └── product-portfolio/
+├── public/
+│   ├── brand/
+│   ├── icons/
+│   └── social/
+├── scripts/
+│   ├── seed.ts
+│   ├── import-abitgamey-metadata.ts
+│   ├── validate-provenance.ts
+│   ├── generate-sitemap.ts
+│   └── verify-storage.ts
+├── src/
+│   ├── app/
+│   │   ├── (marketing)/
+│   │   ├── account/
+│   │   ├── admin/
+│   │   ├── api/
+│   │   ├── guides/
+│   │   ├── templates/
+│   │   ├── tools/
+│   │   ├── products/
+│   │   ├── journey/
+│   │   └── checkout/
+│   ├── components/
+│   │   ├── framework/
+│   │   ├── guide/
+│   │   ├── template/
+│   │   ├── tools/
+│   │   ├── account/
+│   │   ├── admin/
+│   │   └── ui/
+│   ├── lib/
+│   │   ├── auth/
+│   │   ├── database/
+│   │   ├── entitlements/
+│   │   ├── provenance/
+│   │   ├── storage/
+│   │   ├── stripe/
+│   │   ├── tools/
+│   │   └── validation/
+│   ├── server/
+│   │   ├── actions/
+│   │   ├── queries/
+│   │   └── services/
+│   └── types/
+├── supabase/
+│   ├── migrations/
+│   ├── seed.sql
+│   └── tests/
+├── tests/
+│   ├── e2e/
+│   ├── integration/
+│   └── unit/
+├── .env.example
+├── package.json
+├── README.md
+└── ...
+```
+
+### 13.1 Source-content rule
+
+Do not duplicate the entire A Bit Gamey archive into the production repository. Store only approved excerpts where legally/editorially appropriate plus structured provenance metadata sufficient to trace a framework back to its source post IDs and paths.
+
+---
+
+## 14. Data model
+
+
+## 14.1 Naming conventions
+
+Retain the v2 conventions:
+
+- `snake_case` database objects
+- UUID primary keys except stable imported source IDs where text is appropriate
+- UTC `timestamptz`
+- soft archival where historical integrity matters
+- integer minor units for money
+- ISO currency codes
+- migrations for all schema changes
+- `it_` table prefix
+
+## 14.2 Core enums
+
+```sql
+create type it_product_type as enum (
+  'guide',
+  'template',
+  'tool',
+  'bundle'
+);
+
+create type it_framework_status as enum (
+  'candidate',
+  'draft',
+  'approved',
+  'published',
+  'archived'
+);
+
+create type it_product_status as enum (
+  'draft',
+  'scheduled',
+  'published',
+  'unlisted',
+  'archived'
+);
+
+create type it_access_type as enum ('free', 'paid');
+
+create type it_tool_run_status as enum (
+  'started',
+  'in_progress',
+  'completed',
+  'failed',
+  'deleted'
+);
+```
+
+Retain v2 enums for order status, entitlement status, file role, file format and user role. Expand file-role values only when required by a real output.
+
+## 14.3 Framework/product-family layer
+
+### `it_frameworks`
+
+Represents the reusable method/problem/outcome above individual outputs.
+
+```sql
+create table public.it_frameworks (
+  id uuid primary key default gen_random_uuid(),
+  status public.it_framework_status not null default 'candidate',
+  name text not null,
+  slug text not null unique,
+  short_description text not null,
+  problem_statement text,
+  outcome_statement text not null,
+  target_audience text,
+  when_to_use text,
+  when_not_to_use text,
+  method_summary text,
+  journey_stage_id uuid references public.it_stages(id),
+  priority_score numeric(5,2),
+  priority_rationale text,
+  source_strength text,
+  flagship boolean not null default false,
+  display_order integer not null default 0,
+  seo_title text,
+  seo_description text,
+  created_by uuid references public.it_profiles(id),
+  updated_by uuid references public.it_profiles(id),
+  approved_at timestamptz,
+  published_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  archived_at timestamptz,
+  constraint valid_priority_score check (
+    priority_score is null or (priority_score >= 0 and priority_score <= 100)
+  )
+);
+```
+
+Priority score is an editorial portfolio signal, not a customer rating or probability of commercial success.
+
+## 14.4 Source provenance
+
+### `it_source_posts`
+
+Stores metadata for source posts; it does not need to store full post bodies.
+
+```sql
+create table public.it_source_posts (
+  id text primary key,
+  source_type text not null default 'abitgamey',
+  title text not null,
+  subtitle text,
+  published_at timestamptz,
+  source_repository text not null,
+  source_ref text,
+  source_path text not null,
+  source_url text,
+  source_category text,
+  content_hash text,
+  imported_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+```
+
+### `it_framework_source_posts`
+
+```sql
+create table public.it_framework_source_posts (
+  framework_id uuid not null references public.it_frameworks(id) on delete cascade,
+  source_post_id text not null references public.it_source_posts(id) on delete restrict,
+  contribution_type text not null default 'supporting',
+  editorial_note text,
+  display_order integer not null default 0,
+  primary key (framework_id, source_post_id)
+);
+```
+
+Suggested `contribution_type` values:
+
+- `primary_method`
+- `supporting_method`
+- `example`
+- `evidence`
+- `background`
+
+Do not expose private repository credentials or internal GitHub API data publicly. Public provenance may link to the published A Bit Gamey/Substack URL where available.
+
+## 14.5 Profiles and customers
+
+Retain the v2 `it_profiles` and `it_customers` tables and rules, including normalised email, protected role assignment and separation between commercial customer and Auth profile.
+
+## 14.6 Journey stages and categories
+
+Use `it_stages` for the primary public journey:
+
+1. `idea`
+2. `validate`
+3. `decide`
+4. `design`
+5. `build`
+6. `launch`
+7. `improve`
+
+Retain `it_categories` as secondary editorial/search metadata. Source categories from A Bit Gamey should not automatically become public categories.
+
+## 14.7 `it_products`
+
+Represents a publishable output or bundle.
+
+```sql
+create table public.it_products (
+  id uuid primary key default gen_random_uuid(),
+  framework_id uuid references public.it_frameworks(id) on delete restrict,
+  product_type public.it_product_type not null,
+  access_type public.it_access_type not null,
+  status public.it_product_status not null default 'draft',
+  name text not null,
+  slug text not null unique,
+  short_description text not null,
+  full_description text,
+  outcome_statement text,
+  target_audience text,
+  when_to_use text,
+  when_not_to_use text,
+  completion_minutes_min integer,
+  completion_minutes_max integer,
+  skill_level text,
+  current_version text,
+  content_path text,
+  tool_key text,
+  tool_schema_version integer,
+  experience_config jsonb not null default '{}'::jsonb,
+  price_minor integer,
+  compare_at_price_minor integer,
+  currency_code char(3) not null default 'GBP',
+  stripe_product_id text unique,
+  stripe_price_id text unique,
+  licence_id uuid,
+  featured boolean not null default false,
+  featured_order integer,
+  published_at timestamptz,
+  scheduled_for timestamptz,
+  seo_title text,
+  seo_description text,
+  og_image_url text,
+  quality_standard jsonb not null default '{}'::jsonb,
+  schema_data jsonb not null default '{}'::jsonb,
+  search_keywords text[] not null default '{}',
+  created_by uuid references public.it_profiles(id),
+  updated_by uuid references public.it_profiles(id),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  archived_at timestamptz,
+  constraint valid_price check (
+    (access_type = 'free' and coalesce(price_minor, 0) = 0)
+    or
+    (access_type = 'paid' and price_minor is not null and price_minor >= 0)
+  ),
+  constraint tool_requires_key check (
+    product_type <> 'tool' or tool_key is not null
+  )
+);
+```
+
+Rules:
+
+- Guide/Template/Tool products should normally link to one framework.
+- Bundles may have `framework_id = null` when they span multiple families.
+- A framework may have at most one canonical published Guide, Template and Tool in MVP; future specialised editions may relax this.
+- `content_path` points to approved repository-managed content for Guides/instructions where applicable.
+- `tool_key` maps to a version-controlled Tool implementation.
+
+## 14.8 Product categories/stages
+
+Retain `it_product_categories` and `it_product_stages` if multiple secondary classifications are needed. Primary journey should normally be inherited from the framework to avoid inconsistent tagging.
+
+## 14.9 Licences, versions and files
+
+Retain the v2 `it_licences`, `it_product_versions` and `it_files` structures with these rules:
+
+- Templates generally require downloadable files.
+- Guides may be content-only and require no downloadable file.
+- Tools may require no file but may offer export files generated at runtime.
+- Bundles grant entitlements to included paid outputs.
+
+## 14.10 Bundle items
+
+Retain `it_bundle_items`, but `included_product_id` may now refer to Guide, Template or Tool outputs. Prevent recursive bundles in MVP.
+
+## 14.11 Product relationships
+
+Retain `it_product_relationships`. Add or standardise relationship types:
+
+- `same_family`
+- `next_step`
+- `related`
+- `alternative`
+- `bundle_upgrade`
+- `prerequisite`
+
+Same-family relationships can usually be inferred from `framework_id` rather than duplicated.
+
+## 14.12 Tool runs
+
+```sql
+create table public.it_tool_runs (
+  id uuid primary key default gen_random_uuid(),
+  product_id uuid not null references public.it_products(id) on delete restrict,
+  profile_id uuid references public.it_profiles(id) on delete set null,
+  customer_id uuid references public.it_customers(id) on delete set null,
+  anonymous_session_id uuid,
+  status public.it_tool_run_status not null default 'started',
+  tool_schema_version integer not null,
+  input_data jsonb not null default '{}'::jsonb,
+  result_data jsonb not null default '{}'::jsonb,
+  ai_metadata jsonb not null default '{}'::jsonb,
+  title text,
+  started_at timestamptz not null default now(),
+  completed_at timestamptz,
+  updated_at timestamptz not null default now(),
+  expires_at timestamptz,
+  deleted_at timestamptz,
+  constraint run_has_owner check (
+    profile_id is not null or anonymous_session_id is not null
+  )
+);
+```
+
+Requirements:
+
+- Store only data needed to provide/save the Tool.
+- Sensitive free-text inputs require explicit privacy review.
+- Anonymous runs should expire automatically unless there is a justified reason to retain them.
+- AI provider request IDs/model metadata may be stored in `ai_metadata`; do not store hidden prompts containing secrets.
+- Result schema must be versioned so old saved runs remain interpretable after Tool updates.
+
+## 14.13 Commerce and entitlements
+
+Retain v2 tables:
+
+- `it_orders`
+- `it_order_items`
+- `it_entitlements`
+
+Entitlements apply to any paid output type. A paid Tool entitlement authorises use of protected Tool capabilities, not merely a downloadable file.
+
+## 14.14 Events and requests
+
+Retain:
+
+- `it_download_events`
+- `it_free_download_requests`
+- `it_webhook_events`
+- `it_contact_enquiries`
+- `it_feedback`
+- `it_audit_log`
+
+Add `framework_id` and `tool_run_id` to feedback where useful so decision-helpfulness can be measured at the family/result level.
+
+## 14.15 Recommended indexes
+
+At minimum:
+
+- Framework status + journey stage + display order
+- Products by framework/status/type
+- Published products by slug/type/access
+- Source posts by category/date/title search
+- Framework-source join both directions
+- Tool runs by profile/product/updated date
+- Orders/entitlements using the v2 indexes
+- Full-text search vectors for framework and product discovery
+
+---
+
+## 15. Database functions and triggers
+
+
+Implement the v2 functions plus framework/Tool support:
+
+1. `set_updated_at()`.
+2. Auth-user profile creation.
+3. Email normalisation.
+4. Current product-version enforcement.
+5. Bundle-expansion entitlement function.
+6. Safe entitlement-grant function.
+7. Admin-role helper using trusted database state.
+8. Search-vector update function.
+9. Order-total consistency checks.
+10. Audit functions for privileged changes.
+11. Framework publication validation helper.
+12. Source-provenance validation helper.
+13. Anonymous Tool-run expiry/cleanup function.
+14. Safe Tool-run ownership-link function after authentication.
+
+All `security definer` functions must set a safe `search_path`, be narrowly scoped, validate caller permissions, revoke unnecessary public execution rights and have tests.
+
+---
+
+## 16. Row Level Security
+
+
+Enable RLS on every exposed table.
+
+### 16.1 Public read
+
+Anonymous users may read only:
+
+- Published frameworks
+- Published products
+- Active public categories/stages/licence summaries
+- Current published product versions
+- Public-preview file metadata
+- Published bundle relationships
+- Public-safe source-post metadata explicitly approved for display
+
+Do not expose private GitHub repository tokens, raw private source content, paid Storage paths, Tool secrets or internal editorial notes.
+
+### 16.2 Customer policies
+
+Authenticated customers may:
+
+- Read/update their own profile except protected fields.
+- Read linked commercial customer/order/entitlement records.
+- Read paid output metadata for entitlements.
+- Read and mutate only their own saved Tool runs.
+- Create feedback associated with their profile.
+- Update permitted email preferences.
+
+Anonymous Tool runs must be accessed through a high-entropy session token/cookie and server-side checks rather than broad RLS that allows guessing UUIDs.
+
+### 16.3 Admin policies
+
+Retain v2 Support / Editor / Admin / Owner role separation. Extend Editor/Admin capabilities to frameworks, source links and Tool configuration. Editors must not gain customer-data access merely because they can edit product content.
+
+### 16.4 Service-role key
+
+Retain all v2 restrictions. The service-role key is never a shortcut for browser data access.
+
+---
+
+## 17. Storage design
+
+
+Retain the v2 bucket model:
+
+- `it-public-assets`
+- `it-free-files`
+- `it-paid-files`
+- `it-admin-staging`
+
+### 17.1 Output-specific rules
+
+- **Guides:** normally repository-managed MDX; no Storage file required.
+- **Templates:** downloadable files follow v2 signed-URL controls.
+- **Tools:** code lives in the application repository. Generated exports may be created on demand and either streamed directly or stored temporarily in a private bucket.
+- **Bundles:** no special Storage requirement beyond included outputs.
+
+### 17.2 File path convention
+
+Retain:
+
+```text
+{product_id}/{version_id}/{file_role}/{sanitised_filename}
+```
+
+### 17.3 Validation and signed URLs
+
+Retain v2 MIME/extension/size/checksum/executable restrictions, short-lived signed URLs and entitlement checks. Do not persist generated Tool exports longer than necessary unless the user explicitly saves them.
+
+---
+
+## 18. Authentication and account linking
+
+## 18.1 Authentication method
+
+MVP preferred methods:
+
+- Email magic link
+- Email one-time password if desired
+
+Avoid mandatory passwords unless required.
+
+## 18.2 Account creation after checkout
+
+Checkout fulfilment may create a commercial customer before an Auth user exists.
+
+When the email later authenticates:
+
+1. Normalise authenticated email.
+2. Find matching unlinked customer record.
+3. Link `it_customers.profile_id`.
+4. Populate `it_entitlements.profile_id`.
+5. Make prior orders visible.
+6. Record an audit event.
+
+Account linking must be safe against email-change and duplicate-account edge cases.
+
+## 18.3 Email changes
+
+Because purchases are associated with email and commercial records:
+
+- Email changes require reauthentication.
+- Old and new email ownership must be handled through Supabase Auth.
+- Linking logic must not silently transfer entitlements to an unverified address.
+- Administrative transfer requires identity verification and an audit note.
+
+## 18.4 Admin authentication
+
+- Admin accounts must use multi-factor authentication if supported.
+- Admin routes must check role on every request.
+- Consider a restricted allow-list for initial owner accounts.
+- High-risk operations should require recent authentication.
+
+---
+
+## 19. Payments and fulfilment
+
+## 19.1 Stripe model
+
+Each paid output or bundle has:
+
+- One Stripe Product
+- One active Stripe Price per live price point
+- Database mapping to `stripe_product_id` and `stripe_price_id`
+
+Do not trust a client-supplied price or amount.
+
+## 19.2 Checkout Session creation
+
+Endpoint:
+
+```text
+POST /api/checkout/session
+```
+
+Request:
+
+```json
+{
+  "productId": "uuid",
+  "promotionCode": "optional"
+}
+```
+
+Server actions:
+
+1. Validate request with Zod.
+2. Retrieve published product.
+3. Confirm access type is paid.
+4. Confirm active Stripe price ID.
+5. Check ownership for signed-in users.
+6. Create or retrieve Stripe customer.
+7. Create Checkout Session.
+8. Attach internal metadata:
+   - `product_id`
+   - `product_type`
+   - `profile_id` where known
+   - `environment`
+9. Set success and cancellation URLs.
+10. Return redirect URL.
+
+Use an idempotency key for checkout creation where practical.
+
+## 19.3 Webhook endpoint
+
+```text
+POST /api/stripe/webhook
+```
+
+Requirements:
+
+- Read raw request body.
+- Verify Stripe signature.
+- Reject invalid signatures.
+- Store provider event ID before processing.
+- Process idempotently.
+- Return quickly.
+- Use retry-safe service methods.
+- Log failures without exposing payment data.
+
+Handle at minimum:
+
+- `checkout.session.completed`
+- `checkout.session.async_payment_succeeded`
+- `checkout.session.async_payment_failed`
+- `payment_intent.payment_failed`
+- `charge.refunded`
+- `charge.refund.updated`
+- Relevant dispute events
+- Product or price update events if synchronisation is used
+
+## 19.4 Fulfilment service
+
+Pseudo-flow:
+
+```text
+fulfilCheckoutSession(session):
+  assert verified webhook context
+  if event already fulfilled:
+    return existing order
+
+  retrieve expanded checkout session from Stripe
+  validate payment status
+
+  upsert customer by stripe customer id and normalised email
+  create or update order
+  snapshot order items
+
+  for each purchased product:
+    if bundle:
+      grant bundle tracking record if required
+      expand active bundle items
+      grant entitlement for each included product
+    else:
+      grant entitlement for product
+
+  mark order paid
+  queue transactional emails
+  mark webhook processed
+```
+
+All operations that must remain consistent should execute within a database transaction or through a safely retryable equivalent.
+
+## 19.5 Refunds
+
+The policy is a business decision, but system behaviour must support:
+
+- Full refund
+- Partial refund
+- Administrative note
+- Entitlement retention or revocation based on approved policy
+- Audit record
+- Customer email
+- Stripe webhook reconciliation
+
+Do not automatically revoke access on every partial refund without explicit policy.
+
+## 19.6 Failed fulfilment
+
+Provide an admin queue showing:
+
+- Stripe event
+- Error
+- Attempt count
+- Customer email
+- Checkout Session
+- Manual retry action
+- Mark-resolved action with note
+
+A paid customer must not be left without a recoverable fulfilment path.
+
+---
+
+## 20. Free-resource and download system
+
+
+## 20.1 Free Guide access
+
+No API is required for ordinary public Guide reading.
+
+## 20.2 Free Template download API
+
+```text
+POST /api/downloads/free
+```
+
+Retain the v2 request/validation/short-lived signed URL behaviour. Marketing consent remains optional and separate.
+
+## 20.3 Free Tool access
+
+A free Tool should not require checkout or a fake zero-value order.
+
+Tool execution endpoints must:
+
+- Validate the published Tool and tool schema version.
+- Validate inputs with shared typed schemas.
+- Apply appropriate anonymous/user rate limits.
+- Avoid storing inputs unless needed for the result or save flow.
+- Create a Tool-run record only where analytics/persistence requirements justify it.
+- Expire anonymous run data according to retention policy.
+
+## 20.4 Abuse protection
+
+Use layered, proportionate controls:
+
+- Per-IP or privacy-preserving rate limiting
+- Anonymous session limits
+- Bot protection on suspicious traffic
+- Tool-specific execution limits for expensive AI operations
+- Maximum signed-URL generation frequency
+- CSRF/nonce protection where relevant
+
+Do not make ordinary legitimate free usage unnecessarily difficult.
+
+---
+
+## 21. Search
+
+
+## 21.1 Search scope
+
+Search across:
+
+- Framework/product-family name
+- User problem and outcome statement
+- Product name and output type
+- Guide title/body index where supported
+- Search keywords
+- Journey stage
+- Secondary category
+
+Users should be able to search in problem language such as “find first customers”, “choose a product name” or “should I build this idea?” rather than knowing framework names.
+
+## 21.2 Ranking
+
+Suggested ranking:
+
+1. Exact framework/product title match
+2. Problem/outcome semantic or full-text match
+3. Search keywords
+4. Journey stage
+5. Short description
+6. Editorial priority/featured signal
+7. Usage/popularity only after enough data exists
+
+Do not let popularity permanently bury new or strategically important products.
+
+## 21.3 Output filters
+
+- Guide
+- Template
+- Tool
+- Free/paid
+- Journey stage
+- Completion/effort range
+
+Use PostgreSQL full-text search initially. Add dedicated search infrastructure only when justified by scale or search-quality evidence.
+
+---
+
+## 22. Next Step Finder
+
+
+The v2 “Template Finder” becomes the **Next Step Finder** because the correct recommendation may be a Guide, Template or Tool.
+
+## 22.1 Purpose
+
+Help a visitor answer:
+
+> What is the most useful thing for me to do next?
+
+## 22.2 Questions
+
+Maximum five questions, for example:
+
+1. What are you working on?
+2. Which journey stage best describes you?
+3. What decision or outcome do you need next?
+4. How much evidence/work have you already done?
+5. Do you want to learn, structure the work or get an interactive result?
+
+The final question maps naturally to Guide / Template / Tool but should not force users to know those labels if a better recommendation is clear.
+
+## 22.3 Results
+
+Return:
+
+- One primary product-family recommendation
+- Recommended output within that family
+- Up to two supporting/next-step recommendations
+- Why each fits
+- Free starting option where possible
+- No more than one bundle recommendation
+
+## 22.4 Implementation
+
+Use configurable rules/weights stored as data and tested in code. Do not use an LLM for deterministic routing in MVP. Retain optional session/result tables, renamed from `it_finder_*` if necessary.
+
+---
+
+## 23. Content management and A Bit Gamey pipeline
+
+
+## 23.1 Editorial source model
+
+A Bit Gamey provides source material, examples and frameworks. It is not mirrored wholesale into the public site.
+
+Editorial workflow:
+
+```text
+source post catalogue
+      ↓
+cluster related posts
+      ↓
+identify reusable problem/method/outcome
+      ↓
+create framework candidate
+      ↓
+opportunity score + editorial review
+      ↓
+approve output types
+      ↓
+draft Guide / Template / Tool
+      ↓
+source-fidelity + usefulness review
+      ↓
+human approval
+      ↓
+publish
+```
+
+## 23.2 Opportunity scoring
+
+Use a 0–100 weighted score as a prioritisation aid. Suggested components inherited from the content-analysis work:
+
+- Problem clarity — 15%
+- Practical usefulness — 20%
+- Repeatability — 10%
+- Audience breadth — 10%
+- Differentiation — 10%
+- Evidence/source strength — 10%
+- Ease of creation — 5%
+- Fit with IncyTemplates — 15%
+- Source material depth — 5%
+
+The score must not be presented as market validation. Product-owner judgement and observed user demand override the score.
+
+## 23.3 Framework content
+
+Store approved framework definitions as structured fields plus optional repository-managed Markdown. Required fields:
+
+- Problem solved
+- Intended user
+- Promised outcome
+- Method summary
+- Inputs/evidence needed
+- Limitations
+- Journey stage
+- Source posts
+- Approved output types
+- Priority score/rationale
+
+## 23.4 Guide content
+
+Repository-managed Markdown/MDX with front matter including `frameworkId` and `sourcePostIds`.
+
+## 23.5 Template content
+
+Template specification must include purpose, instructions, required/optional fields, examples, calculations/scoring, completion criteria, interpretation and source references.
+
+## 23.6 Tool specification
+
+Before coding a Tool, create a version-controlled specification containing:
+
+- Problem and target user
+- Promised result
+- User flow
+- Inputs and validation
+- Calculations/decision logic
+- Result states and explanations
+- Save/export requirements
+- Privacy/data classification
+- Analytics events
+- Accessibility requirements
+- Failure states
+- Test scenarios
+- Source framework/post references
+- AI usage, if any, including what may and may not be inferred
+
+## 23.7 Human approval
+
+Generated drafts and candidate files remain unapproved until explicit human promotion. The system must distinguish `candidate`, `draft`, `approved` and `published` states.
+
+---
+
+## 24. Email
+
+## 24.1 Transactional provider
+
+Use Resend.
+
+## 24.2 Required messages
+
+1. Purchase confirmation
+2. Access-your-library magic link
+3. Free-template access email when requested
+4. Product update available
+5. Refund confirmation
+6. Contact enquiry acknowledgement
+7. Contact enquiry notification to support
+8. Email-address change notification
+9. Account deletion acknowledgement
+10. Failed fulfilment alert to administrator
+
+## 24.3 Email requirements
+
+- Use branded HTML and plain-text versions.
+- Include company postal and legal information where required.
+- Transactional emails must not include misleading marketing consent.
+- Marketing emails require appropriate consent or other lawful basis.
+- Include absolute URLs.
+- Do not attach large template files; link to secure access.
+- Track only what is necessary.
+- Avoid embedding sensitive order information unnecessarily.
+- Test across major email clients.
+
+## 24.4 Suggested sender identities
+
+Configuration-driven examples:
+
+- `Incy Templates <hello@incytemplates.com>`
+- `Incy Templates Support <support@incytemplates.com>`
+- `Incy Templates Orders <orders@incytemplates.com>`
+
+Set up and verify SPF, DKIM and DMARC.
+
+---
+
+## 25. Analytics and consent
+
+
+## 25.1 Analytics provider and consent
+
+Use GA4 unless replaced. Retain v2 consent requirements: no unnecessary PII, no optional tracking before consent where consent is required, persistent cookie settings, and equally accessible reject/accept controls.
+
+## 25.2 Recommended events
+
+```text
+view_home
+view_journey_stage
+view_framework
+view_guide
+click_guide_to_template
+click_guide_to_tool
+view_template
+preview_template
+start_free_download
+complete_free_download
+view_tool
+start_tool
+progress_tool
+complete_tool
+view_tool_result
+save_tool_run
+reopen_tool_run
+export_tool_result
+click_next_step
+view_bundle
+start_checkout
+complete_purchase
+checkout_cancelled
+sign_in_requested
+sign_in_completed
+view_library
+submit_contact_form
+submit_feedback
+start_finder
+complete_finder
+```
+
+## 25.3 Event properties
+
+Useful non-PII properties:
+
+- `framework_id`
+- `framework_slug`
+- `product_id`
+- `product_slug`
+- `product_type`
+- `tool_schema_version`
+- `access_type`
+- `journey_stage`
+- `category`
+- `file_format`
+- `currency`
+- `value`
+- `source_page`
+- `source_post_id` only when tracking an inbound public source link, not private content
+- `is_authenticated`
+- `is_owned`
+
+Never send email, names, interview notes, Tool free text or Tool results to GA4.
+
+## 25.4 Funnel reporting
+
+Key funnels:
+
+- A Bit Gamey → framework page → output start → completion
+- Guide → Template/Tool
+- Product Idea Assessor → Customer Discovery
+- Free Tool → saved run/account
+- Free resource → paid bundle/output
+
+---
+
+## 26. SEO
+
+
+Retain v2 technical SEO requirements and add product-family/output considerations.
+
+## 26.1 Canonical content hierarchy
+
+- Framework/product-family page is canonical for the overall method/outcome.
+- Guide, Template and Tool pages target distinct user intent and should not duplicate the same body copy.
+- Journey pages aggregate by job-to-be-done.
+
+## 26.2 Structured data
+
+Use only schema types that accurately match visible content:
+
+- `Organization`
+- `WebSite`
+- `BreadcrumbList`
+- `Article` for Guides
+- `Product`/`Offer` for genuinely purchasable outputs and bundles
+- `SoftwareApplication` only if an interactive Tool genuinely meets the schema definition and fields are accurate
+- `FAQPage` only when applicable under current search-engine guidance
+
+Do not mark a free editorial Guide as a purchasable Product merely to gain rich results.
+
+## 26.3 Source links
+
+Where an A Bit Gamey post materially inspired a product and a public post URL exists, the framework/Guide may include a natural “From A Bit Gamey” source link. Avoid creating thin duplicate pages containing republished article text.
+
+Retain v2 slug redirect, sitemap, metadata, image, crawlability and no-fabricated-review rules.
+
+---
+
+## 27. Security
+
+## 27.1 General controls
+
+- Validate all inputs server-side.
+- Escape output by default.
+- Sanitize rendered Markdown.
+- Use parameterised queries.
+- Enable RLS.
+- Keep privileged keys server-only.
+- Verify Stripe webhook signatures.
+- Use short-lived signed download URLs.
+- Implement rate limiting.
+- Protect state-changing requests from CSRF where applicable.
+- Use secure, HTTP-only cookies through supported Auth patterns.
+- Set a Content Security Policy.
+- Set security headers.
+- Prevent clickjacking.
+- Restrict browser permissions.
+- Avoid leaking stack traces in production.
+- Redact secrets and personal data from logs.
+- Run dependency and secret scanning.
+- Use least-privilege database grants.
+
+## 27.2 Recommended headers
+
+Configure and test:
+
+- `Content-Security-Policy`
+- `Strict-Transport-Security`
+- `X-Content-Type-Options: nosniff`
+- `Referrer-Policy`
+- `Permissions-Policy`
+- Frame protection through CSP `frame-ancestors`
+- Appropriate `Cross-Origin-*` headers where compatible
+
+## 27.3 Content Security Policy
+
+Start with a restrictive policy and explicitly allow:
+
+- Application origin
+- Supabase endpoints
+- Stripe resources required by Checkout
+- Resend is server-side and should not require browser permission
+- GA4 only after consent
+- Image and font origins actually used
+
+Do not use unrestricted wildcards unless unavoidable and documented.
+
+## 27.4 Secrets
+
+Required rules:
+
+- No `.env` files committed.
+- `.env.example` contains names only.
+- Separate preview and production values.
+- Rotate leaked secrets immediately.
+- Use Vercel environment scoping.
+- Stripe test keys in non-production.
+- Distinct webhook secrets by environment.
+- Distinct Supabase projects for production and non-production where feasible.
+
+## 27.5 Logging and monitoring
+
+Log:
+
+- Request correlation ID
+- Route
+- Result status
+- Error code
+- Stripe event ID
+- Order ID
+- Product ID
+- Anonymous actor or user ID where appropriate
+
+Do not log:
+
+- Full card information
+- Magic-link tokens
+- Service-role keys
+- Raw webhook signature secrets
+- Full personal messages unless required in the relevant secure record
+- Raw signed download URLs
+
+---
+
+## 28. Privacy and data protection
+
+The product owner must obtain suitable legal review before launch.
+
+Technical requirements:
+
+- Collect only necessary personal data.
+- Explain purposes clearly.
+- Record marketing consent text and timestamp.
+- Support consent withdrawal.
+- Support account deletion requests.
+- Support data-export requests.
+- Define retention periods.
+- Separate transactional and marketing email preferences.
+- Record processors in internal documentation.
+- Protect contact-form content.
+- Avoid unnecessary location and behavioural profiling.
+- Provide cookie controls.
+- Document lawful basis for each processing activity.
+
+Suggested retention configuration:
+
+| Data | Default approach |
+|---|---|
+| Orders and invoices | Retain according to applicable accounting/legal obligations |
+| Active account | Until deletion or defined inactivity period |
+| Marketing lead | Until consent withdrawal or retention review |
+| Contact enquiry | Retain only as long as needed for support and legal purposes |
+| Download analytics | Aggregate or delete identifiable fields after defined period |
+| Webhook payloads | Retain only as long as operationally necessary |
+| Audit logs | Retain according to security and governance policy |
+
+Retention durations must be configurable and legally reviewed.
+
+---
+
+## 29. Legal-content and source-use requirements
+
+
+Before launch publish the v2 legal pages: Terms of sale, Website terms, Privacy, Cookies, Refunds, Accessibility, Licences, Company/contact details.
+
+Output pages must state what is received, permitted users, client/commercial use, modification/redistribution rules, future-update policy and relevant disclaimers.
+
+### 29.1 Third-party frameworks and quotations
+
+A Bit Gamey posts frequently discuss ideas attributed to authors, founders and external frameworks. Before an IncyTemplates product adopts a third-party framework, quotation, trademark or substantial structure:
+
+- Confirm attribution requirements.
+- Confirm copyright/trademark/licence position where applicable.
+- Prefer original synthesis and practical application over copying source wording.
+- Do not imply endorsement by third parties.
+- Maintain internal source notes.
+
+### 29.2 A Bit Gamey provenance
+
+Phil's own posts may be used as source material, but publication workflow should still distinguish:
+
+- Phil's original framework/explanation
+- A third-party framework discussed by Phil
+- Phil's examples/case studies
+- Newly generated IncyTemplates material
+
+This distinction must be visible in editorial metadata even when it is not all shown publicly.
+
+### 29.3 Tool disclaimers
+
+Tools are general decision support. They must not imply that a score or recommendation guarantees product, legal, financial or business success. High-stakes professional advice remains excluded.
+
+---
+
+## 30. Performance
+
+## 30.1 Targets
+
+Aim for production 75th-percentile Core Web Vitals in the “good” range.
+
+Operational targets:
+
+- Fast initial server response
+- Minimal client JavaScript
+- Optimised images
+- Font subsetting
+- Lazy loading below the fold
+- No layout shift from images
+- Cached public content
+- Database indexes for common filters
+- Bounded queries
+- No N+1 query patterns
+
+## 30.2 Images
+
+- Use modern formats such as WebP or AVIF where suitable.
+- Store width and height.
+- Generate responsive sizes.
+- Avoid serving full-resolution previews to catalogue cards.
+- Keep product-document text legible in preview images.
+
+## 30.3 Caching
+
+Use:
+
+- CDN caching for public static assets.
+- Framework caching for public product data.
+- Revalidation after admin publication.
+- No public caching for account, order or entitlement pages.
+- No caching of signed URLs.
+- Private cache headers where necessary.
+
+---
+
+## 31. Reliability and observability
+
+## 31.1 Error monitoring
+
+Use an error-monitoring platform or Vercel-supported equivalent.
+
+Capture:
+
+- Server exceptions
+- Client exceptions
+- Failed webhooks
+- Failed email sends
+- Failed signed-URL generation
+- Database connection errors
+- Admin publication failures
+
+## 31.2 Health checks
+
+Provide a protected or minimal health endpoint:
+
+```text
+GET /api/health
+```
+
+Checks:
+
+- Application available
+- Database reachable
+- Optional Storage check
+- No sensitive configuration returned
+
+## 31.3 Alerts
+
+Configure alerts for:
+
+- Repeated Stripe webhook failures
+- Checkout success with no order created
+- Email failure above threshold
+- Storage access failures
+- Elevated 5xx rate
+- Production deployment failure
+- Database nearing service limits
+- Expiring or invalid domain configuration
+
+---
+
+## 32. Testing
+
+
+Retain the complete v2 testing approach and add framework/Tool coverage.
+
+## 32.1 Unit tests
+
+Include:
+
+- Money/slug/product availability
+- Framework priority score calculation
+- Output eligibility by product type
+- Provenance validation
+- Bundle expansion/entitlements
+- Search ranking
+- Consent handling
+- Each Tool's input validation and deterministic calculations
+- Tool result schema migration/compatibility helpers
+- Analytics payload sanitisation
+
+## 32.2 Integration tests
+
+Include:
+
+- RLS policies
+- Framework + source-post reads/writes
+- Auth/customer linking
+- Checkout/webhook/idempotency
+- Paid Tool entitlement checks
+- Anonymous Tool-run creation/expiry
+- Saved-run ownership linking
+- Signed downloads
+- Product publication/revalidation
+
+## 32.3 End-to-end tests
+
+Required core flows:
+
+1. Browse journey → framework → Guide.
+2. Move Guide → Template/Tool.
+3. Download a free Template.
+4. Complete Product Idea Assessor anonymously.
+5. Save a Tool run after authentication.
+6. Reopen saved run.
+7. Buy a paid output in Stripe test mode.
+8. Verify entitlement and protected access.
+9. Admin creates framework, links source posts and publishes outputs.
+10. Unauthorised user cannot view another user's Tool run or paid resource.
+11. Keyboard-only Tool completion.
+12. Mobile Tool flow and result view.
+13. Consent preferences and contact form.
+
+## 32.4 Accessibility and security
+
+Retain v2 axe/manual keyboard/screen-reader/zoom/reflow/reduced-motion tests plus Tool-specific focus management, error announcements and dynamic result accessibility.
+
+Security tests must include IDOR checks on Tool runs, prompt/data injection controls for any AI Tool, rate limits for expensive Tool operations and protection of private source-repository credentials.
+
+---
+
+## 33. CI/CD
+
+## 33.1 Branch strategy
+
+Suggested:
+
+- `main`: production
+- Feature branches: short-lived
+- Pull requests required before production merge
+- Preview deployment per pull request
+
+## 33.2 CI checks
+
+Run on pull requests:
+
+1. Install with locked dependencies.
+2. Type check.
+3. Lint.
+4. Unit tests.
+5. Integration tests where practical.
+6. Production build.
+7. Migration validation.
+8. Accessibility smoke test.
+9. Secret scan.
+10. Dependency audit.
+
+## 33.3 Database migrations
+
+- All schema changes through migration files.
+- Migrations reviewed in pull requests.
+- Backward-compatible deployment sequence where possible.
+- Test migration against staging copy.
+- Never edit an applied production migration.
+- Include rollback or corrective migration plan.
+
+## 33.4 Environments
+
+### Local
+
+- Local Next.js
+- Local or development Supabase
+- Stripe test mode
+- Resend test mode or restricted recipients
+
+### Preview
+
+- Vercel preview deployment
+- Non-production Supabase
+- Stripe test mode
+- No production marketing emails
+- Search-engine indexing disabled
+
+### Production
+
+- Production Supabase
+- Stripe live mode
+- Verified production email domain
+- Production analytics
+- Error monitoring
+- Backups and recovery settings reviewed
+
+---
+
+## 34. Environment variables
+
+Create `.env.example` containing at least:
+
+```bash
+# Application
+NEXT_PUBLIC_SITE_URL=
+NEXT_PUBLIC_APP_NAME=
+APP_ENV=
+
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+
+# Stripe
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+
+# Resend
+RESEND_API_KEY=
+EMAIL_FROM_ORDERS=
+EMAIL_FROM_SUPPORT=
+SUPPORT_EMAIL=
+
+# Analytics
+NEXT_PUBLIC_GA_MEASUREMENT_ID=
+
+# Security and rate limiting
+RATE_LIMIT_SECRET=
+DOWNLOAD_HASH_SECRET=
+
+# Monitoring
+SENTRY_DSN=
+SENTRY_AUTH_TOKEN=
+
+# Business configuration
+COMPANY_LEGAL_NAME=
+COMPANY_NUMBER=
+COMPANY_REGISTERED_ADDRESS=
+DEFAULT_CURRENCY=
+```
+
+Validate environment variables at application start using Zod.
+
+Do not expose server-only variables through `NEXT_PUBLIC_`.
+
+---
+
+## 35. API and server-action contracts
+
+
+## 35.1 General rules
+
+Retain v2 validation, stable errors, auth/role checks, idempotency, structured logging and rate limiting.
+
+## 35.2 Suggested endpoints
+
+```text
+POST   /api/checkout/session
+POST   /api/stripe/webhook
+POST   /api/downloads/free
+POST   /api/downloads/paid
+POST   /api/tools/[toolKey]/runs
+PATCH  /api/tools/[toolKey]/runs/[runId]
+POST   /api/tools/[toolKey]/runs/[runId]/complete
+POST   /api/tools/[toolKey]/runs/[runId]/export
+DELETE /api/tools/[toolKey]/runs/[runId]
+POST   /api/contact
+POST   /api/feedback
+GET    /api/health
+GET    /api/search
+POST   /api/admin/revalidate
+POST   /api/admin/frameworks/[id]/publish
+POST   /api/admin/products/[id]/publish
+POST   /api/admin/products/[id]/archive
+POST   /api/admin/webhooks/[id]/retry
+```
+
+Server Actions may replace internal endpoints where cleaner. External webhooks remain Route Handlers.
+
+## 35.3 Tool contract pattern
+
+Each Tool must define versioned TypeScript/Zod schemas:
+
+```ts
+type ToolDefinition<I, R> = {
+  key: string
+  schemaVersion: number
+  inputSchema: ZodSchema<I>
+  run: (input: I, context: ToolContext) => Promise<R>
+  resultSchema: ZodSchema<R>
+}
+```
+
+The exact interface may differ, but the architecture must enforce typed input/result boundaries and versioned compatibility.
+
+## 35.4 Error shape
+
+Retain v2 stable error response. Add Tool codes such as:
+
+- `TOOL_NOT_AVAILABLE`
+- `TOOL_INPUT_INVALID`
+- `TOOL_ENTITLEMENT_REQUIRED`
+- `TOOL_RUN_NOT_FOUND`
+- `TOOL_RUN_FORBIDDEN`
+- `TOOL_AI_SERVICE_UNAVAILABLE`
+
+---
+
+## 36. Admin publication validation
+
+
+## 36.1 Framework validation
+
+A framework cannot be published unless:
+
+- Name and unique slug exist.
+- Problem and outcome are clear.
+- Journey stage exists.
+- Intended audience exists.
+- At least one source or explicit original-source note exists.
+- Source/licensing review is complete.
+- At least one approved output exists or is scheduled.
+- Priority rationale exists for flagship products.
+
+## 36.2 Common output validation
+
+Every output requires:
+
+- Name/slug/short description/outcome
+- Linked framework unless bundle exception applies
+- Access type
+- SEO fields
+- Licence where distributed/sold
+- Preview/example unless explicitly waived with reason
+- Source references inherited or supplemented
+- Quality-standard checks
+
+## 36.3 Guide validation
+
+- Approved content path exists.
+- Body renders safely.
+- Cross-links to same-family outputs are valid.
+
+## 36.4 Template validation
+
+- Current version exists.
+- At least one eligible downloadable or browser-rendered template artefact exists.
+- Instructions and completed example exist unless explicitly waived.
+
+## 36.5 Tool validation
+
+- `tool_key` resolves in the registry.
+- Input and result schemas validate.
+- Privacy classification is complete.
+- All deterministic logic has unit tests.
+- Accessibility test scenario exists.
+- Failure states exist.
+- Analytics events are defined.
+- Paid Tool has active Stripe product/price and server-side entitlement enforcement.
+- AI Tool, if any, has approved model/data-handling configuration and non-AI fallback/error behaviour where appropriate.
+
+## 36.6 Bundle validation
+
+Retain v2 bundle rules, except bundles may contain any approved output type.
+
+---
+
+## 37. Ranked product portfolio from the A Bit Gamey archive
+
+
+The following backlog is derived from analysis of the 258 published posts in the 30 July 2026 A Bit Gamey export. Scores are **editorial opportunity scores**, not market-demand forecasts. Representative source posts are listed; source linkage in the database may be broader.
+
+| Rank | Product family | Representative source posts | Proposed outputs | Priority |
+|---:|---|---|---|---:|
+| 1 | **Product Idea Assessor** | *Proven Better New: How to build products people want*; *Questions to test product ideas*; *Before building it, test if anyone wants it* | Guide + Product Idea Scorecard + interactive assessor | **96** |
+| 2 | **Customer Discovery Kit** | *Questions to test product ideas*; related business-idea testing / initial-customer posts | Guide + Interview Planner/Evidence Log + evidence analyser | **95** |
+| 3 | **Better Decision Maker** | *Better decisions in 6 steps*; *Inversion: How to think in reverse*; *Simple rules* | Guide + Decision Worksheet + expected-value tool | **94** |
+| 4 | **Product Naming System** | *How to name a product*; *Apt app names – criteria*; *Apt app names – process*; *Trademarking* | Guide + weighted Name Scorecard + name comparison tool | **93** |
+| 5 | **MVP Scoper** | *Making a Minimum Viable Product*; *80/20 app development*; *Before building it, test if anyone wants it* | Guide + MVP Scope Canvas + keep/defer/remove tool | **92** |
+| 6 | **Product/Market Fit Tracker** | *Four steps to product market fit* + related PMF posts | Guide + survey/analysis template + PMF calculator/tracker | **91** |
+| 7 | **First Customers Planner** | *Cold emails to hot leads*; *Seven steps to drive product demand*; initial-customer material | Guide + First 10 Customers Plan + channel selector | **90** |
+| 8 | **Pricing Your Product** | *The secret to app pricing*; *Price discrimination: what, why and how*; *How relative pricing shapes customer choices*; *App monetisation* | Guide + pricing comparison + scenario calculator | **89** |
+| 9 | **Product Idea Generator** | *My 5 step idea generating process*; *Ten ideas per day*; *How I generate app ideas* | Guide + idea capture template + guided generator | **88** |
+| 10 | **Business Model Chooser** | *Choosing our business model* + related strategy posts | Guide + comparison canvas + model chooser | **87** |
+| 11 | **Decision Framework Picker** | *Six thinking hats*; *Inversion*; *Simple rules*; *Better decisions in 6 steps* | Guide/reference + cheat sheet + framework picker | **86** |
+| 12 | **Product Positioning Builder** | *How to stand out in a crowded market* + positioning/strategy posts | Guide + positioning one-pager + statement builder | **86** |
+| 13 | **Customer Demand Test** | *Before building it, test if anyone wants it*; *Questions to test product ideas* | Guide + experiment planner + test selector | **85** |
+| 14 | **Product Prioritisation Tool** | *Four ways to prioritise tasks and optimise productivity*; *How to prioritise tasks* | Guide + weighted matrix + priority scorer | **84** |
+| 15 | **Lateral Thinking Toolkit** | *Five lateral thinking techniques*; *Three ways to unlock creativity*; *Show me your bad ideas* | Guide + prompt cards + interactive prompts | **83** |
+| 16 | **User Engagement Designer** | *How to trigger users to act*; *Hooking users*; *Help app users see value quickly* | Guide + Engagement Loop Canvas + mapper | **82** |
+| 17 | **Story Builder** | *Five step storytelling framework* + writing/storytelling posts | Guide + story template + structure checker | **81** |
+| 18 | **Startup Launch Planner** | *How to launch apps*; *Seven steps to drive product demand* + growth posts | Guide + launch checklist/calendar + plan generator | **80** |
+| 19 | **Meeting Reset** | *Nine rules for effective meetings*; *3 steps to transform your meetings*; related productivity posts | Guide + meeting template + usefulness diagnostic | **78** |
+| 20 | **Writing Editor** | Writing-rules, storytelling and presenting posts | Guide + self-edit checklist + structured editing review | **78** |
+| 21 | **App Design Review** | *Ten principles of good design*; game-design/app-design/psychology posts | Guide + design checklist + self-assessment | **77** |
+| 22 | **AI Prompt Builder** | *Ten tips to write prompts that make chatbots shine*; *Let the chatbot ask the questions* | Guide + prompt template + prompt builder | **76** |
+| 23 | **AI Agent Designer** | *How to design effective AI Agents*; MCP/AI posts | Guide + Agent Specification Canvas + architecture questionnaire | **75** |
+| 24 | **Negotiation Prep** | Negotiation and influence posts including *Three effective negotiation tactics* | Guide + preparation sheet; Tool optional later | **71** |
+| 25 | **Personal Leverage Assessment** | Specific-knowledge, wealth and career posts | Guide + leverage map + self-assessment | **68** |
+
+### 37.1 Launch tier
+
+Build/validate in this order unless user evidence suggests otherwise:
+
+**Tier 1 — flagship**
+
+1. Product Idea Assessor
+2. Customer Discovery Kit
+3. Better Decision Maker
+4. MVP Scoper
+5. Product Naming System
+6. First Customers Planner
+
+**Tier 2 — next**
+
+7. Product/Market Fit Tracker
+8. Pricing Your Product
+9. Product Idea Generator
+10. Business Model Chooser
+11. Decision Framework Picker
+12. Product Positioning Builder
+13. Customer Demand Test
+14. Product Prioritisation Tool
+
+**Tier 3 — broaden only after demand evidence**
+
+15–25 above.
+
+### 37.2 Seed content
+
+Seed these families and outputs as **draft placeholders**, not approved public copy. Product Idea Assessor should be the first family fully populated and reviewed.
+
+---
+
+## 38. Incy Quality Standard
+
+
+Quality must be evaluated at both framework and output level.
+
+## 38.1 Framework quality
+
+A strong framework declares:
+
+- Clear problem
+- Intended user
+- Promised outcome
+- When to use / not use
+- Required inputs/evidence
+- Repeatable method
+- Limitations
+- Source provenance
+- Sensible next action
+
+## 38.2 Guide quality
+
+- Explains why and when
+- Practical steps
+- Examples
+- Common failure modes
+- Links to action
+- Source references
+
+## 38.3 Template quality
+
+- Clear purpose
+- Required inputs
+- Plain-English instructions
+- Appropriate fields/prompts
+- Completed example
+- Assumption/evidence distinction where relevant
+- Decision/result section
+- Next step
+- Current version
+- AI-agent-ready edition only when approved
+
+## 38.4 Tool quality
+
+- Clear promised result
+- Minimal necessary inputs
+- Validation
+- Transparent calculations/logic
+- Useful result interpretation
+- Failure and uncertainty states
+- Accessibility
+- Privacy/data minimisation
+- Save/export behaviour where justified
+- Worked example
+- Test coverage
+- No fabricated evidence
+
+Store product-level quality flags in `it_products.quality_standard` and framework-level review metadata in the framework record or a dedicated review table.
+
+---
+
+## 39. AI-agent-ready outputs and interactive Tool rules
+
+
+## 39.1 AI-agent-ready Template format
+
+Suitable Templates may include an approved Markdown edition:
+
+```markdown
+# Template name
+
+## Objective
+## Intended user
+## Situation
+## Required context
+## Questions the AI agent must ask
+## Information the agent may infer
+## Information the agent must not invent
+## Process
+## Required output structure
+## Acceptance criteria
+## Review checklist
+## Completed example
+## Common failure modes
+## Recommended next action
+```
+
+Display an **AI-agent-ready** badge only where an approved edition exists.
+
+## 39.2 AI use in Tools
+
+A Tool may be:
+
+1. **Deterministic** — calculations/rules only.
+2. **AI-assisted** — deterministic structure plus AI interpretation/synthesis.
+3. **AI-led** — model performs a substantial part of the reasoning; use sparingly and only after privacy/quality review.
+
+Prefer deterministic or AI-assisted designs.
+
+Requirements:
+
+- User facts remain distinguishable from generated interpretation.
+- The model must not invent customer evidence, market facts or legal conclusions.
+- Material assumptions must be visible.
+- Where a score is deterministic, the AI must not override it silently.
+- Prompts and model versions are version controlled/configured.
+- Tool result should explain uncertainty and evidence gaps rather than manufacture confidence.
+- Customer content sent to external model providers requires separate privacy review and clear notice.
+- AI failures must return a recoverable state; deterministic parts of a Tool should remain available where possible.
+
+## 39.3 Initial Tool design examples
+
+**Product Idea Assessor**
+
+- Deterministic dimensions: Proven, Better, New, Evidence Quality.
+- Result: score, strongest area, weakest area, biggest uncertainty, next evidence action.
+- Optional AI: summarise evidence and phrase suggested experiments; never invent evidence.
+
+**Better Decision Maker**
+
+- Deterministic expected-value calculations.
+- Optional AI: help identify missing outcomes or explain sensitivity, clearly marked as suggestions.
+
+**Product Naming System**
+
+- Deterministic weighted criteria plus user judgement.
+- External availability/trademark checks, if later added, must be clearly scoped and not presented as legal clearance.
+
+---
+
+## 40. Implementation phases
+
+
+## Phase 0 — Foundation
+
+Deliver:
+
+- Existing repository inspection
+- Next.js/TypeScript/Tailwind foundation
+- Environment validation
+- Supabase configuration/migrations
+- Framework + product + provenance schema
+- CI and preview deployment
+- Base design tokens/layout
+- Error monitoring
+
+Exit:
+
+- Preview deploy passes.
+- Migrations apply from empty state.
+- Framework can be created with Guide/Template/Tool child products.
+- No secret is exposed.
+
+## Phase 1 — Public product-family experience
+
+Deliver:
+
+- Homepage
+- Journey pages
+- Framework catalogue/page
+- Guide/Template/Tool routes
+- Search/filtering
+- Source/provenance rendering
+- SEO/sitemap
+- Seed portfolio metadata
+
+Exit:
+
+- Draft/published visibility works.
+- One family can display any combination of outputs.
+- Core pages pass accessibility checks.
+
+## Phase 2 — Product Idea Assessor canonical family
+
+Deliver:
+
+- Approved Proven–Better–New framework content
+- Guide
+- Template/scorecard
+- Interactive Tool
+- Anonymous run flow
+- Result interpretation
+- Same-family cross-links
+- Next-step recommendation to Customer Discovery
+- Analytics and tests
+
+Exit:
+
+- User can go Guide → Template/Tool → result without account.
+- Tool calculations are deterministic/tested.
+- Result clearly identifies evidence gaps.
+- Mobile/keyboard flows pass.
+
+## Phase 3 — Free resources and saved work
+
+Deliver:
+
+- Signed free-template downloads
+- Optional email/consent
+- Magic-link auth
+- Saved Tool runs
+- `/account/work`
+- Anonymous-to-authenticated run linking
+- Retention cleanup
+
+Exit:
+
+- Free download does not require subscription.
+- Tool run can be saved/reopened securely.
+- Another user cannot access it.
+
+## Phase 4 — Remaining flagship families
+
+In recommended order:
+
+1. Customer Discovery Kit
+2. Better Decision Maker
+3. MVP Scoper
+4. Product Naming System
+5. First Customers Planner
+
+Use Guide/Template first where a Tool has not yet earned its complexity.
+
+## Phase 5 — Commerce and customer library
+
+Deliver v2 Stripe, webhook, order, entitlement, paid downloads/Tools, bundles, magic-link library and refund foundations.
+
+Exit:
+
+- Test purchase creates exactly one order/entitlement set.
+- Paid Tool access enforced.
+- Replayed webhook is idempotent.
+
+## Phase 6 — Admin/editorial operations
+
+Deliver:
+
+- Framework/source-post management
+- Product/output editing
+- Version management
+- Tool registry visibility/configuration
+- Publication validation
+- Orders/customers/webhook queue
+- Audit log
+
+## Phase 7 — Launch readiness
+
+Retain v2 legal, consent, analytics, email, security, accessibility, monitoring, DNS and live Stripe readiness work.
+
+## Phase 8 — Portfolio expansion
+
+Use observed usage plus the ranked backlog to choose next families. Do not automatically build ranks 7–25 in order if real user evidence points elsewhere.
+
+---
+
+## 41. MVP acceptance criteria
+
+
+The MVP is complete only when:
+
+### Product model
+
+- Framework/product-family is a first-class entity.
+- Guide, Template and Tool are distinct first-class output types.
+- One family can surface multiple outputs without duplicate unrelated catalogue entries.
+- A Bit Gamey source provenance can be recorded and displayed safely.
+
+### Public experience
+
+- Visitor understands the proposition and output-type distinction.
+- Visitor can browse by journey stage.
+- Visitor can search by problem/outcome.
+- Draft frameworks/products are inaccessible publicly.
+- Core mobile/desktop experience works.
+
+### Flagship family
+
+- Product Idea Assessor has approved Guide, Template and Tool.
+- Tool can be completed without mandatory account.
+- Result provides actionable interpretation and evidence gaps.
+- Same-family and next-step links work.
+
+### Free resources
+
+- Free Template can be downloaded without mandatory registration.
+- Consent states are separate.
+- Signed URL is short-lived.
+- Free Tool has appropriate rate limits/privacy behaviour.
+
+### Accounts/work
+
+- Customer can sign in by magic link.
+- User can save/reopen their own Tool runs.
+- User cannot access another user's runs/orders/entitlements.
+
+### Commerce
+
+If paid products are included in the launch milestone:
+
+- Stripe amount is server controlled.
+- Verified webhook creates order idempotently.
+- Paid Template/Tool entitlement works.
+- Refund state can be reconciled.
+
+### Admin/editorial
+
+- Admin/editor can create framework, link source posts and create justified output types.
+- Tool publication requires registry/schema/test validation.
+- Privileged changes are audited.
+
+### Quality
+
+- Strict TypeScript build passes.
+- Automated tests pass.
+- RLS tests pass.
+- No known critical accessibility violations.
+- No production secrets exposed.
+- Core pages meet agreed performance targets.
+
+---
+
+## 42. Launch checklist
+
+
+Retain all v2 business, domain/email, Stripe, Supabase, repository/deployment, website and operations checks, with these additions.
+
+### Product portfolio
+
+- [ ] Guide / Template / Tool definitions approved
+- [ ] Public journey stages approved
+- [ ] Product Idea Assessor framework approved
+- [ ] Its A Bit Gamey source links reviewed
+- [ ] Guide approved
+- [ ] Template and completed example approved
+- [ ] Tool scoring/logic approved and tested
+- [ ] Tool privacy/retention approved
+- [ ] Next-step recommendation approved
+- [ ] Remaining flagship products clearly marked published, beta, draft or coming soon
+
+### Source and IP
+
+- [ ] A Bit Gamey provenance import/validation works
+- [ ] Third-party framework attribution reviewed
+- [ ] No private GitHub credentials exposed
+- [ ] No unapproved AI-generated content published
+
+### Interactive Tools
+
+- [ ] Anonymous rate limits tested
+- [ ] Saved-run ownership/IDOR tests pass
+- [ ] Tool result schema/version recorded
+- [ ] Accessibility tested end to end
+- [ ] Failure states tested
+- [ ] AI data-handling review complete for any AI-assisted Tool
+
+### Existing v2 launch controls
+
+The implementation must still complete the v2 checklist for company/legal details, tax, DNS, SPF/DKIM/DMARC, Stripe live setup, RLS, Storage policies, backups, Auth redirects, CI, metadata/sitemap/robots, consent, monitoring, support workflows, security and rollback.
+
+---
+
+## 43. Coding-agent instructions
+
+
+## 43.1 Before coding
+
+1. Read this specification fully.
+2. Open `PLAMartin/IncyTemplates` on `main` and inspect repository/history.
+3. Treat `PLAMartin/ABitGamey` as an editorial source repository, not the production app repository.
+4. Do not copy the entire A Bit Gamey archive into IncyTemplates.
+5. Create a concise plan mapped to spec sections.
+6. Record material assumptions in `docs/decisions/`.
+7. Implement the **framework → outputs** model before building catalogue UI.
+8. Do not silently collapse Guide, Template and Tool back into one generic template type.
+9. Prefer the smallest architecture that supports the first three Tools before creating a generic workflow engine.
+
+## 43.2 Repository workflow
+
+Retain v2 feature-branch/PR/CI rules. Suggested initial branches:
+
+- `feature/framework-product-model`
+- `feature/public-journey`
+- `feature/product-idea-assessor`
+- `feature/free-resources`
+- `feature/saved-tool-runs`
+- `feature/stripe-commerce`
+- `feature/admin-editorial`
+
+## 43.3 Source pipeline rules
+
+- Import only source metadata required for provenance/editorial discovery.
+- Record stable source post ID, title, path and content hash where available.
+- Human review decides which posts contribute to a framework.
+- Do not generate and publish all candidate products automatically.
+- Distinguish source examples from newly generated examples.
+- Flag unsupported claims instead of inventing evidence.
+- Validate links and attribution before publication.
+
+## 43.4 Tool implementation rules
+
+- Each Tool has a stable `tool_key`.
+- Each Tool defines versioned input and result schemas.
+- Calculations/decision logic live outside page components.
+- Deterministic logic has unit tests.
+- AI calls, if any, are isolated behind a service boundary.
+- AI never silently changes deterministic scores.
+- Every Tool has loading, empty/start, validation, error and result states.
+- Every Tool works with keyboard and screen readers.
+- Saved runs enforce ownership server-side.
+- Tool analytics never contain user free text/results.
+
+## 43.5 Definition of done
+
+Retain v2 requirements and add:
+
+- Correct framework/output linkage
+- Provenance metadata complete
+- Output type-specific validation complete
+- Tool schema/version recorded where applicable
+- Next-step relationship considered
+
+## 43.6 Required implementation sequence
+
+Before building Tools:
+
+1. Framework/product schema
+2. Product-type enum
+3. Public framework queries
+4. Tool registry contract
+5. Tool-run privacy/ownership model
+
+Before paid Tool access:
+
+1. Verified webhooks
+2. Idempotent orders
+3. Entitlements
+4. Server-side Tool entitlement check
+5. Failure recovery
+
+Before production publication of A Bit Gamey-derived products:
+
+1. Source links reviewed
+2. Third-party attribution/IP reviewed
+3. Human content approval recorded
+
+---
+
+## 44. Decisions still required from the product owner
+
+
+These decisions do not prevent foundation work but affect launch:
+
+1. Confirm canonical domain `incytemplates.com` and singular redirect if owned.
+2. Confirm final visual identity/colour palette.
+3. Confirm primary positioning line: **Practical tools for turning ideas into products** or alternative.
+4. Confirm public journey labels: Idea, Validate, Decide, Design, Build, Launch, Improve.
+5. Confirm the six flagship families and launch order.
+6. Confirm which flagship outputs are free versus paid.
+7. Confirm whether Product Idea Assessor is fully free at launch or has paid save/export/advanced capability.
+8. Approve Product Idea Assessor scoring logic and interpretation language.
+9. Confirm customer licence types and future-update policy.
+10. Confirm refund policy.
+11. Confirm tax/merchant-of-record approach before paid launch.
+12. Confirm whether free downloads are emailed by default or only when requested.
+13. Confirm product-update email consent model.
+14. Confirm final company/address details for legal pages.
+15. Confirm GA4 versus privacy-focused alternative.
+16. Confirm whether Next Step Finder is MVP or immediate follow-on.
+17. Confirm tool-run retention periods, especially anonymous free text.
+18. Confirm third-party framework licences/attribution review process.
+19. Confirm whether team licences are needed at launch.
+20. Confirm whether A Bit Gamey source links should be visible on every family page or only in a source/learn-more section.
+21. Confirm which Tools, if any, may send user data to an external AI provider in MVP.
+
+---
+
+## 45. Recommended first development milestone
+
+
+The first milestone should prove the **new product model and one end-to-end product family**, not commerce.
+
+Deliver:
+
+- Framework/product-family schema
+- Guide/Template/Tool output model
+- A Bit Gamey source-provenance schema/import for approved metadata
+- Public homepage
+- Journey-stage navigation
+- Framework catalogue and family page
+- Guide page
+- Template page/download stub
+- Tool registry pattern
+- **Product Idea Assessor** Guide
+- Product Idea Assessor Template/scorecard
+- Product Idea Assessor interactive Tool
+- Result state and next-step recommendation
+- Seed metadata for the remaining five flagship families
+- Supabase RLS
+- Basic admin authentication/editorial view
+- Design system
+- SEO foundations
+- CI and preview deployment
+
+This milestone should **not** require Stripe. Its purpose is to answer two foundational questions:
+
+1. Does Guide → Template → Tool feel like one coherent product family rather than three disconnected resources?
+2. Does the Product Idea Assessor produce a result useful enough that users want to continue into Customer Discovery?
+
+Only after this pattern is validated should the team scale the catalogue and add commerce complexity.
+
+---
+
+## 46. Technical references
+
+The implementation should use current official documentation at build time rather than relying solely on model training data.
+
+- Next.js App Router: https://nextjs.org/docs/app
+- Next.js project structure: https://nextjs.org/docs/app/getting-started/project-structure
+- Next.js route handlers: https://nextjs.org/docs/app/api-reference/file-conventions/route
+- Supabase Auth: https://supabase.com/docs/guides/auth
+- Supabase Row Level Security: https://supabase.com/docs/guides/database/postgres/row-level-security
+- Supabase Storage: https://supabase.com/docs/guides/storage
+- Supabase Storage access control: https://supabase.com/docs/guides/storage/security/access-control
+- Stripe Checkout: https://docs.stripe.com/payments/checkout/how-checkout-works
+- Stripe fulfilment: https://docs.stripe.com/checkout/fulfillment
+- Vercel Next.js deployment: https://vercel.com/frameworks/nextjs
+- Resend documentation: https://resend.com/docs
+
+---
+
+# End of specification — v3.0

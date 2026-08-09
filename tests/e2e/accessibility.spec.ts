@@ -41,3 +41,31 @@ test("a guide page has no serious/critical axe violations", async ({ page }) => 
   await firstGuideLink.click();
   await expectNoSeriousViolations(page);
 });
+
+test("the product family page has no serious/critical axe violations", async ({ page }) => {
+  await page.goto("/products/product-idea-assessor");
+  await expectNoSeriousViolations(page);
+});
+
+test("the Tool's start state has no serious/critical axe violations", async ({ page }) => {
+  await page.goto("/tools/product-idea-assessor");
+  await expectNoSeriousViolations(page);
+});
+
+test("the Tool's in-progress state has no serious/critical axe violations", async ({ page }) => {
+  await page.goto("/tools/product-idea-assessor");
+  await page.getByRole("button", { name: "Start the assessment" }).click();
+  await expectNoSeriousViolations(page);
+});
+
+test("the Tool's result state has no serious/critical axe violations", async ({ page }) => {
+  await page.goto("/tools/product-idea-assessor");
+  await page.getByRole("button", { name: "Start the assessment" }).click();
+  for (let step = 0; step < 5; step++) {
+    await page.locator('fieldset input[type="radio"]').first().check();
+    const isLast = step === 4;
+    await page.getByRole("button", { name: isLast ? "See my result" : "Continue" }).click();
+  }
+  await expect(page.getByRole("heading", { name: /^Your result:/ })).toBeVisible();
+  await expectNoSeriousViolations(page);
+});

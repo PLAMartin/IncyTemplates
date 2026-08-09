@@ -54,7 +54,7 @@ See the accompanying completed example file for this product.
 
 ## Common failure modes
 
-Not for ideas you've already validated with real customers — move on to the Proven–Better–New Assessment instead.
+Not for ideas you've already validated with real customers — move on to the Copy–Improve–Differentiate Assessment instead.
 
 ## Recommended next action
 
