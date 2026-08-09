@@ -4,6 +4,7 @@ import { ToolNotAvailableError } from "@/lib/tools/types";
 import { PRODUCT_IDEA_ASSESSOR_TOOL_KEY } from "@/lib/tools/product-idea-assessor";
 import { CUSTOMER_DISCOVERY_KIT_TOOL_KEY } from "@/lib/tools/customer-discovery-kit";
 import { BETTER_DECISION_MAKER_TOOL_KEY } from "@/lib/tools/better-decision-maker";
+import { MVP_SCOPER_TOOL_KEY } from "@/lib/tools/mvp-scoper";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -71,5 +72,18 @@ describe("tool registry", () => {
     const result = definition.run(parsedInput);
     const parsedResult = definition.resultSchema.parse(result) as { recommendation: string };
     expect(parsedResult.recommendation).toBe("option_a");
+  });
+
+  it("resolves the fourth registered tool (MVP Scoper) independently of the others", () => {
+    const definition = getToolDefinition(MVP_SCOPER_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      necessity: "essential_for_core_value",
+      riskyQuestionRelevance: "directly_answers",
+      buildEffort: "low",
+      fakeability: "no",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { classification: string };
+    expect(parsedResult.classification).toBe("keep");
   });
 });

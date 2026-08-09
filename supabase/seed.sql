@@ -99,10 +99,10 @@ insert into public.it_frameworks (
   priority_score, priority_rationale, source_strength, source_note, flagship,
   display_order, seo_title, seo_description, published_at
 ) values (
-  'a6f884a5-57d0-cbc7-58cf-9d6cc927f4a6', 'draft', 'MVP Scoper', 'mvp-scoper', 'Work out the smallest useful version of your product worth building first.', null, 'A scoped MVP with what''s in, what''s explicitly out, and the riskiest question it needs to answer.',
-  'Founders and small product teams about to start building.', null, null, null, '81e350e5-2342-79a0-b21e-5ded01bef450',
-  92, 'Ranked #5 in the source-material opportunity portfolio (spec v3 §37).', null, null, true,
-  4, null, null, null
+  'a6f884a5-57d0-cbc7-58cf-9d6cc927f4a6', 'published', 'MVP Scoper', 'mvp-scoper', 'Work out the smallest useful version of your product worth building first.', 'Every candidate feature seems reasonable in isolation, so ''reasonable'' features quietly accumulate into a build that takes months instead of weeks — without anyone making a deliberate decision to let that happen.', 'A scoped MVP with what''s in, what''s explicitly out, and the riskiest question it needs to answer.',
+  'Founders and small product teams about to start building.', 'Use once you have a validated problem and a decision to proceed, before development starts.', 'Not useful before you''ve decided to proceed — scope a decision, not an unvalidated idea.', 'Start from your riskiest open question — the one assumption you''re least sure of — and let it drive scope more than anything else. For each candidate feature, separate genuine necessity (the product fails to deliver its core value without it) from nice-to-have (people just wouldn''t notice). Weigh build effort honestly, especially for nice-but-cheap features, where most scope creep actually hides. Before committing engineering time to anything, ask whether it could be delivered manually first — a concierge process, a spreadsheet — and reserve real build effort for what you''ve already confirmed matters.', '81e350e5-2342-79a0-b21e-5ded01bef450',
+  92, 'Ranked #5 in the source-material opportunity portfolio (spec v3 §37): the natural next step once Better Decision Maker has produced a decision to proceed — this family is where that decision turns into a buildable scope.', 'strong', 'Developed from A Bit Gamey material on minimum viable products and 80/20 app development, including deciding what to build first and what to explicitly leave out.', true,
+  4, 'MVP Scoper — decide what belongs in your first release', 'How to scope a minimum viable product: necessity, your riskiest open question, build effort, and what you can fake instead of building.', '2026-08-09T09:00:00Z'
 )
 on conflict (id) do update set status = excluded.status, name = excluded.name, slug = excluded.slug,
   short_description = excluded.short_description, problem_statement = excluded.problem_statement,
@@ -158,7 +158,7 @@ on conflict (id) do update set status = excluded.status, name = excluded.name, s
 update public.it_frameworks set next_step_framework_id = '1c2a8bbd-308d-3e5c-c08e-30a596a3f716' where id = 'bd063cd6-3bdc-e7a0-47fa-dabc2cd8a448';
 update public.it_frameworks set next_step_framework_id = '4d32e24c-2646-908d-569c-a9789dfb06e1' where id = '1c2a8bbd-308d-3e5c-c08e-30a596a3f716';
 update public.it_frameworks set next_step_framework_id = 'a6f884a5-57d0-cbc7-58cf-9d6cc927f4a6' where id = '4d32e24c-2646-908d-569c-a9789dfb06e1';
-update public.it_frameworks set next_step_framework_id = null where id = 'a6f884a5-57d0-cbc7-58cf-9d6cc927f4a6';
+update public.it_frameworks set next_step_framework_id = '46a94166-2f8a-ceb8-98c3-56610ca412aa' where id = 'a6f884a5-57d0-cbc7-58cf-9d6cc927f4a6';
 update public.it_frameworks set next_step_framework_id = null where id = '46a94166-2f8a-ceb8-98c3-56610ca412aa';
 update public.it_frameworks set next_step_framework_id = null where id = 'beb80f09-0dbb-02cf-91f6-7a611a156ab1';
 
@@ -338,7 +338,7 @@ insert into public.it_products (
   20, 30, 'beginner', '1.0',
   null, null, 'GBP', '488fbee7-849e-4e17-2d2e-e386ec5328ca', true,
   '2026-06-15T09:00:00Z', null, 'MVP Scope in One Page — free template', 'Scope your MVP on a single page: what''s in, what''s out, free.', '{"placeholder":true}'::jsonb,
-  null, null
+  'a6f884a5-57d0-cbc7-58cf-9d6cc927f4a6', null
 )
 on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
   status = excluded.status, name = excluded.name, slug = excluded.slug,
@@ -1062,6 +1062,60 @@ insert into public.it_products (
   published_at, scheduled_for, seo_title, seo_description, schema_data,
   framework_id, tool_key
 ) values (
+  'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', 'guide', 'free', 'published', 'MVP Scoper: the Guide', 'mvp-scoper', 'A repeatable way to decide what''s in, what''s out, and what you can fake instead of building.', 'Explains how to let your riskiest open question drive scope, separate genuine necessity from nice-to-have, weigh build effort honestly, and ask what could be delivered manually before committing engineering time. Read this before the Template or the Tool — both assume the technique this guide teaches.',
+  'A repeatable way to decide what belongs in a first release before ''just one more feature'' doubles the timeline.', 'Founders and small product teams about to start building.', 'Read this first, before the Template or the Tool.', 'Skip straight to the Tool if you already have a specific feature in mind and just want a scored verdict.',
+  8, 12, 'beginner', '1.0',
+  null, null, 'GBP', null, true,
+  '2026-08-09T09:00:00Z', null, 'MVP Scoper guide — decide what belongs in your first release', 'How to scope a minimum viable product: necessity, your riskiest open question, build effort, and what you can fake instead of building.', '{"placeholder":true}'::jsonb,
+  'a6f884a5-57d0-cbc7-58cf-9d6cc927f4a6', null
+)
+on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
+  status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, full_description = excluded.full_description,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  completion_minutes_min = excluded.completion_minutes_min, completion_minutes_max = excluded.completion_minutes_max,
+  skill_level = excluded.skill_level, current_version = excluded.current_version,
+  price_minor = excluded.price_minor, compare_at_price_minor = excluded.compare_at_price_minor,
+  currency_code = excluded.currency_code, licence_id = excluded.licence_id, featured = excluded.featured,
+  published_at = excluded.published_at, scheduled_for = excluded.scheduled_for, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, schema_data = excluded.schema_data,
+  framework_id = excluded.framework_id, tool_key = excluded.tool_key;
+insert into public.it_products (
+  id, product_type, access_type, status, name, slug, short_description, full_description,
+  outcome_statement, target_audience, when_to_use, when_not_to_use,
+  completion_minutes_min, completion_minutes_max, skill_level, current_version,
+  price_minor, compare_at_price_minor, currency_code, licence_id, featured,
+  published_at, scheduled_for, seo_title, seo_description, schema_data,
+  framework_id, tool_key
+) values (
+  '97adee85-d743-a743-f6a3-1299a8edd695', 'tool', 'free', 'published', 'Scope Decider', 'mvp-scoper-tool', 'Score a candidate feature as Keep, Defer or Remove — and catch the ones you could fake instead of building.', 'Answer four questions about one candidate feature — how necessary it is, how relevant it is to your riskiest open question, how much effort it would take, and whether you could deliver it manually instead — and get a Keep, Defer or Remove verdict plus one concrete next step. Usable anonymously, with no account required.',
+  'A Keep, Defer or Remove verdict for a candidate feature, plus one clear next step.', 'Founders and small product teams deciding what belongs in a first release.', 'Use once per candidate feature you''re unsure about, while scoping a first release.', 'Not a replacement for the one-page scope itself — it scores one feature at a time, it doesn''t produce the full page.',
+  5, 5, 'beginner', '1.0',
+  null, null, 'GBP', null, true,
+  '2026-08-09T09:00:00Z', null, 'Scope Decider — free Keep/Defer/Remove MVP scoping tool', 'Score a candidate feature as Keep, Defer or Remove, free, no account required.', '{"placeholder":true}'::jsonb,
+  'a6f884a5-57d0-cbc7-58cf-9d6cc927f4a6', 'mvp-scoper'
+)
+on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
+  status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, full_description = excluded.full_description,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  completion_minutes_min = excluded.completion_minutes_min, completion_minutes_max = excluded.completion_minutes_max,
+  skill_level = excluded.skill_level, current_version = excluded.current_version,
+  price_minor = excluded.price_minor, compare_at_price_minor = excluded.compare_at_price_minor,
+  currency_code = excluded.currency_code, licence_id = excluded.licence_id, featured = excluded.featured,
+  published_at = excluded.published_at, scheduled_for = excluded.scheduled_for, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, schema_data = excluded.schema_data,
+  framework_id = excluded.framework_id, tool_key = excluded.tool_key;
+insert into public.it_products (
+  id, product_type, access_type, status, name, slug, short_description, full_description,
+  outcome_statement, target_audience, when_to_use, when_not_to_use,
+  completion_minutes_min, completion_minutes_max, skill_level, current_version,
+  price_minor, compare_at_price_minor, currency_code, licence_id, featured,
+  published_at, scheduled_for, seo_title, seo_description, schema_data,
+  framework_id, tool_key
+) values (
   'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', 'bundle', 'paid', 'published', 'Idea Validation Pack', 'idea-validation-pack', 'Nine templates that take you from a raw idea to a documented proceed-revise-pause decision, backed by evidence rather than confidence.', 'The Idea Validation Pack is the complete evidence-led path from a raw idea to a defensible decision. It sequences nine templates — intake, founder fit, problem evidence, competitive alternatives, a team Copy–Improve–Differentiate workshop, assumption ranking, a full interview system, evidence synthesis, and a closing proceed/revise/pause decision — into a single 1–2 week process, instead of leaving you to assemble one from separate free worksheets.',
   'A documented, evidence-based decision on whether to proceed, revise or pause — not just a folder of worksheets.', 'Founders who want a structured, complete path through idea validation rather than assembling their own process from free templates.', 'Use end-to-end over 1–2 weeks when you''re serious about validating a new idea before committing real time or money.', 'If you only need one part of the process — for example, just customer interviews — the free Customer Interview Planner may be enough on its own.',
   240, 480, 'intermediate', '1.0',
@@ -1110,7 +1164,7 @@ on conflict (id) do update set product_type = excluded.product_type, access_type
   framework_id = excluded.framework_id, tool_key = excluded.tool_key;
 
 -- it_product_categories (full replace for the products this script manages)
-delete from public.it_product_categories where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
+delete from public.it_product_categories where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('af2edcc3-4630-bbd6-e144-29ff50d794b1', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', '9c66d23e-6490-8df9-1a77-759635564cfc', true);
@@ -1144,11 +1198,13 @@ insert into public.it_product_categories (product_id, category_id, is_primary) v
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('8a89a76f-2289-3369-c1eb-f33755a0cc23', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('d1073e5d-0539-162a-2665-3d01ecc1d821', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('8adc006c-06fb-911d-340c-3ec0fadf6724', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
+insert into public.it_product_categories (product_id, category_id, is_primary) values ('b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', 'e11948c4-e14f-706e-2968-269c8566f9f6', true);
+insert into public.it_product_categories (product_id, category_id, is_primary) values ('97adee85-d743-a743-f6a3-1299a8edd695', 'e11948c4-e14f-706e-2968-269c8566f9f6', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb', 'e11948c4-e14f-706e-2968-269c8566f9f6', true);
 
 -- it_product_stages (full replace for the products this script manages)
-delete from public.it_product_stages where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
+delete from public.it_product_stages where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('af2edcc3-4630-bbd6-e144-29ff50d794b1', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', '8f0f32b0-bba6-e3a0-a144-46ebfbcab4c0', true);
@@ -1182,6 +1238,8 @@ insert into public.it_product_stages (product_id, stage_id, is_primary) values (
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('8a89a76f-2289-3369-c1eb-f33755a0cc23', '3f7a87a9-2a65-573c-b0ed-c66ad4f7d9f0', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('d1073e5d-0539-162a-2665-3d01ecc1d821', '3f7a87a9-2a65-573c-b0ed-c66ad4f7d9f0', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('8adc006c-06fb-911d-340c-3ec0fadf6724', '3f7a87a9-2a65-573c-b0ed-c66ad4f7d9f0', true);
+insert into public.it_product_stages (product_id, stage_id, is_primary) values ('b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '81e350e5-2342-79a0-b21e-5ded01bef450', true);
+insert into public.it_product_stages (product_id, stage_id, is_primary) values ('97adee85-d743-a743-f6a3-1299a8edd695', '81e350e5-2342-79a0-b21e-5ded01bef450', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb', 'cf668b0e-b443-8f64-21ed-80ac162bfc1e', true);
 
