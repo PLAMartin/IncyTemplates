@@ -107,7 +107,13 @@ export default async function HomePage() {
       <section className="border-y border-ink-200 bg-paper-raised">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
           <h2 className="font-serif text-2xl font-semibold text-ink-900">Where are you in the journey?</h2>
-          <p className="mt-2 max-w-2xl text-ink-500">Start from the task you&apos;re facing, not the format of the answer.</p>
+          <p className="mt-2 max-w-2xl text-ink-500">
+            Start from the task you&apos;re facing, not the format of the answer. Not sure which stage that is?{" "}
+            <Link href="/finder" className="font-medium text-brand-600 underline hover:text-brand-700">
+              Answer three quick questions
+            </Link>{" "}
+            and we&apos;ll point you at the right place.
+          </p>
           <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
             {stages.map((stage) => (
               <Link
