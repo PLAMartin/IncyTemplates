@@ -10,6 +10,7 @@ import { ProductCard } from "@/components/catalogue/product-card";
 import { FrameworkCard } from "@/components/framework/framework-card";
 import { GuideCard } from "@/components/content/guide-card";
 import { CoverPlaceholder } from "@/components/product/cover-placeholder";
+import { HeroResultPreview } from "@/components/home/hero-result-preview";
 import { AccessBadge } from "@/components/ui/badge";
 import { NewsletterSignup } from "@/components/content/newsletter-signup";
 
@@ -74,11 +75,8 @@ export default async function HomePage() {
               </ButtonLink>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4" aria-hidden>
-            <CoverPlaceholder name="Product Idea Assessor" productType="tool" className="translate-y-4" />
-            <CoverPlaceholder name="Product Idea Assessor: the Guide" productType="guide" />
-            <CoverPlaceholder name="Copy–Improve–Differentiate Assessment" />
-            <CoverPlaceholder name="Idea Validation Pack" productType="bundle" className="translate-y-4" />
+          <div aria-hidden className="mx-auto w-full max-w-sm">
+            <HeroResultPreview />
           </div>
         </div>
       </section>
