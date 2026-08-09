@@ -154,8 +154,8 @@ export default async function HomePage() {
               <div>
                 <h2 className="font-serif text-2xl font-semibold text-ink-900">Product families</h2>
                 <p className="mt-2 text-ink-500">
-                  Product Idea Assessor, Customer Discovery Kit, Better Decision Maker and MVP Scoper are live today;
-                  the rest are in development.
+                  Product Idea Assessor, Customer Discovery Kit, Better Decision Maker, MVP Scoper and Product Naming
+                  System are live today; First Customers Planner is in development.
                 </p>
               </div>
               <Link href="/products" className="hidden text-sm font-medium text-brand-600 hover:text-brand-700 sm:block">
