@@ -267,19 +267,22 @@ export function toSummary(product: Product): ProductSummary {
 
 // ---------------------------------------------------------------------------
 // Frameworks (spec v3 §14.3, §37) — the reusable method/problem/outcome layer
-// above individual Guide/Template/Tool outputs. Product Idea Assessor and
-// Customer Discovery Kit are fully populated and published, each with a
-// complete Guide/Template/Tool set (see docs/decisions/0021 for how Customer
-// Discovery Kit reused existing v2-era template/guide content). The
-// remaining four flagship families (spec v3 §37.1 Tier 1) are seeded as
-// minimal, draft, flagship placeholders per the product-owner decision
-// recorded in docs/decisions — visible as public "Coming soon" teasers (via
+// above individual Guide/Template/Tool outputs. Product Idea Assessor,
+// Customer Discovery Kit and Better Decision Maker are fully populated and
+// published, each with a complete Guide/Template/Tool set (see
+// docs/decisions/0021 for how Customer Discovery Kit reused existing
+// v2-era template/guide content, and docs/decisions/0022 for Better
+// Decision Maker, built entirely from new content). The remaining three
+// flagship families (spec v3 §37.1 Tier 1) are seeded as minimal, draft,
+// flagship placeholders per the product-owner decision recorded in
+// docs/decisions — visible as public "Coming soon" teasers (via
 // `it_frameworks_teasers`/`getFrameworkTeasers`), not full pages, and with
 // no child Guide/Template/Tool rows yet.
 // ---------------------------------------------------------------------------
 
 export const PRODUCT_IDEA_ASSESSOR_FRAMEWORK_ID = "framework-product-idea-assessor";
 export const CUSTOMER_DISCOVERY_KIT_FRAMEWORK_ID = "framework-customer-discovery-kit";
+export const BETTER_DECISION_MAKER_FRAMEWORK_ID = "framework-better-decision-maker";
 
 export const frameworks: Framework[] = [
   {
@@ -343,28 +346,34 @@ export const frameworks: Framework[] = [
     next_step_framework_slug: "better-decision-maker",
   },
   {
-    id: "framework-better-decision-maker",
-    status: "draft",
+    id: BETTER_DECISION_MAKER_FRAMEWORK_ID,
+    status: "published",
     name: "Better Decision Maker",
     slug: "better-decision-maker",
     short_description: "Given the evidence you have, work out what you should actually do.",
-    problem_statement: null,
+    problem_statement:
+      "Founders wait for certainty that never arrives, or decide on instinct without noticing that some decisions are cheap to reverse and others aren't — so easy, reversible calls get over-analysed while genuinely risky, one-way ones get rushed.",
     outcome_statement: "A documented decision, reasoned through rather than made on instinct alone.",
     target_audience: "Founders facing an important decision under uncertainty.",
-    when_to_use: null,
-    when_not_to_use: null,
-    method_summary: null,
+    when_to_use: "Use once you have real options to weigh — after the evidence-gathering stages, not instead of them.",
+    when_not_to_use:
+      "Not useful for decisions that are genuinely reversible and low-stakes — the process itself costs more time than a quick two-way-door decision deserves.",
+    method_summary:
+      "Classify the decision by reversibility first: a two-way door is cheap to back out of and deserves a fast call; a one-way door is expensive or impossible to reverse and deserves real analysis. Invert the question — instead of 'what would make this succeed,' ask 'what would guarantee it fails' — to turn an abstract comparison into a concrete checklist of what to avoid. Check the decision against any simple rules you've already committed to, so routine decisions don't need fresh analysis every time. For decisions with real options to compare, estimate expected value for each — likelihood of success, impact if it works, and effort to attempt — and when two options come out close, let reversibility break the tie rather than agonising further.",
     journey_stage: stageRef("decide"),
     priority_score: 94,
-    priority_rationale: "Ranked #3 in the source-material opportunity portfolio (spec v3 §37).",
-    source_strength: null,
-    source_note: null,
+    priority_rationale:
+      "Ranked #3 in the source-material opportunity portfolio (spec v3 §37): the natural next step once Product Idea Assessor and Customer Discovery Kit have produced evidence — this family is where that evidence actually turns into a decision.",
+    source_strength: "strong",
+    source_note:
+      "Developed from A Bit Gamey material on decision-making under uncertainty, including reversibility ('two-way door' vs 'one-way door'), inversion, simple rules and expected-value estimation.",
     flagship: true,
     display_order: 3,
-    seo_title: null,
-    seo_description: null,
-    published_at: null,
-    next_step_framework_slug: null,
+    seo_title: "Better Decision Maker — decide under uncertainty without waiting for certainty",
+    seo_description:
+      "Four techniques for making an important founder decision: reversibility, inversion, simple rules and expected value — with a worksheet and a comparison tool.",
+    published_at: "2026-08-09T09:00:00Z",
+    next_step_framework_slug: "mvp-scoper",
   },
   {
     id: "framework-mvp-scoper",
@@ -1772,12 +1781,150 @@ const customerDiscoveryKitFamilyOutputs: Product[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Better Decision Maker family outputs (spec v3 §14.7, §37) — Guide, Template
+// and Tool all newly written for this family (unlike Customer Discovery Kit,
+// there was no existing v2-era content to reuse — see docs/decisions/0022).
+// The Guide's body lives in content/guides/better-decision-maker.mdx, joined
+// to this row by matching slug; the Template's body lives in
+// content/seed/free-files/decision-worksheet.md.
+// ---------------------------------------------------------------------------
+
+const betterDecisionMakerFamilyOutputs: Product[] = [
+  {
+    id: "better-decision-maker-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "Better Decision Maker: the Guide",
+    slug: "better-decision-maker",
+    short_description: "Four techniques for deciding under uncertainty: reversibility, inversion, simple rules and expected value.",
+    full_description:
+      "Explains how to classify a decision by reversibility, invert the question to find what would guarantee failure, check it against your simple rules, and estimate expected value when you have real options to compare. Read this before the Template or the Tool — both assume the technique this guide teaches.",
+    outcome_statement: "A repeatable way to decide under uncertainty without waiting for certainty that never arrives.",
+    target_audience: "Founders facing an important decision under uncertainty.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you already have two options in mind and just want a scored comparison.",
+    completion_minutes_min: 8,
+    completion_minutes_max: 12,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-09T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-strategy")],
+    stages: [stageRef("decide")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: BETTER_DECISION_MAKER_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "Better Decision Maker guide — decide under uncertainty without waiting for certainty",
+    seo_description:
+      "Four techniques for making an important founder decision: reversibility, inversion, simple rules and expected value.",
+  },
+  {
+    id: "decision-worksheet",
+    product_type: "template",
+    access_type: "free",
+    status: "published",
+    name: "Decision Worksheet",
+    slug: "decision-worksheet",
+    short_description: "Work through reversibility, inversion, your simple rules and an expected-value estimate for a decision you're facing.",
+    full_description:
+      "A structured worksheet covering all four Better Decision Maker techniques for a single decision: classify it by reversibility, invert the question to find what would guarantee failure, check it against your simple rules, and estimate expected value if you have real options to compare. Ends with a documented decision and reasoning you can revisit later.",
+    outcome_statement: "A documented decision, reasoned through rather than made on instinct alone.",
+    target_audience: "Founders facing an important decision under uncertainty.",
+    when_to_use: "Use once you have real options to weigh — after the evidence-gathering stages, not instead of them.",
+    when_not_to_use:
+      "Not useful for decisions that are genuinely reversible and low-stakes — the process itself costs more time than a quick two-way-door decision deserves.",
+    completion_minutes_min: 20,
+    completion_minutes_max: 30,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-09T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-strategy")],
+    stages: [stageRef("decide")],
+    formats: ["markdown"],
+    is_placeholder: true,
+    framework_id: BETTER_DECISION_MAKER_FRAMEWORK_ID,
+    tool_key: null,
+    licence: standardLicence,
+    quality_standard: {
+      purpose: true,
+      instructions: true,
+      thinkingPrompts: true,
+      evidenceFields: true,
+      decisionOutcome: true,
+      nextStep: true,
+    },
+    files: [
+      {
+        id: "decision-worksheet-md",
+        file_role: "template",
+        file_format: "markdown",
+        display_name: "Decision Worksheet (Markdown, AI-agent-ready)",
+        is_public_preview: false,
+      },
+    ],
+    seo_title: "Decision Worksheet — free template for deciding under uncertainty",
+    seo_description: "Work through reversibility, inversion, your simple rules and an expected-value estimate for a decision you're facing, free.",
+  },
+  {
+    id: "better-decision-maker-tool",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "Expected Value Comparator",
+    slug: "better-decision-maker-tool",
+    short_description: "Compare two options by expected value and get a reversibility-aware recommendation.",
+    full_description:
+      "Answer four questions about each of two options — likelihood of success, impact if it works, effort to attempt, and whether it's a one-way or two-way door — and get an expected-value score for each, a recommendation, a confidence read on how clear the gap is, and one next step. Usable anonymously, with no account required.",
+    outcome_statement: "An expected-value comparison of two options, a recommendation, and one clear next step.",
+    target_audience: "Founders comparing two real options and wanting a structured, deterministic read on which one to take.",
+    when_to_use: "Use once you've narrowed a decision down to two real options worth comparing.",
+    when_not_to_use: "Not useful for more than two options at once, or for decisions that don't have distinct alternatives to compare.",
+    completion_minutes_min: 5,
+    completion_minutes_max: 10,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-09T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-strategy")],
+    stages: [stageRef("decide")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: BETTER_DECISION_MAKER_FRAMEWORK_ID,
+    tool_key: "better-decision-maker",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "Expected Value Comparator — free decision-comparison tool",
+    seo_description: "Compare two options by expected value and get a reversibility-aware recommendation, free, no account required.",
+  },
+];
+
 export const products: Product[] = [
   ...freeProducts,
   ...ideaValidationItems,
   ...productDefinitionItems,
   ...productIdeaAssessorFamilyOutputs,
   ...customerDiscoveryKitFamilyOutputs,
+  ...betterDecisionMakerFamilyOutputs,
 ];
 
 // ---------------------------------------------------------------------------
