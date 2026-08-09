@@ -268,23 +268,24 @@ export function toSummary(product: Product): ProductSummary {
 // ---------------------------------------------------------------------------
 // Frameworks (spec v3 §14.3, §37) — the reusable method/problem/outcome layer
 // above individual Guide/Template/Tool outputs. Product Idea Assessor,
-// Customer Discovery Kit, Better Decision Maker and MVP Scoper are fully
-// populated and published, each with a complete Guide/Template/Tool set
-// (see docs/decisions/0021 for how Customer Discovery Kit and
-// docs/decisions/0023 for how MVP Scoper each reused existing v2-era
-// template content, and docs/decisions/0022 for Better Decision Maker,
-// built entirely from new content). The remaining two flagship families
-// (spec v3 §37.1 Tier 1) are seeded as minimal, draft, flagship
-// placeholders per the product-owner decision recorded in docs/decisions —
-// visible as public "Coming soon" teasers (via
-// `it_frameworks_teasers`/`getFrameworkTeasers`), not full pages, and with
-// no child Guide/Template/Tool rows yet.
+// Customer Discovery Kit, Better Decision Maker, MVP Scoper and Product
+// Naming System are fully populated and published, each with a complete
+// Guide/Template/Tool set (see docs/decisions/0021 for how Customer
+// Discovery Kit and docs/decisions/0023 for how MVP Scoper each reused
+// existing v2-era template content, and docs/decisions/0022 for Better
+// Decision Maker and docs/decisions/0024 for Product Naming System, both
+// built entirely from new content). The remaining flagship family (spec v3
+// §37.1 Tier 1) is seeded as a minimal, draft, flagship placeholder per the
+// product-owner decision recorded in docs/decisions — visible as a public
+// "Coming soon" teaser (via `it_frameworks_teasers`/`getFrameworkTeasers`),
+// not a full page, and with no child Guide/Template/Tool rows yet.
 // ---------------------------------------------------------------------------
 
 export const PRODUCT_IDEA_ASSESSOR_FRAMEWORK_ID = "framework-product-idea-assessor";
 export const CUSTOMER_DISCOVERY_KIT_FRAMEWORK_ID = "framework-customer-discovery-kit";
 export const BETTER_DECISION_MAKER_FRAMEWORK_ID = "framework-better-decision-maker";
 export const MVP_SCOPER_FRAMEWORK_ID = "framework-mvp-scoper";
+export const PRODUCT_NAMING_SYSTEM_FRAMEWORK_ID = "framework-product-naming-system";
 
 export const frameworks: Framework[] = [
   {
@@ -407,28 +408,33 @@ export const frameworks: Framework[] = [
     next_step_framework_slug: "product-naming-system",
   },
   {
-    id: "framework-product-naming-system",
-    status: "draft",
+    id: PRODUCT_NAMING_SYSTEM_FRAMEWORK_ID,
+    status: "published",
     name: "Product Naming System",
     slug: "product-naming-system",
     short_description: "Choose a product name using weighted criteria instead of whoever argues loudest in the room.",
-    problem_statement: null,
+    problem_statement:
+      "Naming decisions default to a popularity contest — whoever is most senior or most persistent in the room wins — because nobody agreed on criteria first, and founders routinely fall in love with a name before checking whether it's even available to use.",
     outcome_statement: "A shortlist of names scored against the criteria that actually matter for this product.",
     target_audience: "Founders and product teams naming a new product.",
-    when_to_use: null,
-    when_not_to_use: null,
-    method_summary: null,
+    when_to_use: "Use once you have a scoped product and a rough list of candidate names to work through.",
+    when_not_to_use: "Not useful before you have real candidate names — this scores and compares names, it doesn't generate them.",
+    method_summary:
+      "Screen candidate names for availability first — domain, social handles, an informal trademark search — before getting attached to any of them; a name that's taken everywhere isn't an option, however good it sounds. Score the genuinely available survivors on memorability (can someone repeat it back later), clarity (does it hint at what the product does) and distinctiveness (does it stand out from competitors), rather than letting one strong criterion carry a name that's weak on the others. Test the final two or three candidates with real people outside the project, since the room is too close to the product to hear the name the way a stranger will.",
     journey_stage: stageRef("design"),
     priority_score: 93,
-    priority_rationale: "Ranked #4 in the source-material opportunity portfolio (spec v3 §37).",
-    source_strength: null,
-    source_note: null,
+    priority_rationale:
+      "Ranked #4 in the source-material opportunity portfolio (spec v3 §37): the natural next step once MVP Scoper has produced a scope worth naming.",
+    source_strength: "strong",
+    source_note:
+      "Developed from A Bit Gamey material on naming apps and products, including criteria for an apt name, the naming process, and trademark considerations.",
     flagship: true,
     display_order: 5,
-    seo_title: null,
-    seo_description: null,
-    published_at: null,
-    next_step_framework_slug: null,
+    seo_title: "Product Naming System — choose a product name on criteria, not confidence",
+    seo_description:
+      "How to name a product: memorability, clarity, distinctiveness and availability, and why checking availability first saves you from falling in love with a name you can't use.",
+    published_at: "2026-08-09T09:00:00Z",
+    next_step_framework_slug: "first-customers-planner",
   },
   {
     id: "framework-first-customers-planner",
@@ -2010,6 +2016,142 @@ const mvpScoperFamilyOutputs: Product[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Product Naming System family outputs (spec v3 §14.7, §37) — Guide, Template
+// and Tool all newly written for this family, same situation as Better
+// Decision Maker: no existing v2-era content covered product naming (see
+// docs/decisions/0024). The Guide's body lives in
+// content/guides/product-naming-system.mdx, joined to this row by matching
+// slug; the Template's body lives in content/seed/free-files/name-scorecard.md.
+// ---------------------------------------------------------------------------
+
+const productNamingSystemFamilyOutputs: Product[] = [
+  {
+    id: "product-naming-system-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "Product Naming System: the Guide",
+    slug: "product-naming-system",
+    short_description: "A weighted way to choose a product name — memorability, clarity, distinctiveness and availability.",
+    full_description:
+      "Explains how to screen candidate names for availability before getting attached to any of them, score the survivors on memorability, clarity and distinctiveness, and test the finalists with real people outside the project. Read this before the Template or the Tool — both assume the technique this guide teaches.",
+    outcome_statement: "A repeatable, criteria-based way to choose a product name instead of a room's strongest opinion.",
+    target_audience: "Founders and product teams naming a new product.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you already have two candidate names in mind and just want a scored comparison.",
+    completion_minutes_min: 8,
+    completion_minutes_max: 12,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-09T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-strategy")],
+    stages: [stageRef("design")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: PRODUCT_NAMING_SYSTEM_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "Product Naming System guide — choose a product name on criteria, not confidence",
+    seo_description:
+      "How to name a product: memorability, clarity, distinctiveness and availability, and why checking availability first saves you from falling in love with a name you can't use.",
+  },
+  {
+    id: "name-scorecard",
+    product_type: "template",
+    access_type: "free",
+    status: "published",
+    name: "Name Scorecard",
+    slug: "name-scorecard",
+    short_description: "Screen candidate names for availability, then score the survivors on memorability, clarity and distinctiveness.",
+    full_description:
+      "A structured worksheet for choosing a product name: screen candidates for availability first, score what's left against weighted naming criteria, and record what real people said when you tested the finalists.",
+    outcome_statement: "A shortlist of names scored against the criteria that actually matter for this product.",
+    target_audience: "Founders and product teams naming a new product.",
+    when_to_use: "Use once you have a scoped product and a rough list of candidate names to work through.",
+    when_not_to_use: "Not useful before you have real candidate names — this scores and compares names, it doesn't generate them.",
+    completion_minutes_min: 30,
+    completion_minutes_max: 45,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-09T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-strategy")],
+    stages: [stageRef("design")],
+    formats: ["markdown"],
+    is_placeholder: true,
+    framework_id: PRODUCT_NAMING_SYSTEM_FRAMEWORK_ID,
+    tool_key: null,
+    licence: standardLicence,
+    quality_standard: {
+      purpose: true,
+      instructions: true,
+      thinkingPrompts: true,
+      evidenceFields: true,
+      decisionOutcome: true,
+      nextStep: true,
+    },
+    files: [
+      {
+        id: "name-scorecard-md",
+        file_role: "template",
+        file_format: "markdown",
+        display_name: "Name Scorecard (Markdown, AI-agent-ready)",
+        is_public_preview: false,
+      },
+    ],
+    seo_title: "Name Scorecard — free template for choosing a product name",
+    seo_description: "Screen candidate names for availability, then score the survivors on memorability, clarity and distinctiveness, free.",
+  },
+  {
+    id: "product-naming-system-tool",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "Name Comparator",
+    slug: "product-naming-system-tool",
+    short_description: "Compare two candidate names head-to-head, and catch the ones that aren't actually usable.",
+    full_description:
+      "Answer four questions about each of two candidate names — memorability, clarity, distinctiveness and availability — and get a score for each, a recommendation, and one next step. A name that's taken everywhere is flagged as unusable outright, however well it scores on everything else. Usable anonymously, with no account required.",
+    outcome_statement: "A scored comparison of two candidate names, a recommendation, and one clear next step.",
+    target_audience: "Founders and product teams comparing two real candidate names.",
+    when_to_use: "Use once you've narrowed a naming decision down to two real candidates worth comparing.",
+    when_not_to_use: "Not useful for more than two candidates at once, or before you have real candidate names to compare.",
+    completion_minutes_min: 5,
+    completion_minutes_max: 10,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-09T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-strategy")],
+    stages: [stageRef("design")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: PRODUCT_NAMING_SYSTEM_FRAMEWORK_ID,
+    tool_key: "product-naming-system",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "Name Comparator — free product-naming comparison tool",
+    seo_description: "Compare two candidate product names head-to-head, free, no account required.",
+  },
+];
+
 export const products: Product[] = [
   ...freeProducts,
   ...ideaValidationItems,
@@ -2018,6 +2160,7 @@ export const products: Product[] = [
   ...customerDiscoveryKitFamilyOutputs,
   ...betterDecisionMakerFamilyOutputs,
   ...mvpScoperFamilyOutputs,
+  ...productNamingSystemFamilyOutputs,
 ];
 
 // ---------------------------------------------------------------------------

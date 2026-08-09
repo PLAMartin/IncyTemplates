@@ -5,6 +5,7 @@ import { PRODUCT_IDEA_ASSESSOR_TOOL_KEY } from "@/lib/tools/product-idea-assesso
 import { CUSTOMER_DISCOVERY_KIT_TOOL_KEY } from "@/lib/tools/customer-discovery-kit";
 import { BETTER_DECISION_MAKER_TOOL_KEY } from "@/lib/tools/better-decision-maker";
 import { MVP_SCOPER_TOOL_KEY } from "@/lib/tools/mvp-scoper";
+import { PRODUCT_NAMING_SYSTEM_TOOL_KEY } from "@/lib/tools/product-naming-system";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -85,5 +86,22 @@ describe("tool registry", () => {
     const result = definition.run(parsedInput);
     const parsedResult = definition.resultSchema.parse(result) as { classification: string };
     expect(parsedResult.classification).toBe("keep");
+  });
+
+  it("resolves the fifth registered tool (Product Naming System) independently of the others", () => {
+    const definition = getToolDefinition(PRODUCT_NAMING_SYSTEM_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      nameAMemorability: "high",
+      nameAClarity: "high",
+      nameADistinctiveness: "high",
+      nameAAvailability: "fully_available",
+      nameBMemorability: "low",
+      nameBClarity: "low",
+      nameBDistinctiveness: "low",
+      nameBAvailability: "fully_available",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { recommendation: string };
+    expect(parsedResult.recommendation).toBe("name_a");
   });
 });
