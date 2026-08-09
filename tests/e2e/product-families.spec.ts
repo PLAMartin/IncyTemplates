@@ -4,29 +4,16 @@ import { test, expect } from "@playwright/test";
  * Spec §41 MVP acceptance criterion: "draft frameworks/products are inaccessible
  * publicly" — with the product-owner-approved exception that draft *flagship* families
  * show as narrow "Coming soon" teasers (see supabase/migrations/20260809160010_
- * it_frameworks_rls.sql and docs/decisions). This test verifies the teaser stays teaser:
- * no editorial detail (problem statement, method summary) ever reaches the page, and a
- * draft family's own detail route never serves the full editorial page.
+ * it_frameworks_rls.sql and docs/decisions/0014). The two tests that used to live here
+ * ("draft framework shows only as a public teaser" / "visiting a draft framework's own
+ * page shows the in-development state") were retired in docs/decisions/0025: once First
+ * Customers Planner published, all six seeded frameworks are published and none are draft
+ * any more, so there's no real draft-flagship data left to point the tests at. The code
+ * paths they exercised (the `it_frameworks_teasers` view, and the teaser-fallback branch in
+ * `src/app/(marketing)/products/[slug]/page.tsx`) are untouched and still covered by every
+ * "published family" test below reaching the same page component — they'll get direct e2e
+ * coverage again the next time a framework is seeded as draft.
  */
-
-test("draft framework shows only as a public teaser, never full editorial detail", async ({ page }) => {
-  await page.goto("/products");
-  const teaserCard = page.getByRole("link", { name: /First Customers Planner/ });
-  await expect(teaserCard).toBeVisible();
-  await expect(teaserCard).toContainText("Coming soon");
-
-  await page.goto("/journey/launch");
-  await expect(page.getByRole("link", { name: /First Customers Planner/ })).toBeVisible();
-});
-
-test("visiting a draft framework's own page shows the in-development state, not full detail", async ({ page }) => {
-  await page.goto("/products/first-customers-planner");
-  await expect(page.getByRole("heading", { name: "First Customers Planner" })).toBeVisible();
-  await expect(page.getByText(/still in development/i)).toBeVisible();
-  // No "Ways to use this" outputs section (Guide/Template/Tool cards) exists for a draft
-  // family with no published outputs.
-  await expect(page.getByRole("heading", { name: "Ways to use this" })).toHaveCount(0);
-});
 
 test("the published Product Idea Assessor family page shows full detail and its outputs", async ({ page }) => {
   await page.goto("/products/product-idea-assessor");
@@ -97,8 +84,22 @@ test("the published Product Naming System family page shows full detail, its out
   await expect(page.getByText("Do it yourself")).toBeVisible();
   await expect(page.getByText("Do it interactively")).toBeVisible();
   await expect(page.getByRole("link", { name: /Name Scorecard/ })).toBeVisible();
-  // Recommended next step per its `next_step_framework_slug` — still a draft-flagship
-  // teaser at this point, which the "Next step" card renders identically to a published one.
+  // Recommended next step per its `next_step_framework_slug`.
   await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
   await expect(page.getByRole("link", { name: /First Customers Planner/ })).toBeVisible();
+});
+
+test("the published First Customers Planner family page shows full detail and its outputs, with no next step", async ({
+  page,
+}) => {
+  await page.goto("/products/first-customers-planner");
+  await expect(page.getByRole("heading", { name: "First Customers Planner", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /First 10 Customers Plan/ })).toBeVisible();
+  // Last family in the flagship journey — `next_step_framework_slug` is null, so no
+  // "Next step" section should render at all.
+  await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
 });

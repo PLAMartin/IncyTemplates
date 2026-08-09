@@ -13,6 +13,7 @@ import { CustomerDiscoveryKitRunner } from "@/components/tools/customer-discover
 import { BetterDecisionMakerRunner } from "@/components/tools/better-decision-maker/tool-runner";
 import { MvpScoperRunner } from "@/components/tools/mvp-scoper/tool-runner";
 import { ProductNamingSystemRunner } from "@/components/tools/product-naming-system/tool-runner";
+import { FirstCustomersPlannerRunner } from "@/components/tools/first-customers-planner/tool-runner";
 
 type Props = { params: Promise<{ toolKey: string }> };
 
@@ -27,6 +28,7 @@ const TOOL_RUNNERS: Record<string, ComponentType> = {
   "better-decision-maker": BetterDecisionMakerRunner,
   "mvp-scoper": MvpScoperRunner,
   "product-naming-system": ProductNamingSystemRunner,
+  "first-customers-planner": FirstCustomersPlannerRunner,
 };
 
 export async function generateStaticParams() {
