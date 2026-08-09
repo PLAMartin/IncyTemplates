@@ -11,17 +11,17 @@ import { test, expect } from "@playwright/test";
 
 test("draft framework shows only as a public teaser, never full editorial detail", async ({ page }) => {
   await page.goto("/products");
-  const teaserCard = page.getByRole("link", { name: /Better Decision Maker/ });
+  const teaserCard = page.getByRole("link", { name: /MVP Scoper/ });
   await expect(teaserCard).toBeVisible();
   await expect(teaserCard).toContainText("Coming soon");
 
-  await page.goto("/journey/decide");
-  await expect(page.getByRole("link", { name: /Better Decision Maker/ })).toBeVisible();
+  await page.goto("/journey/build");
+  await expect(page.getByRole("link", { name: /MVP Scoper/ })).toBeVisible();
 });
 
 test("visiting a draft framework's own page shows the in-development state, not full detail", async ({ page }) => {
-  await page.goto("/products/better-decision-maker");
-  await expect(page.getByRole("heading", { name: "Better Decision Maker" })).toBeVisible();
+  await page.goto("/products/mvp-scoper");
+  await expect(page.getByRole("heading", { name: "MVP Scoper" })).toBeVisible();
   await expect(page.getByText(/still in development/i)).toBeVisible();
   // No "Ways to use this" outputs section (Guide/Template/Tool cards) exists for a draft
   // family with no published outputs.
@@ -55,4 +55,20 @@ test("the published Customer Discovery Kit family page shows full detail, its ou
   // Recommended next step per its `next_step_framework_slug`.
   await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
   await expect(page.getByRole("link", { name: /Better Decision Maker/ })).toBeVisible();
+});
+
+test("the published Better Decision Maker family page shows full detail, its outputs, and links on to its next step", async ({
+  page,
+}) => {
+  await page.goto("/products/better-decision-maker");
+  await expect(page.getByRole("heading", { name: "Better Decision Maker", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Decision Worksheet/ })).toBeVisible();
+  // Recommended next step per its `next_step_framework_slug` — still a draft-flagship
+  // teaser at this point, which the "Next step" card renders identically to a published one.
+  await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /MVP Scoper/ })).toBeVisible();
 });

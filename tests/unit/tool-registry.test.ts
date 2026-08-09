@@ -3,6 +3,7 @@ import { findToolDefinition, getToolDefinition } from "@/lib/tools/registry";
 import { ToolNotAvailableError } from "@/lib/tools/types";
 import { PRODUCT_IDEA_ASSESSOR_TOOL_KEY } from "@/lib/tools/product-idea-assessor";
 import { CUSTOMER_DISCOVERY_KIT_TOOL_KEY } from "@/lib/tools/customer-discovery-kit";
+import { BETTER_DECISION_MAKER_TOOL_KEY } from "@/lib/tools/better-decision-maker";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -53,5 +54,22 @@ describe("tool registry", () => {
     const result = definition.run(parsedInput);
     const parsedResult = definition.resultSchema.parse(result) as { evidenceStrengthScore: number };
     expect(parsedResult.evidenceStrengthScore).toBe(100);
+  });
+
+  it("resolves the third registered tool (Better Decision Maker) independently of the first two", () => {
+    const definition = getToolDefinition(BETTER_DECISION_MAKER_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      optionALikelihood: "high",
+      optionAImpact: "large",
+      optionAEffort: "low",
+      optionAReversibility: "two_way_door",
+      optionBLikelihood: "low",
+      optionBImpact: "small",
+      optionBEffort: "high",
+      optionBReversibility: "one_way_door",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { recommendation: string };
+    expect(parsedResult.recommendation).toBe("option_a");
   });
 });
