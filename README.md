@@ -11,26 +11,32 @@ operated by Incyworks Ltd.
 
 ## Current milestone
 
-This build targets the **v3 spec's recommended first milestone**
-(`docs/Incytemplates-website-spec-v3.md`, §45): the framework/product-family
-data model, Guide/Template/Tool as distinct first-class output types, a Tool
-registry pattern, and five flagship families built fully end-to-end (Guide +
+This build completes the **v3 spec's recommended first milestone**
+(`docs/Incytemplates-website-spec-v3.md`, §45) and spec §5.2's full
+first-release scope: the framework/product-family data model,
+Guide/Template/Tool as distinct first-class output types, a Tool registry
+pattern, and **all six flagship families** built fully end-to-end (Guide +
 Template + an anonymous, deterministic interactive Tool each) — **Product
 Idea Assessor**, **Customer Discovery Kit** (see
 [`docs/decisions/0021`](docs/decisions/0021-customer-discovery-kit-family.md)),
 **Better Decision Maker** (see
 [`docs/decisions/0022`](docs/decisions/0022-better-decision-maker-family.md)),
 **MVP Scoper** (see
-[`docs/decisions/0023`](docs/decisions/0023-mvp-scoper-family.md))
-and **Product Naming System** (see
+[`docs/decisions/0023`](docs/decisions/0023-mvp-scoper-family.md)),
+**Product Naming System** (see
 [`docs/decisions/0024`](docs/decisions/0024-product-naming-system-family.md))
+and **First Customers Planner** (see
+[`docs/decisions/0025`](docs/decisions/0025-first-customers-planner-family.md))
 — alongside journey-stage navigation (`/journey/*`) and a framework
-catalogue (`/products/*`). The one remaining flagship family, First
-Customers Planner, is seeded as a draft "Coming soon" placeholder —
-visible on listing pages, no published outputs yet (see
-[`docs/decisions/0014`](docs/decisions/0014-draft-flagship-family-public-teasers.md)).
-The earlier, v2-era template/bundle catalogue (`/templates`, `/bundles`)
-still exists underneath and is unaffected.
+catalogue (`/products/*`). No frameworks in the seed data are draft any
+more; the "Coming soon" draft-flagship-teaser mechanism (see
+[`docs/decisions/0014`](docs/decisions/0014-draft-flagship-family-public-teasers.md))
+stays in the codebase for whenever a future framework needs it, but nothing
+currently exercises it (see
+[`docs/decisions/0025`](docs/decisions/0025-first-customers-planner-family.md)
+for what that meant for e2e test coverage). The earlier, v2-era
+template/bundle catalogue (`/templates`, `/bundles`) still exists
+underneath and is unaffected.
 
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per

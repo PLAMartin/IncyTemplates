@@ -139,10 +139,10 @@ insert into public.it_frameworks (
   priority_score, priority_rationale, source_strength, source_note, flagship,
   display_order, seo_title, seo_description, published_at
 ) values (
-  'beb80f09-0dbb-02cf-91f6-7a611a156ab1', 'draft', 'First Customers Planner', 'first-customers-planner', 'Plan how you''ll find your first customers instead of hoping they find you.', null, 'A prioritised plan for reaching a first set of real customers.',
-  'Founders approaching launch who don''t yet have a customer-acquisition plan.', null, null, null, '631ab1c8-889b-c8a5-a382-6aa9044bc3ab',
-  90, 'Ranked #7 in the source-material opportunity portfolio (spec v3 §37).', null, null, true,
-  6, null, null, null
+  'beb80f09-0dbb-02cf-91f6-7a611a156ab1', 'published', 'First Customers Planner', 'first-customers-planner', 'Plan how you''ll find your first customers instead of hoping they find you.', 'Founders launch and wait for customers to find them, or spread thin across every channel at once — instead of starting from warm leads, committing to one channel long enough to get a real answer, and writing outreach specific enough to actually work.', 'A prioritised plan for reaching a first set of real customers.',
+  'Founders approaching launch who don''t yet have a customer-acquisition plan.', 'Use once you have a named product ready to put in front of real people.', 'Not useful before you have a real, named product to put in front of people — this plans outreach, it doesn''t validate the idea itself.', 'Start with warm leads — people who''ve already shown some signal — and exhaust that list before spending energy on cold outreach. Pick the single channel that best matches where your audience already spends attention and your own strengths as a founder, and commit to it long enough to get a real answer before adding a second one. Write outreach specific enough to the recipient that it couldn''t have been sent to anyone else. Track named prospects and what happened with each, not just a vanity signup target.', '631ab1c8-889b-c8a5-a382-6aa9044bc3ab',
+  90, 'Ranked #7 in the source-material opportunity portfolio (spec v3 §37) and the sixth and final family in the Tier 1 flagship launch order — the natural close of the founder journey this platform covers, from assessing an idea through to finding the people who''ll actually use it.', 'strong', 'Developed from A Bit Gamey material on cold outreach and driving product demand, including starting from warm leads and writing outreach specific enough to work.', true,
+  6, 'First Customers Planner — find your first customers instead of waiting for them', 'How to plan customer acquisition for a new product: starting warm, picking one channel, personalised outreach, and tracking real people by name.', '2026-08-09T09:00:00Z'
 )
 on conflict (id) do update set status = excluded.status, name = excluded.name, slug = excluded.slug,
   short_description = excluded.short_description, problem_statement = excluded.problem_statement,
@@ -1197,6 +1197,87 @@ insert into public.it_products (
   published_at, scheduled_for, seo_title, seo_description, schema_data,
   framework_id, tool_key
 ) values (
+  '3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', 'guide', 'free', 'published', 'First Customers Planner: the Guide', 'first-customers-planner', 'A plan for finding your first real customers — starting warm, picking one channel, and getting specific.', 'Explains how to start from warm leads, commit to one acquisition channel long enough to get a real answer, write outreach specific enough to actually work, and track named prospects rather than a vanity target. Read this before the Template or the Tool — both assume the technique this guide teaches.',
+  'A repeatable way to find first customers deliberately instead of waiting for them to show up.', 'Founders approaching launch who don''t yet have a customer-acquisition plan.', 'Read this first, before the Template or the Tool.', 'Skip straight to the Tool if you already have a specific channel in mind and just want a scored fit check.',
+  8, 12, 'beginner', '1.0',
+  null, null, 'GBP', null, true,
+  '2026-08-09T09:00:00Z', null, 'First Customers Planner guide — find your first customers instead of waiting for them', 'How to plan customer acquisition for a new product: starting warm, picking one channel, personalised outreach, and tracking real people by name.', '{"placeholder":true}'::jsonb,
+  'beb80f09-0dbb-02cf-91f6-7a611a156ab1', null
+)
+on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
+  status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, full_description = excluded.full_description,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  completion_minutes_min = excluded.completion_minutes_min, completion_minutes_max = excluded.completion_minutes_max,
+  skill_level = excluded.skill_level, current_version = excluded.current_version,
+  price_minor = excluded.price_minor, compare_at_price_minor = excluded.compare_at_price_minor,
+  currency_code = excluded.currency_code, licence_id = excluded.licence_id, featured = excluded.featured,
+  published_at = excluded.published_at, scheduled_for = excluded.scheduled_for, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, schema_data = excluded.schema_data,
+  framework_id = excluded.framework_id, tool_key = excluded.tool_key;
+insert into public.it_products (
+  id, product_type, access_type, status, name, slug, short_description, full_description,
+  outcome_statement, target_audience, when_to_use, when_not_to_use,
+  completion_minutes_min, completion_minutes_max, skill_level, current_version,
+  price_minor, compare_at_price_minor, currency_code, licence_id, featured,
+  published_at, scheduled_for, seo_title, seo_description, schema_data,
+  framework_id, tool_key
+) values (
+  '750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', 'template', 'free', 'published', 'First 10 Customers Plan', 'first-10-customers-plan', 'Build a warm-lead list, commit to one channel, and track named prospects instead of a vanity signup target.', 'A structured plan for finding first customers: a warm-lead list, the one acquisition channel you''ve committed to with an outreach script specific enough to work, and a running log of named prospects and what happened with each.',
+  'A prioritised plan for reaching a first set of real customers.', 'Founders approaching launch who don''t yet have a customer-acquisition plan.', 'Use once you have a named product ready to put in front of real people.', 'Not useful before you have a real, named product to put in front of people — this plans outreach, it doesn''t validate the idea itself.',
+  30, 45, 'beginner', '1.0',
+  null, null, 'GBP', '488fbee7-849e-4e17-2d2e-e386ec5328ca', true,
+  '2026-08-09T09:00:00Z', null, 'First 10 Customers Plan — free customer-acquisition planning template', 'Build a warm-lead list, commit to one channel, and track named prospects instead of a vanity signup target, free.', '{"placeholder":true}'::jsonb,
+  'beb80f09-0dbb-02cf-91f6-7a611a156ab1', null
+)
+on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
+  status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, full_description = excluded.full_description,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  completion_minutes_min = excluded.completion_minutes_min, completion_minutes_max = excluded.completion_minutes_max,
+  skill_level = excluded.skill_level, current_version = excluded.current_version,
+  price_minor = excluded.price_minor, compare_at_price_minor = excluded.compare_at_price_minor,
+  currency_code = excluded.currency_code, licence_id = excluded.licence_id, featured = excluded.featured,
+  published_at = excluded.published_at, scheduled_for = excluded.scheduled_for, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, schema_data = excluded.schema_data,
+  framework_id = excluded.framework_id, tool_key = excluded.tool_key;
+insert into public.it_products (
+  id, product_type, access_type, status, name, slug, short_description, full_description,
+  outcome_statement, target_audience, when_to_use, when_not_to_use,
+  completion_minutes_min, completion_minutes_max, skill_level, current_version,
+  price_minor, compare_at_price_minor, currency_code, licence_id, featured,
+  published_at, scheduled_for, seo_title, seo_description, schema_data,
+  framework_id, tool_key
+) values (
+  'b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', 'tool', 'free', 'published', 'Channel Selector', 'first-customers-planner-tool', 'Score how well a specific acquisition channel fits your situation, and get a concrete next step.', 'Pick the channel you''re evaluating — cold outreach, content marketing, communities and forums, or your existing network — and answer four questions about your situation: audience presence, founder fit, effort to start, and repeatability. Get a fit score, a strongest and weakest factor, and one concrete next step. Usable anonymously, with no account required.',
+  'A fit score for a specific acquisition channel, a named strongest and weakest factor, and one clear next step.', 'Founders deciding which single channel to commit to for finding first customers.', 'Use once you have a specific channel in mind and want a structured read on whether it actually fits your situation.', 'Not a substitute for actually running the channel — it scores fit on paper, it doesn''t replace a real first attempt.',
+  5, 5, 'beginner', '1.0',
+  null, null, 'GBP', null, true,
+  '2026-08-09T09:00:00Z', null, 'Channel Selector — free customer-acquisition channel fit tool', 'Score how well a specific acquisition channel fits your situation, free, no account required.', '{"placeholder":true}'::jsonb,
+  'beb80f09-0dbb-02cf-91f6-7a611a156ab1', 'first-customers-planner'
+)
+on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
+  status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, full_description = excluded.full_description,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  completion_minutes_min = excluded.completion_minutes_min, completion_minutes_max = excluded.completion_minutes_max,
+  skill_level = excluded.skill_level, current_version = excluded.current_version,
+  price_minor = excluded.price_minor, compare_at_price_minor = excluded.compare_at_price_minor,
+  currency_code = excluded.currency_code, licence_id = excluded.licence_id, featured = excluded.featured,
+  published_at = excluded.published_at, scheduled_for = excluded.scheduled_for, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, schema_data = excluded.schema_data,
+  framework_id = excluded.framework_id, tool_key = excluded.tool_key;
+insert into public.it_products (
+  id, product_type, access_type, status, name, slug, short_description, full_description,
+  outcome_statement, target_audience, when_to_use, when_not_to_use,
+  completion_minutes_min, completion_minutes_max, skill_level, current_version,
+  price_minor, compare_at_price_minor, currency_code, licence_id, featured,
+  published_at, scheduled_for, seo_title, seo_description, schema_data,
+  framework_id, tool_key
+) values (
   'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', 'bundle', 'paid', 'published', 'Idea Validation Pack', 'idea-validation-pack', 'Nine templates that take you from a raw idea to a documented proceed-revise-pause decision, backed by evidence rather than confidence.', 'The Idea Validation Pack is the complete evidence-led path from a raw idea to a defensible decision. It sequences nine templates — intake, founder fit, problem evidence, competitive alternatives, a team Copy–Improve–Differentiate workshop, assumption ranking, a full interview system, evidence synthesis, and a closing proceed/revise/pause decision — into a single 1–2 week process, instead of leaving you to assemble one from separate free worksheets.',
   'A documented, evidence-based decision on whether to proceed, revise or pause — not just a folder of worksheets.', 'Founders who want a structured, complete path through idea validation rather than assembling their own process from free templates.', 'Use end-to-end over 1–2 weeks when you''re serious about validating a new idea before committing real time or money.', 'If you only need one part of the process — for example, just customer interviews — the free Customer Interview Planner may be enough on its own.',
   240, 480, 'intermediate', '1.0',
@@ -1245,7 +1326,7 @@ on conflict (id) do update set product_type = excluded.product_type, access_type
   framework_id = excluded.framework_id, tool_key = excluded.tool_key;
 
 -- it_product_categories (full replace for the products this script manages)
-delete from public.it_product_categories where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', '1dca4420-0caf-b736-a6b9-63e9d09c9c82', 'e6306744-459c-6a1a-a183-e51c4a7ad76d', '1b97b540-1b26-effb-101b-1067402e856d', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
+delete from public.it_product_categories where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', '1dca4420-0caf-b736-a6b9-63e9d09c9c82', 'e6306744-459c-6a1a-a183-e51c4a7ad76d', '1b97b540-1b26-effb-101b-1067402e856d', '3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', 'b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('af2edcc3-4630-bbd6-e144-29ff50d794b1', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', '9c66d23e-6490-8df9-1a77-759635564cfc', true);
@@ -1284,11 +1365,14 @@ insert into public.it_product_categories (product_id, category_id, is_primary) v
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('1dca4420-0caf-b736-a6b9-63e9d09c9c82', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('e6306744-459c-6a1a-a183-e51c4a7ad76d', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('1b97b540-1b26-effb-101b-1067402e856d', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
+insert into public.it_product_categories (product_id, category_id, is_primary) values ('3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '4af5c43b-4065-4251-cd7e-09d868b59f60', true);
+insert into public.it_product_categories (product_id, category_id, is_primary) values ('750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', '4af5c43b-4065-4251-cd7e-09d868b59f60', true);
+insert into public.it_product_categories (product_id, category_id, is_primary) values ('b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', '4af5c43b-4065-4251-cd7e-09d868b59f60', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb', 'e11948c4-e14f-706e-2968-269c8566f9f6', true);
 
 -- it_product_stages (full replace for the products this script manages)
-delete from public.it_product_stages where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', '1dca4420-0caf-b736-a6b9-63e9d09c9c82', 'e6306744-459c-6a1a-a183-e51c4a7ad76d', '1b97b540-1b26-effb-101b-1067402e856d', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
+delete from public.it_product_stages where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', '1dca4420-0caf-b736-a6b9-63e9d09c9c82', 'e6306744-459c-6a1a-a183-e51c4a7ad76d', '1b97b540-1b26-effb-101b-1067402e856d', '3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', 'b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('af2edcc3-4630-bbd6-e144-29ff50d794b1', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', '8f0f32b0-bba6-e3a0-a144-46ebfbcab4c0', true);
@@ -1327,6 +1411,9 @@ insert into public.it_product_stages (product_id, stage_id, is_primary) values (
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('1dca4420-0caf-b736-a6b9-63e9d09c9c82', 'cf668b0e-b443-8f64-21ed-80ac162bfc1e', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('e6306744-459c-6a1a-a183-e51c4a7ad76d', 'cf668b0e-b443-8f64-21ed-80ac162bfc1e', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('1b97b540-1b26-effb-101b-1067402e856d', 'cf668b0e-b443-8f64-21ed-80ac162bfc1e', true);
+insert into public.it_product_stages (product_id, stage_id, is_primary) values ('3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '631ab1c8-889b-c8a5-a382-6aa9044bc3ab', true);
+insert into public.it_product_stages (product_id, stage_id, is_primary) values ('750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', '631ab1c8-889b-c8a5-a382-6aa9044bc3ab', true);
+insert into public.it_product_stages (product_id, stage_id, is_primary) values ('b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', '631ab1c8-889b-c8a5-a382-6aa9044bc3ab', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb', 'cf668b0e-b443-8f64-21ed-80ac162bfc1e', true);
 
