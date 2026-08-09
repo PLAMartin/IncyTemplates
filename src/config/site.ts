@@ -58,6 +58,7 @@ export const footerNav: { heading: string; links: NavLink[] }[] = [
       { label: "Guides", href: "/guides" },
       { label: "Templates", href: "/templates" },
       { label: "Tools", href: "/tools" },
+      { label: "Not sure where to start?", href: "/finder" },
       { label: "Bundles", href: "/bundles" },
       { label: "Source: A Bit Gamey", href: "/about#source" },
     ],

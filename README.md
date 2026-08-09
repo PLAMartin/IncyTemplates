@@ -38,6 +38,13 @@ for what that meant for e2e test coverage). The earlier, v2-era
 template/bundle catalogue (`/templates`, `/bundles`) still exists
 underneath and is unaffected.
 
+With all six flagship families complete, work has started on spec §5.3's
+**Phase 1.1 enhancements**. First up: the **Next Step Finder** (`/finder`,
+spec §22) — a three-question, fully client-side, deterministic routing quiz
+across the six published families, with no LLM and no database-stored
+rules table (see
+[`docs/decisions/0026`](docs/decisions/0026-next-step-finder.md)).
+
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per
 the spec's own phasing. Product/bundle pages still use a waitlist

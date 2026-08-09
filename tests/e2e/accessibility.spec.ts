@@ -69,3 +69,26 @@ test("the Tool's result state has no serious/critical axe violations", async ({ 
   await expect(page.getByRole("heading", { name: /^Your result:/ })).toBeVisible();
   await expectNoSeriousViolations(page);
 });
+
+test("the Next Step Finder's start state has no serious/critical axe violations", async ({ page }) => {
+  await page.goto("/finder");
+  await expectNoSeriousViolations(page);
+});
+
+test("the Next Step Finder's in-progress state has no serious/critical axe violations", async ({ page }) => {
+  await page.goto("/finder");
+  await page.getByRole("button", { name: "Find my next step" }).click();
+  await expectNoSeriousViolations(page);
+});
+
+test("the Next Step Finder's result state has no serious/critical axe violations", async ({ page }) => {
+  await page.goto("/finder");
+  await page.getByRole("button", { name: "Find my next step" }).click();
+  for (let step = 0; step < 3; step++) {
+    await page.locator('fieldset input[type="radio"]').first().check();
+    const isLast = step === 2;
+    await page.getByRole("button", { name: isLast ? "See my recommendation" : "Continue" }).click();
+  }
+  await expect(page.getByRole("heading", { name: "Your recommendation" })).toBeVisible();
+  await expectNoSeriousViolations(page);
+});

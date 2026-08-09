@@ -15,6 +15,7 @@ const STATIC_PATHS = [
   "/templates/categories",
   "/templates/stages",
   "/tools",
+  "/finder",
   "/bundles",
   "/guides",
   "/about",
