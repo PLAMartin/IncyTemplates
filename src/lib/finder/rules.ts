@@ -30,6 +30,7 @@ export const OUTCOME_FRAMEWORK_SLUG: Record<Exclude<Outcome, "not_sure">, string
   choose_a_name: "product-naming-system",
   find_customers: "first-customers-planner",
   check_fit: "product-market-fit-tracker",
+  choose_pricing: "pricing-your-product",
 };
 
 const PROGRESS_OUTPUT_TYPE: Record<Progress, FinderOutputType> = {

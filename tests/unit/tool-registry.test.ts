@@ -8,6 +8,7 @@ import { MVP_SCOPER_TOOL_KEY } from "@/lib/tools/mvp-scoper";
 import { PRODUCT_NAMING_SYSTEM_TOOL_KEY } from "@/lib/tools/product-naming-system";
 import { FIRST_CUSTOMERS_PLANNER_TOOL_KEY } from "@/lib/tools/first-customers-planner";
 import { PRODUCT_MARKET_FIT_TRACKER_TOOL_KEY } from "@/lib/tools/product-market-fit-tracker";
+import { PRICING_YOUR_PRODUCT_TOOL_KEY } from "@/lib/tools/pricing-your-product";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -121,7 +122,7 @@ describe("tool registry", () => {
     expect(parsedResult.fit).toBe("strong_fit");
   });
 
-  it("resolves the seventh and final registered tool (Product/Market Fit Tracker) independently of the others", () => {
+  it("resolves the seventh registered tool (Product/Market Fit Tracker) independently of the others", () => {
     const definition = getToolDefinition(PRODUCT_MARKET_FIT_TRACKER_TOOL_KEY);
     const parsedInput = definition.inputSchema.parse({
       disappointmentSignal: "high",
@@ -133,5 +134,18 @@ describe("tool registry", () => {
     const result = definition.run(parsedInput);
     const parsedResult = definition.resultSchema.parse(result) as { fit: string };
     expect(parsedResult.fit).toBe("strong_fit");
+  });
+
+  it("resolves the eighth and final registered tool (Pricing Your Product) independently of the others", () => {
+    const definition = getToolDefinition(PRICING_YOUR_PRODUCT_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      valueMetric: "clear",
+      purchasePattern: "ongoing",
+      customerType: "individual",
+      priceVisibility: "not_visible",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { recommendedModel: string };
+    expect(parsedResult.recommendedModel).toBe("usage_based");
   });
 });

@@ -52,6 +52,15 @@ the **Improve** journey stage, which none of the six Tier 1 flagships cover.
 It chains directly on from First Customers Planner and is wired into the
 Next Step Finder alongside the original six.
 
+An eighth family has since shipped: **Pricing Your Product** (see
+[`docs/decisions/0028`](docs/decisions/0028-pricing-your-product-family.md)),
+the second Tier 2 family. Its Tool is the first to score four named candidate
+pricing models against each other — one-time, flat subscription, usage-based
+and tiered — rather than a single subject against fixed thresholds. It chains
+directly on from Product/Market Fit Tracker as the new terminal family in the
+founder journey, and is wired into the Next Step Finder alongside the other
+seven.
+
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per
 the spec's own phasing. Product/bundle pages still use a waitlist

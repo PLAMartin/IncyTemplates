@@ -289,6 +289,7 @@ export const MVP_SCOPER_FRAMEWORK_ID = "framework-mvp-scoper";
 export const PRODUCT_NAMING_SYSTEM_FRAMEWORK_ID = "framework-product-naming-system";
 export const FIRST_CUSTOMERS_PLANNER_FRAMEWORK_ID = "framework-first-customers-planner";
 export const PRODUCT_MARKET_FIT_TRACKER_FRAMEWORK_ID = "framework-product-market-fit-tracker";
+export const PRICING_YOUR_PRODUCT_FRAMEWORK_ID = "framework-pricing-your-product";
 
 export const frameworks: Framework[] = [
   {
@@ -485,7 +486,7 @@ export const frameworks: Framework[] = [
     journey_stage: stageRef("improve"),
     priority_score: 91,
     priority_rationale:
-      "Ranked #6 in the source-material opportunity portfolio (spec v3 §37) and the first Tier 2 family, taken up immediately after all six Tier 1 flagship families shipped — the natural next step once First Customers Planner has produced real customers to check fit against, and the first family to occupy the otherwise-uncovered Improve journey stage.",
+      "Ranked #6 in the source-material opportunity portfolio (spec v3 §37) and the first Tier 2 family, taken up immediately after all six Tier 1 flagship families shipped — the natural next step once First Customers Planner has produced real customers to check fit against, and the first family to occupy the otherwise-uncovered Improve journey stage. Once you know you have fit, the next question is what to charge for it.",
     source_strength: "strong",
     source_note:
       "Developed from A Bit Gamey material on the four steps to product-market fit and related PMF posts, including the Sean Ellis 'how would you feel' test as the anchor signal.",
@@ -495,7 +496,35 @@ export const frameworks: Framework[] = [
     seo_description:
       "How to check for real product-market fit: the Sean Ellis test, retention, organic growth, referral and paying intent.",
     published_at: "2026-08-10T09:00:00Z",
-    // First Tier 2 family, and the newest terminal point in the founder journey.
+    next_step_framework_slug: "pricing-your-product",
+  },
+  {
+    id: PRICING_YOUR_PRODUCT_FRAMEWORK_ID,
+    status: "published",
+    name: "Pricing Your Product",
+    slug: "pricing-your-product",
+    short_description: "Work out which pricing model actually fits how your product delivers value, before you pick a number.",
+    problem_statement:
+      "Founders pick a pricing model — subscription because that's what everyone does, or a flat one-off price because it's simple — without checking whether it matches how the product actually delivers value, who's buying it, or how visible competitor pricing is. The model is wrong before the number is even chosen.",
+    outcome_statement: "A recommended pricing model, a runner-up, and the one factor that separated them.",
+    target_audience: "Founders with a product people already want who now need to decide how to charge for it.",
+    when_to_use: "Use once you have product-market fit and real customers to reason about, before you commit to a specific price.",
+    when_not_to_use: "Not useful before you know whether people want the product at all — that's what Product/Market Fit Tracker is for.",
+    method_summary:
+      "Work out how value actually scales — is there a countable unit customers already understand (seats, usage, projects), or does everyone get roughly the same thing? Check whether use is genuinely ongoing or a one-off job, since a one-off job can't sustain a subscription regardless of anything else. Factor in who's buying (an individual, a small business or an enterprise with a formal process) and how easily customers can compare your price to a competitor's — pricing that's hard to compare directly can capture more value through tiers; pricing that's easy to compare usually needs to stay simple. Combining these rules out some models outright and ranks what's left, so you get a recommended model and the runner-up it beat.",
+    journey_stage: stageRef("launch"),
+    priority_score: 89,
+    priority_rationale:
+      "Ranked #8 in the source-material opportunity portfolio (spec v3 §37) and the second Tier 2 family, taken up immediately after Product/Market Fit Tracker — once a founder knows they have fit, choosing how to charge for it is the natural next question, so this family continues the founder journey rather than starting a separate track.",
+    source_strength: "strong",
+    source_note:
+      "Developed from A Bit Gamey material on app pricing, including price discrimination, relative/anchor pricing and monetisation model choice.",
+    flagship: false,
+    display_order: 8,
+    seo_title: "Pricing Your Product — choose the right pricing model before you pick a number",
+    seo_description:
+      "Work out whether a one-time price, a flat subscription, usage-based pricing or a tiered subscription actually fits how your product delivers value.",
+    published_at: "2026-08-10T09:00:00Z",
     next_step_framework_slug: null,
   },
 ];
@@ -2464,6 +2493,132 @@ const productMarketFitTrackerFamilyOutputs: Product[] = [
   },
 ];
 
+const pricingYourProductFamilyOutputs: Product[] = [
+  {
+    id: "pricing-your-product-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "Pricing Your Product: the Guide",
+    slug: "pricing-your-product",
+    short_description: "How to choose a pricing model that actually fits how your product delivers value.",
+    full_description:
+      "Explains how value-metric clarity, purchase pattern, buyer type and price visibility point toward a one-time price, a flat subscription, usage-based pricing or a tiered subscription — and how price discrimination and relative/anchor pricing change which model wins. Read this before the Template or the Tool — both assume the technique this guide teaches.",
+    outcome_statement: "A clear framework for choosing a pricing model, before you pick a number.",
+    target_audience: "Founders with a product people already want who now need to decide how to charge for it.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you already know your answers and just want a scored recommendation.",
+    completion_minutes_min: 8,
+    completion_minutes_max: 12,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-10T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("business-planning")],
+    stages: [stageRef("launch")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: PRICING_YOUR_PRODUCT_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "Pricing Your Product guide — choose the right pricing model before you pick a number",
+    seo_description: "How to choose a pricing model that fits your product: value metrics, price discrimination and relative pricing.",
+  },
+  {
+    id: "pricing-model-comparison",
+    product_type: "template",
+    access_type: "free",
+    status: "published",
+    name: "Pricing Model Comparison Worksheet",
+    slug: "pricing-model-comparison",
+    short_description: "A worksheet comparing four pricing models against your product, so you pick a model deliberately.",
+    full_description:
+      "A structured comparison of one-time, flat subscription, usage-based and tiered pricing — prompts to work out your own value metric, buyer type and price visibility, then match them against the model that fits.",
+    outcome_statement: "A worked comparison of pricing models against your product, and a chosen model with reasons written down.",
+    target_audience: "Founders with a product people already want who now need to decide how to charge for it.",
+    when_to_use: "Use once you have product-market fit and real customers to reason about.",
+    when_not_to_use: "Not useful before you know whether people want the product at all.",
+    completion_minutes_min: 20,
+    completion_minutes_max: 30,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-10T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("business-planning")],
+    stages: [stageRef("launch")],
+    formats: ["markdown"],
+    is_placeholder: true,
+    framework_id: PRICING_YOUR_PRODUCT_FRAMEWORK_ID,
+    tool_key: null,
+    licence: standardLicence,
+    quality_standard: {
+      purpose: true,
+      instructions: true,
+      thinkingPrompts: true,
+      evidenceFields: true,
+      decisionOutcome: true,
+      nextStep: true,
+    },
+    files: [
+      {
+        id: "pricing-model-comparison-md",
+        file_role: "template",
+        file_format: "markdown",
+        display_name: "Pricing Model Comparison Worksheet (Markdown, AI-agent-ready)",
+        is_public_preview: false,
+      },
+    ],
+    seo_title: "Pricing Model Comparison Worksheet — free pricing model comparison template",
+    seo_description: "Compare one-time, flat subscription, usage-based and tiered pricing against your product, free.",
+  },
+  {
+    id: "pricing-your-product-tool",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "Pricing Model Recommender",
+    slug: "pricing-your-product-tool",
+    short_description: "Get a recommended pricing model and a runner-up, based on how your product delivers value.",
+    full_description:
+      "Answer four questions about your situation — purchase pattern, value metric clarity, buyer type and price visibility — and get a recommended pricing model, a runner-up, and one concrete next step. Usable anonymously, with no account required.",
+    outcome_statement: "A recommended pricing model, a runner-up, and one clear next step.",
+    target_audience: "Founders with a product people already want who now need to decide how to charge for it.",
+    when_to_use: "Use once you have product-market fit and want a structured recommendation.",
+    when_not_to_use: "Not a substitute for testing a real price with real customers — it recommends a model, it doesn't set your number.",
+    completion_minutes_min: 3,
+    completion_minutes_max: 5,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-10T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("business-planning")],
+    stages: [stageRef("launch")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: PRICING_YOUR_PRODUCT_FRAMEWORK_ID,
+    tool_key: "pricing-your-product",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "Pricing Model Recommender — free pricing model recommendation tool",
+    seo_description: "Get a recommended pricing model and a runner-up based on how your product delivers value, free, no account required.",
+  },
+];
+
 export const products: Product[] = [
   ...freeProducts,
   ...ideaValidationItems,
@@ -2475,6 +2630,7 @@ export const products: Product[] = [
   ...productNamingSystemFamilyOutputs,
   ...firstCustomersPlannerFamilyOutputs,
   ...productMarketFitTrackerFamilyOutputs,
+  ...pricingYourProductFamilyOutputs,
 ];
 
 // ---------------------------------------------------------------------------
