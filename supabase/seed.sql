@@ -141,8 +141,28 @@ insert into public.it_frameworks (
 ) values (
   'beb80f09-0dbb-02cf-91f6-7a611a156ab1', 'published', 'First Customers Planner', 'first-customers-planner', 'Plan how you''ll find your first customers instead of hoping they find you.', 'Founders launch and wait for customers to find them, or spread thin across every channel at once — instead of starting from warm leads, committing to one channel long enough to get a real answer, and writing outreach specific enough to actually work.', 'A prioritised plan for reaching a first set of real customers.',
   'Founders approaching launch who don''t yet have a customer-acquisition plan.', 'Use once you have a named product ready to put in front of real people.', 'Not useful before you have a real, named product to put in front of people — this plans outreach, it doesn''t validate the idea itself.', 'Start with warm leads — people who''ve already shown some signal — and exhaust that list before spending energy on cold outreach. Pick the single channel that best matches where your audience already spends attention and your own strengths as a founder, and commit to it long enough to get a real answer before adding a second one. Write outreach specific enough to the recipient that it couldn''t have been sent to anyone else. Track named prospects and what happened with each, not just a vanity signup target.', '631ab1c8-889b-c8a5-a382-6aa9044bc3ab',
-  90, 'Ranked #7 in the source-material opportunity portfolio (spec v3 §37) and the sixth and final family in the Tier 1 flagship launch order — the natural close of the founder journey this platform covers, from assessing an idea through to finding the people who''ll actually use it.', 'strong', 'Developed from A Bit Gamey material on cold outreach and driving product demand, including starting from warm leads and writing outreach specific enough to work.', true,
+  90, 'Ranked #7 in the source-material opportunity portfolio (spec v3 §37) and the sixth and final family in the Tier 1 flagship launch order.', 'strong', 'Developed from A Bit Gamey material on cold outreach and driving product demand, including starting from warm leads and writing outreach specific enough to work.', true,
   6, 'First Customers Planner — find your first customers instead of waiting for them', 'How to plan customer acquisition for a new product: starting warm, picking one channel, personalised outreach, and tracking real people by name.', '2026-08-09T09:00:00Z'
+)
+on conflict (id) do update set status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, problem_statement = excluded.problem_statement,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  method_summary = excluded.method_summary, journey_stage_id = excluded.journey_stage_id,
+  priority_score = excluded.priority_score, priority_rationale = excluded.priority_rationale,
+  source_strength = excluded.source_strength, source_note = excluded.source_note,
+  flagship = excluded.flagship, display_order = excluded.display_order, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, published_at = excluded.published_at;
+insert into public.it_frameworks (
+  id, status, name, slug, short_description, problem_statement, outcome_statement,
+  target_audience, when_to_use, when_not_to_use, method_summary, journey_stage_id,
+  priority_score, priority_rationale, source_strength, source_note, flagship,
+  display_order, seo_title, seo_description, published_at
+) values (
+  '51b832a2-019f-c47a-1d77-d150590bf525', 'published', 'Product/Market Fit Tracker', 'product-market-fit-tracker', 'Check whether you actually have product-market fit yet, instead of guessing from signups.', 'Founders keep building and shipping features without ever checking whether they have genuine product-market fit — mistaking a handful of paying customers or a vanity signup number for real fit, when the only reliable signal is how people would feel if the product disappeared, backed up by whether they actually come back, refer others, and pay.', 'A clear, evidence-based read on whether you actually have product-market fit yet, and what to check next.',
+  'Founders with real users already using the product who want an honest read on fit.', 'Use once you have real customers using the product, not just signups — this checks for fit, it doesn''t create it.', 'Not useful before people are actually using the product regularly — you need real behaviour to check, not intentions.', 'Start with the Sean Ellis test: ask real users how they''d feel if they could no longer use the product, and treat ''very disappointed'' as the anchor signal — nothing else substitutes for it. Back that up with retention (do people actually come back), organic growth (are new users arriving without you paying for them), referral (do people recommend it unprompted) and paying intent (would people pay, or are they already paying). Revisit this on a regular cadence rather than once — product-market fit is a moving target, not a one-off gate you pass.', '2057da67-b35a-18d0-aa8c-e6973e8635d6',
+  91, 'Ranked #6 in the source-material opportunity portfolio (spec v3 §37) and the first Tier 2 family, taken up immediately after all six Tier 1 flagship families shipped — the natural next step once First Customers Planner has produced real customers to check fit against, and the first family to occupy the otherwise-uncovered Improve journey stage.', 'strong', 'Developed from A Bit Gamey material on the four steps to product-market fit and related PMF posts, including the Sean Ellis ''how would you feel'' test as the anchor signal.', false,
+  7, 'Product/Market Fit Tracker — check whether you actually have product-market fit', 'How to check for real product-market fit: the Sean Ellis test, retention, organic growth, referral and paying intent.', '2026-08-10T09:00:00Z'
 )
 on conflict (id) do update set status = excluded.status, name = excluded.name, slug = excluded.slug,
   short_description = excluded.short_description, problem_statement = excluded.problem_statement,
@@ -160,7 +180,8 @@ update public.it_frameworks set next_step_framework_id = '4d32e24c-2646-908d-569
 update public.it_frameworks set next_step_framework_id = 'a6f884a5-57d0-cbc7-58cf-9d6cc927f4a6' where id = '4d32e24c-2646-908d-569c-a9789dfb06e1';
 update public.it_frameworks set next_step_framework_id = '46a94166-2f8a-ceb8-98c3-56610ca412aa' where id = 'a6f884a5-57d0-cbc7-58cf-9d6cc927f4a6';
 update public.it_frameworks set next_step_framework_id = 'beb80f09-0dbb-02cf-91f6-7a611a156ab1' where id = '46a94166-2f8a-ceb8-98c3-56610ca412aa';
-update public.it_frameworks set next_step_framework_id = null where id = 'beb80f09-0dbb-02cf-91f6-7a611a156ab1';
+update public.it_frameworks set next_step_framework_id = '51b832a2-019f-c47a-1d77-d150590bf525' where id = 'beb80f09-0dbb-02cf-91f6-7a611a156ab1';
+update public.it_frameworks set next_step_framework_id = null where id = '51b832a2-019f-c47a-1d77-d150590bf525';
 
 -- it_products
 insert into public.it_products (
@@ -1278,6 +1299,87 @@ insert into public.it_products (
   published_at, scheduled_for, seo_title, seo_description, schema_data,
   framework_id, tool_key
 ) values (
+  '7524c705-aa52-f6bc-151a-e699fe26efc6', 'guide', 'free', 'published', 'Product/Market Fit Tracker: the Guide', 'product-market-fit-tracker', 'How to check for real product-market fit instead of guessing from signups.', 'Explains the Sean Ellis ''how would you feel if this disappeared'' test as the anchor PMF signal, backed up by retention, organic growth, referral and paying intent. Read this before the Template or the Tool — both assume the technique this guide teaches.',
+  'A repeatable way to check for real product-market fit instead of trusting vanity signup numbers.', 'Founders with real users already using the product who want an honest read on fit.', 'Read this first, before the Template or the Tool.', 'Skip straight to the Tool if you already have a read on your signals and just want a scored check.',
+  8, 12, 'beginner', '1.0',
+  null, null, 'GBP', null, true,
+  '2026-08-10T09:00:00Z', null, 'Product/Market Fit Tracker guide — check whether you actually have product-market fit', 'How to check for real product-market fit: the Sean Ellis test, retention, organic growth, referral and paying intent.', '{"placeholder":true}'::jsonb,
+  '51b832a2-019f-c47a-1d77-d150590bf525', null
+)
+on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
+  status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, full_description = excluded.full_description,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  completion_minutes_min = excluded.completion_minutes_min, completion_minutes_max = excluded.completion_minutes_max,
+  skill_level = excluded.skill_level, current_version = excluded.current_version,
+  price_minor = excluded.price_minor, compare_at_price_minor = excluded.compare_at_price_minor,
+  currency_code = excluded.currency_code, licence_id = excluded.licence_id, featured = excluded.featured,
+  published_at = excluded.published_at, scheduled_for = excluded.scheduled_for, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, schema_data = excluded.schema_data,
+  framework_id = excluded.framework_id, tool_key = excluded.tool_key;
+insert into public.it_products (
+  id, product_type, access_type, status, name, slug, short_description, full_description,
+  outcome_statement, target_audience, when_to_use, when_not_to_use,
+  completion_minutes_min, completion_minutes_max, skill_level, current_version,
+  price_minor, compare_at_price_minor, currency_code, licence_id, featured,
+  published_at, scheduled_for, seo_title, seo_description, schema_data,
+  framework_id, tool_key
+) values (
+  'cdb247be-c798-9652-2bcd-e2ad96b9f38e', 'template', 'free', 'published', 'PMF Signal Tracker', 'pmf-signal-tracker', 'A survey script and running log for tracking your product-market fit signals over time.', 'A structured survey script for the Sean Ellis question and a running log for retention, organic growth, referral and paying-intent signals — so you''re tracking real evidence on a regular cadence, not a one-off gut check.',
+  'A running record of your product-market fit signals, revisited on a regular cadence.', 'Founders with real users already using the product who want an honest read on fit.', 'Use once you have real customers using the product, not just signups — this checks for fit, it doesn''t create it.', 'Not useful before people are actually using the product regularly — you need real behaviour to check, not intentions.',
+  20, 30, 'beginner', '1.0',
+  null, null, 'GBP', '488fbee7-849e-4e17-2d2e-e386ec5328ca', true,
+  '2026-08-10T09:00:00Z', null, 'PMF Signal Tracker — free product-market fit survey and tracking template', 'A survey script and running log for tracking your product-market fit signals over time, free.', '{"placeholder":true}'::jsonb,
+  '51b832a2-019f-c47a-1d77-d150590bf525', null
+)
+on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
+  status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, full_description = excluded.full_description,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  completion_minutes_min = excluded.completion_minutes_min, completion_minutes_max = excluded.completion_minutes_max,
+  skill_level = excluded.skill_level, current_version = excluded.current_version,
+  price_minor = excluded.price_minor, compare_at_price_minor = excluded.compare_at_price_minor,
+  currency_code = excluded.currency_code, licence_id = excluded.licence_id, featured = excluded.featured,
+  published_at = excluded.published_at, scheduled_for = excluded.scheduled_for, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, schema_data = excluded.schema_data,
+  framework_id = excluded.framework_id, tool_key = excluded.tool_key;
+insert into public.it_products (
+  id, product_type, access_type, status, name, slug, short_description, full_description,
+  outcome_statement, target_audience, when_to_use, when_not_to_use,
+  completion_minutes_min, completion_minutes_max, skill_level, current_version,
+  price_minor, compare_at_price_minor, currency_code, licence_id, featured,
+  published_at, scheduled_for, seo_title, seo_description, schema_data,
+  framework_id, tool_key
+) values (
+  '89b057d3-dcfb-5d47-9b19-2fa03e4588f6', 'tool', 'free', 'published', 'PMF Score Checker', 'product-market-fit-tracker-tool', 'Score your product-market fit signals and get a concrete next step.', 'Answer five questions about your situation — how disappointed users would be without the product, retention, organic growth, referral and paying intent — and get a fit score, a strongest and weakest signal, and one concrete next step. Usable anonymously, with no account required.',
+  'A fit score, a named strongest and weakest signal, and one clear next step.', 'Founders with real users already using the product who want an honest read on fit.', 'Use once you have real customers using the product and want a structured, repeatable read on fit.', 'Not a substitute for talking to real users directly — it scores what you report, it doesn''t gather the evidence for you.',
+  5, 5, 'beginner', '1.0',
+  null, null, 'GBP', null, true,
+  '2026-08-10T09:00:00Z', null, 'PMF Score Checker — free product-market fit scoring tool', 'Score your product-market fit signals and get a concrete next step, free, no account required.', '{"placeholder":true}'::jsonb,
+  '51b832a2-019f-c47a-1d77-d150590bf525', 'product-market-fit-tracker'
+)
+on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
+  status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, full_description = excluded.full_description,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  completion_minutes_min = excluded.completion_minutes_min, completion_minutes_max = excluded.completion_minutes_max,
+  skill_level = excluded.skill_level, current_version = excluded.current_version,
+  price_minor = excluded.price_minor, compare_at_price_minor = excluded.compare_at_price_minor,
+  currency_code = excluded.currency_code, licence_id = excluded.licence_id, featured = excluded.featured,
+  published_at = excluded.published_at, scheduled_for = excluded.scheduled_for, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, schema_data = excluded.schema_data,
+  framework_id = excluded.framework_id, tool_key = excluded.tool_key;
+insert into public.it_products (
+  id, product_type, access_type, status, name, slug, short_description, full_description,
+  outcome_statement, target_audience, when_to_use, when_not_to_use,
+  completion_minutes_min, completion_minutes_max, skill_level, current_version,
+  price_minor, compare_at_price_minor, currency_code, licence_id, featured,
+  published_at, scheduled_for, seo_title, seo_description, schema_data,
+  framework_id, tool_key
+) values (
   'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', 'bundle', 'paid', 'published', 'Idea Validation Pack', 'idea-validation-pack', 'Nine templates that take you from a raw idea to a documented proceed-revise-pause decision, backed by evidence rather than confidence.', 'The Idea Validation Pack is the complete evidence-led path from a raw idea to a defensible decision. It sequences nine templates — intake, founder fit, problem evidence, competitive alternatives, a team Copy–Improve–Differentiate workshop, assumption ranking, a full interview system, evidence synthesis, and a closing proceed/revise/pause decision — into a single 1–2 week process, instead of leaving you to assemble one from separate free worksheets.',
   'A documented, evidence-based decision on whether to proceed, revise or pause — not just a folder of worksheets.', 'Founders who want a structured, complete path through idea validation rather than assembling their own process from free templates.', 'Use end-to-end over 1–2 weeks when you''re serious about validating a new idea before committing real time or money.', 'If you only need one part of the process — for example, just customer interviews — the free Customer Interview Planner may be enough on its own.',
   240, 480, 'intermediate', '1.0',
@@ -1326,7 +1428,7 @@ on conflict (id) do update set product_type = excluded.product_type, access_type
   framework_id = excluded.framework_id, tool_key = excluded.tool_key;
 
 -- it_product_categories (full replace for the products this script manages)
-delete from public.it_product_categories where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', '1dca4420-0caf-b736-a6b9-63e9d09c9c82', 'e6306744-459c-6a1a-a183-e51c4a7ad76d', '1b97b540-1b26-effb-101b-1067402e856d', '3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', 'b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
+delete from public.it_product_categories where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', '1dca4420-0caf-b736-a6b9-63e9d09c9c82', 'e6306744-459c-6a1a-a183-e51c4a7ad76d', '1b97b540-1b26-effb-101b-1067402e856d', '3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', 'b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', '7524c705-aa52-f6bc-151a-e699fe26efc6', 'cdb247be-c798-9652-2bcd-e2ad96b9f38e', '89b057d3-dcfb-5d47-9b19-2fa03e4588f6', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('af2edcc3-4630-bbd6-e144-29ff50d794b1', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', '9c66d23e-6490-8df9-1a77-759635564cfc', true);
@@ -1368,11 +1470,14 @@ insert into public.it_product_categories (product_id, category_id, is_primary) v
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '4af5c43b-4065-4251-cd7e-09d868b59f60', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', '4af5c43b-4065-4251-cd7e-09d868b59f60', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', '4af5c43b-4065-4251-cd7e-09d868b59f60', true);
+insert into public.it_product_categories (product_id, category_id, is_primary) values ('7524c705-aa52-f6bc-151a-e699fe26efc6', 'c2068d8a-4c92-3d36-2ddc-f9c967907231', true);
+insert into public.it_product_categories (product_id, category_id, is_primary) values ('cdb247be-c798-9652-2bcd-e2ad96b9f38e', 'c2068d8a-4c92-3d36-2ddc-f9c967907231', true);
+insert into public.it_product_categories (product_id, category_id, is_primary) values ('89b057d3-dcfb-5d47-9b19-2fa03e4588f6', 'c2068d8a-4c92-3d36-2ddc-f9c967907231', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb', 'e11948c4-e14f-706e-2968-269c8566f9f6', true);
 
 -- it_product_stages (full replace for the products this script manages)
-delete from public.it_product_stages where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', '1dca4420-0caf-b736-a6b9-63e9d09c9c82', 'e6306744-459c-6a1a-a183-e51c4a7ad76d', '1b97b540-1b26-effb-101b-1067402e856d', '3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', 'b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
+delete from public.it_product_stages where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', '1dca4420-0caf-b736-a6b9-63e9d09c9c82', 'e6306744-459c-6a1a-a183-e51c4a7ad76d', '1b97b540-1b26-effb-101b-1067402e856d', '3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', 'b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', '7524c705-aa52-f6bc-151a-e699fe26efc6', 'cdb247be-c798-9652-2bcd-e2ad96b9f38e', '89b057d3-dcfb-5d47-9b19-2fa03e4588f6', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('af2edcc3-4630-bbd6-e144-29ff50d794b1', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', '8f0f32b0-bba6-e3a0-a144-46ebfbcab4c0', true);
@@ -1414,6 +1519,9 @@ insert into public.it_product_stages (product_id, stage_id, is_primary) values (
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '631ab1c8-889b-c8a5-a382-6aa9044bc3ab', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', '631ab1c8-889b-c8a5-a382-6aa9044bc3ab', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', '631ab1c8-889b-c8a5-a382-6aa9044bc3ab', true);
+insert into public.it_product_stages (product_id, stage_id, is_primary) values ('7524c705-aa52-f6bc-151a-e699fe26efc6', '2057da67-b35a-18d0-aa8c-e6973e8635d6', true);
+insert into public.it_product_stages (product_id, stage_id, is_primary) values ('cdb247be-c798-9652-2bcd-e2ad96b9f38e', '2057da67-b35a-18d0-aa8c-e6973e8635d6', true);
+insert into public.it_product_stages (product_id, stage_id, is_primary) values ('89b057d3-dcfb-5d47-9b19-2fa03e4588f6', '2057da67-b35a-18d0-aa8c-e6973e8635d6', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb', 'cf668b0e-b443-8f64-21ed-80ac162bfc1e', true);
 
