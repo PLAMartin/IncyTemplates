@@ -7,6 +7,7 @@ import { BETTER_DECISION_MAKER_TOOL_KEY } from "@/lib/tools/better-decision-make
 import { MVP_SCOPER_TOOL_KEY } from "@/lib/tools/mvp-scoper";
 import { PRODUCT_NAMING_SYSTEM_TOOL_KEY } from "@/lib/tools/product-naming-system";
 import { FIRST_CUSTOMERS_PLANNER_TOOL_KEY } from "@/lib/tools/first-customers-planner";
+import { PRODUCT_MARKET_FIT_TRACKER_TOOL_KEY } from "@/lib/tools/product-market-fit-tracker";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -106,7 +107,7 @@ describe("tool registry", () => {
     expect(parsedResult.recommendation).toBe("name_a");
   });
 
-  it("resolves the sixth and final registered tool (First Customers Planner) independently of the others", () => {
+  it("resolves the sixth registered tool (First Customers Planner) independently of the others", () => {
     const definition = getToolDefinition(FIRST_CUSTOMERS_PLANNER_TOOL_KEY);
     const parsedInput = definition.inputSchema.parse({
       channelType: "cold_outreach",
@@ -114,6 +115,20 @@ describe("tool registry", () => {
       founderFit: "high",
       effortToStart: "low",
       repeatability: "high",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { fit: string };
+    expect(parsedResult.fit).toBe("strong_fit");
+  });
+
+  it("resolves the seventh and final registered tool (Product/Market Fit Tracker) independently of the others", () => {
+    const definition = getToolDefinition(PRODUCT_MARKET_FIT_TRACKER_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      disappointmentSignal: "high",
+      retention: "high",
+      organicGrowth: "high",
+      referral: "high",
+      payingIntent: "high",
     });
     const result = definition.run(parsedInput);
     const parsedResult = definition.resultSchema.parse(result) as { fit: string };

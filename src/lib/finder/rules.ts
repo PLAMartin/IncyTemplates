@@ -29,6 +29,7 @@ export const OUTCOME_FRAMEWORK_SLUG: Record<Exclude<Outcome, "not_sure">, string
   scope_the_build: "mvp-scoper",
   choose_a_name: "product-naming-system",
   find_customers: "first-customers-planner",
+  check_fit: "product-market-fit-tracker",
 };
 
 const PROGRESS_OUTPUT_TYPE: Record<Progress, FinderOutputType> = {

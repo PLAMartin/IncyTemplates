@@ -89,7 +89,7 @@ test("the published Product Naming System family page shows full detail, its out
   await expect(page.getByRole("link", { name: /First Customers Planner/ })).toBeVisible();
 });
 
-test("the published First Customers Planner family page shows full detail and its outputs, with no next step", async ({
+test("the published First Customers Planner family page shows full detail, its outputs, and links on to its next step", async ({
   page,
 }) => {
   await page.goto("/products/first-customers-planner");
@@ -99,7 +99,22 @@ test("the published First Customers Planner family page shows full detail and it
   await expect(page.getByText("Do it yourself")).toBeVisible();
   await expect(page.getByText("Do it interactively")).toBeVisible();
   await expect(page.getByRole("link", { name: /First 10 Customers Plan/ })).toBeVisible();
-  // Last family in the flagship journey — `next_step_framework_slug` is null, so no
-  // "Next step" section should render at all.
+  // Recommended next step per its `next_step_framework_slug`.
+  await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Product\/Market Fit Tracker/ })).toBeVisible();
+});
+
+test("the published Product/Market Fit Tracker family page shows full detail and its outputs, with no next step", async ({
+  page,
+}) => {
+  await page.goto("/products/product-market-fit-tracker");
+  await expect(page.getByRole("heading", { name: "Product/Market Fit Tracker", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /PMF Signal Tracker/ })).toBeVisible();
+  // First Tier 2 family, currently the newest terminal point in the founder journey —
+  // `next_step_framework_slug` is null, so no "Next step" section should render at all.
   await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
 });

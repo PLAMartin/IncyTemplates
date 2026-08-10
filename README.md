@@ -41,9 +41,16 @@ underneath and is unaffected.
 With all six flagship families complete, work has started on spec §5.3's
 **Phase 1.1 enhancements**. First up: the **Next Step Finder** (`/finder`,
 spec §22) — a three-question, fully client-side, deterministic routing quiz
-across the six published families, with no LLM and no database-stored
+across the published families, with no LLM and no database-stored
 rules table (see
 [`docs/decisions/0026`](docs/decisions/0026-next-step-finder.md)).
+
+A seventh family has since shipped: **Product/Market Fit Tracker** (see
+[`docs/decisions/0027`](docs/decisions/0027-product-market-fit-tracker-family.md)),
+the first family from spec §37.1's Tier 2 launch order and the first to occupy
+the **Improve** journey stage, which none of the six Tier 1 flagships cover.
+It chains directly on from First Customers Planner and is wired into the
+Next Step Finder alongside the original six.
 
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per

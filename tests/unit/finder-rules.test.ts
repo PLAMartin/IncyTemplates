@@ -21,14 +21,15 @@ function framework(
   };
 }
 
-/** Mirrors the real six-family chain and its next-step links. */
+/** Mirrors the real seven-family chain and its next-step links. */
 const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
   framework("product-idea-assessor", { nextStepFrameworkSlug: "customer-discovery-kit" }),
   framework("customer-discovery-kit", { nextStepFrameworkSlug: "better-decision-maker" }),
   framework("better-decision-maker", { nextStepFrameworkSlug: "mvp-scoper" }),
   framework("mvp-scoper", { nextStepFrameworkSlug: "product-naming-system" }),
   framework("product-naming-system", { nextStepFrameworkSlug: "first-customers-planner" }),
-  framework("first-customers-planner", { nextStepFrameworkSlug: null }),
+  framework("first-customers-planner", { nextStepFrameworkSlug: "product-market-fit-tracker" }),
+  framework("product-market-fit-tracker", { nextStepFrameworkSlug: null }),
 ];
 
 const baseInput = (overrides: Partial<FinderInput> = {}): FinderInput => ({
@@ -46,6 +47,7 @@ describe("resolveNextStep — outcome maps to the right framework", () => {
     ["scope_the_build", "mvp-scoper"],
     ["choose_a_name", "product-naming-system"],
     ["find_customers", "first-customers-planner"],
+    ["check_fit", "product-market-fit-tracker"],
   ] as [Outcome, string][])("%s -> %s", (outcome, expectedSlug) => {
     const result = resolveNextStep(baseInput({ outcome }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe(expectedSlug);
@@ -129,6 +131,15 @@ describe("resolveNextStep — supporting recommendations", () => {
     expect(result?.supporting.some((s) => s.frameworkSlug === "customer-discovery-kit")).toBe(true);
   });
 
+  it("a family with a next step (First Customers Planner) includes it as a supporting recommendation", () => {
+    const result = resolveNextStep(
+      baseInput({ outcome: "find_customers", outputPreference: "interactive_result" }),
+      ALL_FRAMEWORKS,
+    );
+    expect(result?.primary.frameworkSlug).toBe("first-customers-planner");
+    expect(result?.supporting.some((s) => s.frameworkSlug === "product-market-fit-tracker")).toBe(true);
+  });
+
   it("never returns more than two supporting recommendations", () => {
     const result = resolveNextStep(baseInput({ outcome: "assess_idea", outputPreference: "interactive_result" }), ALL_FRAMEWORKS);
     expect(result?.supporting.length).toBeLessThanOrEqual(2);
@@ -136,10 +147,10 @@ describe("resolveNextStep — supporting recommendations", () => {
 
   it("the last family in the chain has no next-step supporting recommendation", () => {
     const result = resolveNextStep(
-      baseInput({ outcome: "find_customers", outputPreference: "interactive_result" }),
+      baseInput({ outcome: "check_fit", outputPreference: "interactive_result" }),
       ALL_FRAMEWORKS,
     );
-    expect(result?.primary.frameworkSlug).toBe("first-customers-planner");
+    expect(result?.primary.frameworkSlug).toBe("product-market-fit-tracker");
     // Only the Guide suggestion should appear — there's no next family to recommend.
     expect(result?.supporting).toHaveLength(1);
     expect(result?.supporting[0]?.outputType).toBe("guide");

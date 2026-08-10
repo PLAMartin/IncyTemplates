@@ -288,6 +288,7 @@ export const BETTER_DECISION_MAKER_FRAMEWORK_ID = "framework-better-decision-mak
 export const MVP_SCOPER_FRAMEWORK_ID = "framework-mvp-scoper";
 export const PRODUCT_NAMING_SYSTEM_FRAMEWORK_ID = "framework-product-naming-system";
 export const FIRST_CUSTOMERS_PLANNER_FRAMEWORK_ID = "framework-first-customers-planner";
+export const PRODUCT_MARKET_FIT_TRACKER_FRAMEWORK_ID = "framework-product-market-fit-tracker";
 
 export const frameworks: Framework[] = [
   {
@@ -455,7 +456,7 @@ export const frameworks: Framework[] = [
     journey_stage: stageRef("launch"),
     priority_score: 90,
     priority_rationale:
-      "Ranked #7 in the source-material opportunity portfolio (spec v3 §37) and the sixth and final family in the Tier 1 flagship launch order — the natural close of the founder journey this platform covers, from assessing an idea through to finding the people who'll actually use it.",
+      "Ranked #7 in the source-material opportunity portfolio (spec v3 §37) and the sixth and final family in the Tier 1 flagship launch order.",
     source_strength: "strong",
     source_note:
       "Developed from A Bit Gamey material on cold outreach and driving product demand, including starting from warm leads and writing outreach specific enough to work.",
@@ -465,7 +466,36 @@ export const frameworks: Framework[] = [
     seo_description:
       "How to plan customer acquisition for a new product: starting warm, picking one channel, personalised outreach, and tracking real people by name.",
     published_at: "2026-08-09T09:00:00Z",
-    // Last family in the flagship journey — nothing further to recommend on to.
+    next_step_framework_slug: "product-market-fit-tracker",
+  },
+  {
+    id: PRODUCT_MARKET_FIT_TRACKER_FRAMEWORK_ID,
+    status: "published",
+    name: "Product/Market Fit Tracker",
+    slug: "product-market-fit-tracker",
+    short_description: "Check whether you actually have product-market fit yet, instead of guessing from signups.",
+    problem_statement:
+      "Founders keep building and shipping features without ever checking whether they have genuine product-market fit — mistaking a handful of paying customers or a vanity signup number for real fit, when the only reliable signal is how people would feel if the product disappeared, backed up by whether they actually come back, refer others, and pay.",
+    outcome_statement: "A clear, evidence-based read on whether you actually have product-market fit yet, and what to check next.",
+    target_audience: "Founders with real users already using the product who want an honest read on fit.",
+    when_to_use: "Use once you have real customers using the product, not just signups — this checks for fit, it doesn't create it.",
+    when_not_to_use: "Not useful before people are actually using the product regularly — you need real behaviour to check, not intentions.",
+    method_summary:
+      "Start with the Sean Ellis test: ask real users how they'd feel if they could no longer use the product, and treat 'very disappointed' as the anchor signal — nothing else substitutes for it. Back that up with retention (do people actually come back), organic growth (are new users arriving without you paying for them), referral (do people recommend it unprompted) and paying intent (would people pay, or are they already paying). Revisit this on a regular cadence rather than once — product-market fit is a moving target, not a one-off gate you pass.",
+    journey_stage: stageRef("improve"),
+    priority_score: 91,
+    priority_rationale:
+      "Ranked #6 in the source-material opportunity portfolio (spec v3 §37) and the first Tier 2 family, taken up immediately after all six Tier 1 flagship families shipped — the natural next step once First Customers Planner has produced real customers to check fit against, and the first family to occupy the otherwise-uncovered Improve journey stage.",
+    source_strength: "strong",
+    source_note:
+      "Developed from A Bit Gamey material on the four steps to product-market fit and related PMF posts, including the Sean Ellis 'how would you feel' test as the anchor signal.",
+    flagship: false,
+    display_order: 7,
+    seo_title: "Product/Market Fit Tracker — check whether you actually have product-market fit",
+    seo_description:
+      "How to check for real product-market fit: the Sean Ellis test, retention, organic growth, referral and paying intent.",
+    published_at: "2026-08-10T09:00:00Z",
+    // First Tier 2 family, and the newest terminal point in the founder journey.
     next_step_framework_slug: null,
   },
 ];
@@ -2298,6 +2328,142 @@ const firstCustomersPlannerFamilyOutputs: Product[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Product/Market Fit Tracker family outputs (spec v3 §14.7, §37) — Guide,
+// Template and Tool all newly written for this family, the first Tier 2
+// family (see docs/decisions/0027) taken up after all six Tier 1 flagships
+// shipped. The Guide's body lives in
+// content/guides/product-market-fit-tracker.mdx, joined to this row by
+// matching slug; the Template's body lives in
+// content/seed/free-files/pmf-signal-tracker.md.
+// ---------------------------------------------------------------------------
+
+const productMarketFitTrackerFamilyOutputs: Product[] = [
+  {
+    id: "product-market-fit-tracker-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "Product/Market Fit Tracker: the Guide",
+    slug: "product-market-fit-tracker",
+    short_description: "How to check for real product-market fit instead of guessing from signups.",
+    full_description:
+      "Explains the Sean Ellis 'how would you feel if this disappeared' test as the anchor PMF signal, backed up by retention, organic growth, referral and paying intent. Read this before the Template or the Tool — both assume the technique this guide teaches.",
+    outcome_statement: "A repeatable way to check for real product-market fit instead of trusting vanity signup numbers.",
+    target_audience: "Founders with real users already using the product who want an honest read on fit.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you already have a read on your signals and just want a scored check.",
+    completion_minutes_min: 8,
+    completion_minutes_max: 12,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-10T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("founder-management")],
+    stages: [stageRef("improve")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: PRODUCT_MARKET_FIT_TRACKER_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "Product/Market Fit Tracker guide — check whether you actually have product-market fit",
+    seo_description: "How to check for real product-market fit: the Sean Ellis test, retention, organic growth, referral and paying intent.",
+  },
+  {
+    id: "pmf-signal-tracker",
+    product_type: "template",
+    access_type: "free",
+    status: "published",
+    name: "PMF Signal Tracker",
+    slug: "pmf-signal-tracker",
+    short_description: "A survey script and running log for tracking your product-market fit signals over time.",
+    full_description:
+      "A structured survey script for the Sean Ellis question and a running log for retention, organic growth, referral and paying-intent signals — so you're tracking real evidence on a regular cadence, not a one-off gut check.",
+    outcome_statement: "A running record of your product-market fit signals, revisited on a regular cadence.",
+    target_audience: "Founders with real users already using the product who want an honest read on fit.",
+    when_to_use: "Use once you have real customers using the product, not just signups — this checks for fit, it doesn't create it.",
+    when_not_to_use: "Not useful before people are actually using the product regularly — you need real behaviour to check, not intentions.",
+    completion_minutes_min: 20,
+    completion_minutes_max: 30,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-10T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("founder-management")],
+    stages: [stageRef("improve")],
+    formats: ["markdown"],
+    is_placeholder: true,
+    framework_id: PRODUCT_MARKET_FIT_TRACKER_FRAMEWORK_ID,
+    tool_key: null,
+    licence: standardLicence,
+    quality_standard: {
+      purpose: true,
+      instructions: true,
+      thinkingPrompts: true,
+      evidenceFields: true,
+      decisionOutcome: true,
+      nextStep: true,
+    },
+    files: [
+      {
+        id: "pmf-signal-tracker-md",
+        file_role: "template",
+        file_format: "markdown",
+        display_name: "PMF Signal Tracker (Markdown, AI-agent-ready)",
+        is_public_preview: false,
+      },
+    ],
+    seo_title: "PMF Signal Tracker — free product-market fit survey and tracking template",
+    seo_description: "A survey script and running log for tracking your product-market fit signals over time, free.",
+  },
+  {
+    id: "product-market-fit-tracker-tool",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "PMF Score Checker",
+    slug: "product-market-fit-tracker-tool",
+    short_description: "Score your product-market fit signals and get a concrete next step.",
+    full_description:
+      "Answer five questions about your situation — how disappointed users would be without the product, retention, organic growth, referral and paying intent — and get a fit score, a strongest and weakest signal, and one concrete next step. Usable anonymously, with no account required.",
+    outcome_statement: "A fit score, a named strongest and weakest signal, and one clear next step.",
+    target_audience: "Founders with real users already using the product who want an honest read on fit.",
+    when_to_use: "Use once you have real customers using the product and want a structured, repeatable read on fit.",
+    when_not_to_use: "Not a substitute for talking to real users directly — it scores what you report, it doesn't gather the evidence for you.",
+    completion_minutes_min: 5,
+    completion_minutes_max: 5,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-10T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("founder-management")],
+    stages: [stageRef("improve")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: PRODUCT_MARKET_FIT_TRACKER_FRAMEWORK_ID,
+    tool_key: "product-market-fit-tracker",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "PMF Score Checker — free product-market fit scoring tool",
+    seo_description: "Score your product-market fit signals and get a concrete next step, free, no account required.",
+  },
+];
+
 export const products: Product[] = [
   ...freeProducts,
   ...ideaValidationItems,
@@ -2308,6 +2474,7 @@ export const products: Product[] = [
   ...mvpScoperFamilyOutputs,
   ...productNamingSystemFamilyOutputs,
   ...firstCustomersPlannerFamilyOutputs,
+  ...productMarketFitTrackerFamilyOutputs,
 ];
 
 // ---------------------------------------------------------------------------

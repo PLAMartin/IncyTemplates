@@ -7,7 +7,7 @@ import { z } from "zod";
  * if a better recommendation is clear") is best served by asking fewer, more load-bearing
  * questions rather than padding out to five. `outcome` does the work of both the spec's
  * "what are you working on" and "which journey stage" questions at once, since every
- * outcome option maps directly to exactly one of the six published frameworks (each of
+ * outcome option maps directly to exactly one of the published frameworks (each of
  * which already has its own single journey stage) — see docs/decisions/0026.
  */
 export const outcomeSchema = z.enum([
@@ -17,6 +17,7 @@ export const outcomeSchema = z.enum([
   "scope_the_build",
   "choose_a_name",
   "find_customers",
+  "check_fit",
   "not_sure",
 ]);
 export type Outcome = z.infer<typeof outcomeSchema>;
