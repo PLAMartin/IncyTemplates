@@ -33,6 +33,7 @@ export const outcomeSchema = z.enum([
   "sharpen_writing",
   "review_design",
   "craft_a_prompt",
+  "design_an_agent",
   "not_sure",
 ]);
 export type Outcome = z.infer<typeof outcomeSchema>;

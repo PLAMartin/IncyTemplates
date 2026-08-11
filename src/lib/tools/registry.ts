@@ -20,6 +20,7 @@ import { meetingResetTool } from "./meeting-reset";
 import { writingEditorTool } from "./writing-editor";
 import { appDesignReviewTool } from "./app-design-review";
 import { aiPromptBuilderTool } from "./ai-prompt-builder";
+import { aiAgentDesignerTool } from "./ai-agent-designer";
 import type { ToolDefinition } from "./types";
 import { ToolNotAvailableError } from "./types";
 
@@ -52,6 +53,7 @@ const TOOL_REGISTRY: Record<string, ToolDefinition<unknown, unknown>> = {
   [writingEditorTool.key]: writingEditorTool as ToolDefinition<unknown, unknown>,
   [appDesignReviewTool.key]: appDesignReviewTool as ToolDefinition<unknown, unknown>,
   [aiPromptBuilderTool.key]: aiPromptBuilderTool as ToolDefinition<unknown, unknown>,
+  [aiAgentDesignerTool.key]: aiAgentDesignerTool as ToolDefinition<unknown, unknown>,
 };
 
 /** Returns the Tool definition for `toolKey`, or null if none is registered. */

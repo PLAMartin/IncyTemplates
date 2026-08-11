@@ -23,6 +23,7 @@ import { MEETING_RESET_TOOL_KEY } from "@/lib/tools/meeting-reset";
 import { WRITING_EDITOR_TOOL_KEY } from "@/lib/tools/writing-editor";
 import { APP_DESIGN_REVIEW_TOOL_KEY } from "@/lib/tools/app-design-review";
 import { AI_PROMPT_BUILDER_TOOL_KEY } from "@/lib/tools/ai-prompt-builder";
+import { AI_AGENT_DESIGNER_TOOL_KEY } from "@/lib/tools/ai-agent-designer";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -353,5 +354,20 @@ describe("tool registry", () => {
     const parsedResult = definition.resultSchema.parse(result) as { assembledPrompt: string };
     expect(parsedResult.assembledPrompt).toContain("Context: A nutritionist.");
     expect(parsedResult.assembledPrompt).toContain("ask me one question at a time");
+  });
+
+  it("resolves the twenty-third registered tool (AI Agent Designer) independently of the others", () => {
+    const definition = getToolDefinition(AI_AGENT_DESIGNER_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      taskPredictability: "fixed_predictable_path",
+      needsExternalData: "no_training_data_is_enough",
+      needsMultiStepReasoning: "no_a_single_step_is_enough",
+      needsDifferentHandling: "no_one_handling_path_is_enough",
+      needsSubtaskDecomposition: "no_its_one_cohesive_task",
+      needsSelfCritique: "no_a_single_pass_is_enough",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { verdict: string };
+    expect(parsedResult.verdict).toBe("workflow_not_agent");
   });
 });

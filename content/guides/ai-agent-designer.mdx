@@ -1,0 +1,32 @@
+---
+title: "AI Agent Designer: workflows, agents, and five patterns"
+slug: "ai-agent-designer"
+summary: "The difference between AI workflows and agents, the simplicity principle for choosing between them, and five design patterns for when an agent genuinely is warranted."
+author: "Phil Martin"
+publishedAt: "2026-08-11"
+updatedAt: "2026-08-11"
+status: "published"
+seoTitle: "AI Agent Designer guide — workflows vs agents, and five design patterns"
+seoDescription: "The difference between AI workflows and agents, and five design patterns for when an agent genuinely is warranted."
+frameworkSlug: "ai-agent-designer"
+---
+
+Nvidia's CEO says "the age of AI agentics is here." That sounds important — but it's worth being precise about what an agent actually is, because reaching for one by default is usually the wrong call.
+
+## Workflows vs agents
+
+AI apps split into two types. **AI Workflows** follow predefined paths with rigidly encoded logic and tool use, executing tasks in a structured manner — a customer support chatbot that follows a strict decision tree, for example. **AI Agents** autonomously manage their own process, making dynamic decisions to accomplish a task — an AI research assistant that searches databases, summarises findings and refines its answer based on feedback.
+
+Anthropic's own advice is blunt: "start with the simplest solution that works, and add complexity only when absolutely necessary." Overly complex agents are slow, costly and hard to debug. Workflows should be the default for structured, predictable tasks; agents earn their place only when a problem genuinely demands flexibility and autonomy.
+
+## Five patterns, when an agent is warranted
+
+Once a task genuinely needs agent-level autonomy, five established patterns cover most cases. **Augmented LLM** — a base model enhanced with tools, retrieval or memory, pulling in data dynamically rather than relying solely on training data. **Prompt Chaining** — instead of one call trying to solve everything, the task breaks into sequential steps where each prompt builds on the last, making the reasoning more traceable. **Routing System** — the agent classifies incoming input and directs it to the right subprocess, useful when different requests genuinely need different handling. **Orchestrator-Worker** — a central model decomposes a task into subtasks, assigns them to specialised workers, then synthesises the results, effective for complex problems with distinct parts. **Evaluator-Optimiser** — one model generates a response while another evaluates and refines it, iterating until the quality is there.
+
+None of these patterns competes with the others in the abstract — each answers a different question about what the task actually needs.
+
+## Using the process
+
+The **Agent Specification Canvas** is a worksheet for writing down a specific agent's goal, which pattern it uses, the tools or data it needs, and how you'll know it's working. The **Agent Architecture Check** Tool asks six quick questions about a specific feature and recommends the pattern that fits — or tells you plainly that you don't need an agent at all.
+
+Once you know the architecture, the next step is scoping the actual build — that's what MVP Scoper is for.

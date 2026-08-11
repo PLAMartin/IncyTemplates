@@ -52,6 +52,7 @@ const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
   framework("writing-editor", { nextStepFrameworkSlug: null }),
   framework("app-design-review", { nextStepFrameworkSlug: null }),
   framework("ai-prompt-builder", { nextStepFrameworkSlug: null }),
+  framework("ai-agent-designer", { nextStepFrameworkSlug: "mvp-scoper" }),
 ];
 
 const baseInput = (overrides: Partial<FinderInput> = {}): FinderInput => ({
@@ -85,6 +86,7 @@ describe("resolveNextStep — outcome maps to the right framework", () => {
     ["sharpen_writing", "writing-editor"],
     ["review_design", "app-design-review"],
     ["craft_a_prompt", "ai-prompt-builder"],
+    ["design_an_agent", "ai-agent-designer"],
   ] as [Outcome, string][])("%s -> %s", (outcome, expectedSlug) => {
     const result = resolveNextStep(baseInput({ outcome }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe(expectedSlug);
@@ -304,6 +306,12 @@ describe("resolveNextStep — supporting recommendations", () => {
     expect(result?.primary.frameworkSlug).toBe("ai-prompt-builder");
     expect(result?.supporting).toHaveLength(1);
     expect(result?.supporting[0]?.outputType).toBe("guide");
+  });
+
+  it("AI Agent Designer includes MVP Scoper as a supporting recommendation, a second branch into that family alongside Better Decision Maker", () => {
+    const result = resolveNextStep(baseInput({ outcome: "design_an_agent", outputPreference: "interactive_result" }), ALL_FRAMEWORKS);
+    expect(result?.primary.frameworkSlug).toBe("ai-agent-designer");
+    expect(result?.supporting.some((s) => s.frameworkSlug === "mvp-scoper")).toBe(true);
   });
 
   it("the last family in the chain has no next-step supporting recommendation", () => {

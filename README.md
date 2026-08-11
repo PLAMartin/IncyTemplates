@@ -226,6 +226,21 @@ Editor and App Design Review, it's deliberately terminal (no next-step
 family), since prompting is a skill applied everywhere, not a one-time
 step. Wired into the Next Step Finder alongside the other twenty-one.
 
+A twenty-third family has since shipped: **AI Agent Designer** (see
+[`docs/decisions/0043`](docs/decisions/0043-ai-agent-designer-family.md)),
+the ninth Tier 3 family, again started at the user's explicit request. Its
+Tool is a gated decision tree, the third instance of that shape (MVP
+Scoper's original score+gate, Meeting Reset's pure form): six
+priority-ordered questions classify a specific AI feature into one of six
+outcomes — "use a workflow, not an agent" outright if the task is
+predictable, otherwise one of five named architecture patterns (Augmented
+LLM, Prompt Chaining, Routing System, Orchestrator-Worker,
+Evaluator-Optimiser), checked from most specific need to most general
+fallback. Unlike the six families before it, this one isn't deliberately
+terminal — it's the first family since Better Decision Maker to point
+forward into MVP Scoper, a second, independent branch. Wired into the Next
+Step Finder alongside the other twenty-two.
+
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per
 the spec's own phasing. Product/bundle pages still use a waitlist
