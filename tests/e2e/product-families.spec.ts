@@ -333,3 +333,16 @@ test("the published App Design Review family page shows full detail and its outp
   // a recurring practice rather than a one-time step (docs/decisions/0041).
   await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
 });
+
+test("the published AI Prompt Builder family page shows full detail and its outputs, with no next step", async ({ page }) => {
+  await page.goto("/products/ai-prompt-builder");
+  await expect(page.getByRole("heading", { name: "AI Prompt Builder", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Prompt Template/ })).toBeVisible();
+  // Eighth Tier 3 family, built at explicit user request — deliberately no next-step family,
+  // a recurring practice rather than a one-time step (docs/decisions/0042).
+  await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
+});

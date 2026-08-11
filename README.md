@@ -212,6 +212,20 @@ family), since reviewing a design against fixed principles is revisited
 every release, not a one-time step. Wired into the Next Step Finder
 alongside the other twenty.
 
+A twenty-second family has since shipped: **AI Prompt Builder** (see
+[`docs/decisions/0042`](docs/decisions/0042-ai-prompt-builder-family.md)), the
+eighth Tier 3 family, again started at the user's explicit request. Its Tool
+is the third use of the free-text interpolation mechanic (Product Idea
+Generator, Product Positioning Builder): the CARE framework's own structure
+(Context, Action, Result required, Example optional) assembles directly
+into a ready-to-paste prompt, with a select toggle for whether to append a
+second technique — letting the chatbot ask the questions instead — rather
+than a lookup-based recommendation. Like Decision Framework Picker, Product
+Prioritisation Tool, User Engagement Designer, Meeting Reset, Writing
+Editor and App Design Review, it's deliberately terminal (no next-step
+family), since prompting is a skill applied everywhere, not a one-time
+step. Wired into the Next Step Finder alongside the other twenty-one.
+
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per
 the spec's own phasing. Product/bundle pages still use a waitlist

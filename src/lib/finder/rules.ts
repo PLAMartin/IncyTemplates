@@ -44,6 +44,7 @@ export const OUTCOME_FRAMEWORK_SLUG: Record<Exclude<Outcome, "not_sure">, string
   reset_meetings: "meeting-reset",
   sharpen_writing: "writing-editor",
   review_design: "app-design-review",
+  craft_a_prompt: "ai-prompt-builder",
 };
 
 const PROGRESS_OUTPUT_TYPE: Record<Progress, FinderOutputType> = {

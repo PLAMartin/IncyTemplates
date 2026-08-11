@@ -51,6 +51,7 @@ const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
   framework("meeting-reset", { nextStepFrameworkSlug: null }),
   framework("writing-editor", { nextStepFrameworkSlug: null }),
   framework("app-design-review", { nextStepFrameworkSlug: null }),
+  framework("ai-prompt-builder", { nextStepFrameworkSlug: null }),
 ];
 
 const baseInput = (overrides: Partial<FinderInput> = {}): FinderInput => ({
@@ -83,6 +84,7 @@ describe("resolveNextStep — outcome maps to the right framework", () => {
     ["reset_meetings", "meeting-reset"],
     ["sharpen_writing", "writing-editor"],
     ["review_design", "app-design-review"],
+    ["craft_a_prompt", "ai-prompt-builder"],
   ] as [Outcome, string][])("%s -> %s", (outcome, expectedSlug) => {
     const result = resolveNextStep(baseInput({ outcome }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe(expectedSlug);
@@ -293,6 +295,13 @@ describe("resolveNextStep — supporting recommendations", () => {
   it("App Design Review has no next-step supporting recommendation — a recurring practice, not a one-time step", () => {
     const result = resolveNextStep(baseInput({ outcome: "review_design", outputPreference: "interactive_result" }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe("app-design-review");
+    expect(result?.supporting).toHaveLength(1);
+    expect(result?.supporting[0]?.outputType).toBe("guide");
+  });
+
+  it("AI Prompt Builder has no next-step supporting recommendation — a recurring practice, not a one-time step", () => {
+    const result = resolveNextStep(baseInput({ outcome: "craft_a_prompt", outputPreference: "interactive_result" }), ALL_FRAMEWORKS);
+    expect(result?.primary.frameworkSlug).toBe("ai-prompt-builder");
     expect(result?.supporting).toHaveLength(1);
     expect(result?.supporting[0]?.outputType).toBe("guide");
   });

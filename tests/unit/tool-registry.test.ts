@@ -22,6 +22,7 @@ import { STARTUP_LAUNCH_PLANNER_TOOL_KEY } from "@/lib/tools/startup-launch-plan
 import { MEETING_RESET_TOOL_KEY } from "@/lib/tools/meeting-reset";
 import { WRITING_EDITOR_TOOL_KEY } from "@/lib/tools/writing-editor";
 import { APP_DESIGN_REVIEW_TOOL_KEY } from "@/lib/tools/app-design-review";
+import { AI_PROMPT_BUILDER_TOOL_KEY } from "@/lib/tools/ai-prompt-builder";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -338,5 +339,19 @@ describe("tool registry", () => {
     const parsedResult = definition.resultSchema.parse(result) as { principleStates: { principle: string; present: boolean }[] };
     expect(parsedResult.principleStates.find((s) => s.principle === "innovative")?.present).toBe(false);
     expect(parsedResult.principleStates.filter((s) => !s.present)).toHaveLength(1);
+  });
+
+  it("resolves the twenty-second registered tool (AI Prompt Builder) independently of the others", () => {
+    const definition = getToolDefinition(AI_PROMPT_BUILDER_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      contextText: "A nutritionist.",
+      actionText: "Create a meal plan.",
+      resultText: "A table.",
+      includeQuestionFlip: "yes_add_it",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { assembledPrompt: string };
+    expect(parsedResult.assembledPrompt).toContain("Context: A nutritionist.");
+    expect(parsedResult.assembledPrompt).toContain("ask me one question at a time");
   });
 });
