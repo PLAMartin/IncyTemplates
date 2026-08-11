@@ -152,6 +152,16 @@ next-step family), since diagnosing an engagement loop is something to
 revisit repeatedly, not a one-time step. Wired into the Next Step Finder
 alongside the other fifteen.
 
+A seventeenth family has since shipped: **Story Builder** (see
+[`docs/decisions/0037`](docs/decisions/0037-story-builder-family.md)), the
+third Tier 3 family, again started at the user's explicit request. Its Tool
+is the first pure completeness checker — five optional free-text fields,
+one per story-spine element (Place, Action, Thought, Emotion, Dialogue),
+checked for presence rather than scored or ranked, with a craft tip for
+whichever element is missing first. A second branch into First Customers
+Planner alongside Product Naming System, and wired into the Next Step
+Finder alongside the other sixteen.
+
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per
 the spec's own phasing. Product/bundle pages still use a waitlist

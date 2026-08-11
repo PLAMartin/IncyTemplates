@@ -17,6 +17,7 @@ import { CUSTOMER_DEMAND_TEST_TOOL_KEY } from "@/lib/tools/customer-demand-test"
 import { PRODUCT_PRIORITISATION_TOOL_TOOL_KEY } from "@/lib/tools/product-prioritisation-tool";
 import { LATERAL_THINKING_TOOLKIT_TOOL_KEY } from "@/lib/tools/lateral-thinking-toolkit";
 import { USER_ENGAGEMENT_DESIGNER_TOOL_KEY } from "@/lib/tools/user-engagement-designer";
+import { STORY_BUILDER_TOOL_KEY } from "@/lib/tools/story-builder";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -256,5 +257,20 @@ describe("tool registry", () => {
     const result = definition.run(parsedInput);
     const parsedResult = definition.resultSchema.parse(result) as { weakestStage: string };
     expect(parsedResult.weakestStage).toBe("trigger");
+  });
+
+  it("resolves the seventeenth registered tool (Story Builder) independently of the others", () => {
+    const definition = getToolDefinition(STORY_BUILDER_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      place: "The airport.",
+      action: "",
+      thought: "",
+      emotion: "",
+      dialogue: "",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { elements: { element: string; present: boolean }[] };
+    expect(parsedResult.elements.find((e) => e.element === "place")?.present).toBe(true);
+    expect(parsedResult.elements.find((e) => e.element === "action")?.present).toBe(false);
   });
 });

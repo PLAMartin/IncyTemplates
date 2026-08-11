@@ -262,3 +262,19 @@ test("the published User Engagement Designer family page shows full detail and i
   // the same "recurring diagnostic" reasoning as Product Prioritisation Tool (docs/decisions/0034, 0036).
   await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
 });
+
+test("the published Story Builder family page shows full detail, its outputs, and links on to its next step", async ({
+  page,
+}) => {
+  await page.goto("/products/story-builder");
+  await expect(page.getByRole("heading", { name: "Story Builder", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Story Spine Template/ })).toBeVisible();
+  // Third Tier 3 family, built at explicit user request — a second branch into First
+  // Customers Planner alongside Product Naming System (docs/decisions/0037).
+  await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /First Customers Planner/ })).toBeVisible();
+});

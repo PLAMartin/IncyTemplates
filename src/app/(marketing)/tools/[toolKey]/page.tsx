@@ -24,6 +24,7 @@ import { CustomerDemandTestRunner } from "@/components/tools/customer-demand-tes
 import { ProductPrioritisationToolRunner } from "@/components/tools/product-prioritisation-tool/tool-runner";
 import { LateralThinkingToolkitRunner } from "@/components/tools/lateral-thinking-toolkit/tool-runner";
 import { UserEngagementDesignerRunner } from "@/components/tools/user-engagement-designer/tool-runner";
+import { StoryBuilderRunner } from "@/components/tools/story-builder/tool-runner";
 
 type Props = { params: Promise<{ toolKey: string }> };
 
@@ -49,6 +50,7 @@ const TOOL_RUNNERS: Record<string, ComponentType> = {
   "product-prioritisation-tool": ProductPrioritisationToolRunner,
   "lateral-thinking-toolkit": LateralThinkingToolkitRunner,
   "user-engagement-designer": UserEngagementDesignerRunner,
+  "story-builder": StoryBuilderRunner,
 };
 
 export async function generateStaticParams() {

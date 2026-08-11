@@ -298,6 +298,7 @@ export const CUSTOMER_DEMAND_TEST_FRAMEWORK_ID = "framework-customer-demand-test
 export const PRODUCT_PRIORITISATION_TOOL_FRAMEWORK_ID = "framework-product-prioritisation-tool";
 export const LATERAL_THINKING_TOOLKIT_FRAMEWORK_ID = "framework-lateral-thinking-toolkit";
 export const USER_ENGAGEMENT_DESIGNER_FRAMEWORK_ID = "framework-user-engagement-designer";
+export const STORY_BUILDER_FRAMEWORK_ID = "framework-story-builder";
 
 export const frameworks: Framework[] = [
   {
@@ -766,6 +767,33 @@ export const frameworks: Framework[] = [
       "Score your product's trigger, action, reward and investment, and find out which stage of the Hook Model is holding engagement back.",
     published_at: "2026-08-11T09:00:00Z",
     next_step_framework_slug: null,
+  },
+  {
+    id: STORY_BUILDER_FRAMEWORK_ID,
+    status: "published",
+    name: "Story Builder",
+    slug: "story-builder",
+    short_description: "Turn a flat description into a scene, using a five-part story spine.",
+    problem_statement:
+      "Founders describe what happened instead of telling it — a summary of events rather than a scene the listener can stand inside. The difference between a forgettable pitch and a memorable one is usually structure, not talent, and most people have never been taught the structure.",
+    outcome_statement: "A five-part story spine — Place, Action, Thought, Emotion, Dialogue — ready to tell.",
+    target_audience: "Founders who need to tell a real story well — in a pitch, a customer conversation, a piece of marketing.",
+    when_to_use: "Use whenever you have a real moment worth telling and a flat description isn't landing.",
+    when_not_to_use: "Not useful for writing fiction from scratch — this checks and structures a real moment you already lived through.",
+    method_summary:
+      "Check a scene against five required parts: Place (one clear noun to anchor it), Action (verbs — the story is already happening), Thought (the raw thought you actually had, not a tidy summary), Emotion shown rather than named (the body doing something), and Dialogue (a specific line, not a description of how someone felt). Fill gaps in order, starting with whichever part is missing first.",
+    journey_stage: stageRef("design"),
+    priority_score: 81,
+    priority_rationale:
+      "Ranked #17 in the source-material opportunity portfolio (spec v4 §37) and the third Tier 3 family, built at the user's explicit request. Its Tool is a sixth distinct mechanic: a completeness checker rather than a scorer, ranker or generator, since the source material's five parts are a fixed checklist every scene needs all of, not alternatives to rank. Points forward to First Customers Planner, a second entry point alongside Product Naming System, since a working story is what you actually use to find customers.",
+    source_strength: "strong",
+    source_note: "Developed from A Bit Gamey material on the five-step storytelling framework (Place, Action, Thought, Emotion, Dialogue).",
+    flagship: false,
+    display_order: 17,
+    seo_title: "Story Builder — the five-part story spine",
+    seo_description: "Check your story against the five-part spine — Place, Action, Thought, Emotion, Dialogue — and find out what's missing.",
+    published_at: "2026-08-11T09:00:00Z",
+    next_step_framework_slug: "first-customers-planner",
   },
 ];
 
@@ -3884,6 +3912,134 @@ const userEngagementDesignerFamilyOutputs: Product[] = [
   },
 ];
 
+// Third Tier 3 family (docs/decisions/0037), built at explicit user request. Its Template
+// placeholder body lives at content/seed/free-files/story-spine-template.md.
+const storyBuilderFamilyOutputs: Product[] = [
+  {
+    id: "story-builder-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "Story Builder: the Guide",
+    slug: "story-builder",
+    short_description: "A five-part story spine for turning a flat description into a scene the reader can stand inside.",
+    full_description:
+      "Explains the five-step storytelling framework — Place, Action, Thought, Emotion (shown), Dialogue — with a worked example. Read this before the Template or the Tool — both assume the technique this guide teaches.",
+    outcome_statement: "A clear framework for structuring a real story well.",
+    target_audience: "Founders who need to tell a real story well — in a pitch, a customer conversation, a piece of marketing.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you already know the framework and just want a structure check.",
+    completion_minutes_min: 6,
+    completion_minutes_max: 10,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("go-to-market")],
+    stages: [stageRef("design")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: STORY_BUILDER_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "Story Builder guide — the five-part story spine",
+    seo_description: "A five-step storytelling framework — Place, Action, Thought, Emotion, Dialogue — for telling a real story well.",
+  },
+  {
+    id: "story-spine-template",
+    product_type: "template",
+    access_type: "free",
+    status: "published",
+    name: "Story Spine Template",
+    slug: "story-spine-template",
+    short_description: "A worksheet for writing all five parts of a story spine, with examples for each.",
+    full_description:
+      "A structured worksheet for writing Place, Action, Thought, Emotion (shown) and Dialogue for a real scene, with an example for each part and guidance on what makes each one work.",
+    outcome_statement: "A completed, documented story spine, ready to tell.",
+    target_audience: "Founders who need to tell a real story well — in a pitch, a customer conversation, a piece of marketing.",
+    when_to_use: "Use whenever you have a real moment worth telling and a flat description isn't landing.",
+    when_not_to_use: "Not useful for writing fiction from scratch.",
+    completion_minutes_min: 15,
+    completion_minutes_max: 20,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("go-to-market")],
+    stages: [stageRef("design")],
+    formats: ["markdown"],
+    is_placeholder: true,
+    framework_id: STORY_BUILDER_FRAMEWORK_ID,
+    tool_key: null,
+    licence: standardLicence,
+    quality_standard: {
+      purpose: true,
+      instructions: true,
+      thinkingPrompts: true,
+      evidenceFields: true,
+      decisionOutcome: true,
+      nextStep: true,
+    },
+    files: [
+      {
+        id: "story-spine-template-md",
+        file_role: "template",
+        file_format: "markdown",
+        display_name: "Story Spine Template (Markdown, AI-agent-ready)",
+        is_public_preview: false,
+      },
+    ],
+    seo_title: "Story Spine Template — free story structure template",
+    seo_description: "Write all five parts of a story spine — Place, Action, Thought, Emotion, Dialogue — free.",
+  },
+  {
+    id: "story-builder-tool",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "Story Structure Checker",
+    slug: "story-builder-tool",
+    short_description: "Check which parts of your story spine are there, and what's still missing.",
+    full_description:
+      "Paste whatever you already have for Place, Action, Thought, Emotion and Dialogue, and see which parts are present, which are missing, and a craft tip for what to add next. Usable anonymously, with no account required.",
+    outcome_statement: "A checked story spine, with a tip for the next part to write.",
+    target_audience: "Founders who need to tell a real story well — in a pitch, a customer conversation, a piece of marketing.",
+    when_to_use: "Use once you've started writing a scene and want to check what's missing.",
+    when_not_to_use: "Not a substitute for actually telling the story out loud and seeing how it lands.",
+    completion_minutes_min: 3,
+    completion_minutes_max: 5,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("go-to-market")],
+    stages: [stageRef("design")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: STORY_BUILDER_FRAMEWORK_ID,
+    tool_key: "story-builder",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "Story Structure Checker — free story structure checking tool",
+    seo_description: "Check which parts of your story spine are present and which are missing, free, no account required.",
+  },
+];
+
 export const products: Product[] = [
   ...freeProducts,
   ...ideaValidationItems,
@@ -3904,6 +4060,7 @@ export const products: Product[] = [
   ...productPrioritisationToolFamilyOutputs,
   ...lateralThinkingToolkitFamilyOutputs,
   ...userEngagementDesignerFamilyOutputs,
+  ...storyBuilderFamilyOutputs,
 ];
 
 // ---------------------------------------------------------------------------
