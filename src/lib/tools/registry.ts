@@ -10,6 +10,7 @@ import { productIdeaGeneratorTool } from "./product-idea-generator";
 import { businessModelChooserTool } from "./business-model-chooser";
 import { decisionFrameworkPickerTool } from "./decision-framework-picker";
 import { productPositioningBuilderTool } from "./product-positioning-builder";
+import { customerDemandTestTool } from "./customer-demand-test";
 import type { ToolDefinition } from "./types";
 import { ToolNotAvailableError } from "./types";
 
@@ -32,6 +33,7 @@ const TOOL_REGISTRY: Record<string, ToolDefinition<unknown, unknown>> = {
   [businessModelChooserTool.key]: businessModelChooserTool as ToolDefinition<unknown, unknown>,
   [decisionFrameworkPickerTool.key]: decisionFrameworkPickerTool as ToolDefinition<unknown, unknown>,
   [productPositioningBuilderTool.key]: productPositioningBuilderTool as ToolDefinition<unknown, unknown>,
+  [customerDemandTestTool.key]: customerDemandTestTool as ToolDefinition<unknown, unknown>,
 };
 
 /** Returns the Tool definition for `toolKey`, or null if none is registered. */

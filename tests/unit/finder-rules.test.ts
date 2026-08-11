@@ -42,6 +42,7 @@ const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
   framework("business-model-chooser", { nextStepFrameworkSlug: "pricing-your-product" }),
   framework("decision-framework-picker", { nextStepFrameworkSlug: null }),
   framework("product-positioning-builder", { nextStepFrameworkSlug: "product-naming-system" }),
+  framework("customer-demand-test", { nextStepFrameworkSlug: "better-decision-maker" }),
 ];
 
 const baseInput = (overrides: Partial<FinderInput> = {}): FinderInput => ({
@@ -65,6 +66,7 @@ describe("resolveNextStep — outcome maps to the right framework", () => {
     ["choose_business_model", "business-model-chooser"],
     ["pick_a_decision_framework", "decision-framework-picker"],
     ["build_positioning", "product-positioning-builder"],
+    ["test_demand", "customer-demand-test"],
   ] as [Outcome, string][])("%s -> %s", (outcome, expectedSlug) => {
     const result = resolveNextStep(baseInput({ outcome }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe(expectedSlug);
@@ -206,6 +208,15 @@ describe("resolveNextStep — supporting recommendations", () => {
     );
     expect(result?.primary.frameworkSlug).toBe("product-positioning-builder");
     expect(result?.supporting.some((s) => s.frameworkSlug === "product-naming-system")).toBe(true);
+  });
+
+  it("Customer Demand Test includes Better Decision Maker as a supporting recommendation, a second branch into that family alongside Customer Discovery Kit", () => {
+    const result = resolveNextStep(
+      baseInput({ outcome: "test_demand", outputPreference: "interactive_result" }),
+      ALL_FRAMEWORKS,
+    );
+    expect(result?.primary.frameworkSlug).toBe("customer-demand-test");
+    expect(result?.supporting.some((s) => s.frameworkSlug === "better-decision-maker")).toBe(true);
   });
 
   it("the last family in the chain has no next-step supporting recommendation", () => {

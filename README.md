@@ -106,6 +106,17 @@ direct lookup for which cut-through tactic fits. It's a second, independent
 branch into Product Naming System alongside MVP Scoper, and is wired into
 the Next Step Finder alongside the other eleven.
 
+A thirteenth family has since shipped: **Customer Demand Test** (see
+[`docs/decisions/0033`](docs/decisions/0033-customer-demand-test-family.md)),
+the seventh Tier 2 family. Its Tool reverts to the named-candidate scoring
+matrix — unlike Product Positioning Builder, this family's source material
+(four pretotyping techniques: Fake Door Test, Wizard of Oz, YouTube MVP,
+The Infiltrator) names comparable candidates itself, so the mechanic fits
+without inventing anything. It's a third branch-into-an-existing-target
+family, pointing forward to Better Decision Maker alongside Customer
+Discovery Kit, and is wired into the Next Step Finder alongside the other
+twelve.
+
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per
 the spec's own phasing. Product/bundle pages still use a waitlist

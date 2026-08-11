@@ -294,6 +294,7 @@ export const PRODUCT_IDEA_GENERATOR_FRAMEWORK_ID = "framework-product-idea-gener
 export const BUSINESS_MODEL_CHOOSER_FRAMEWORK_ID = "framework-business-model-chooser";
 export const DECISION_FRAMEWORK_PICKER_FRAMEWORK_ID = "framework-decision-framework-picker";
 export const PRODUCT_POSITIONING_BUILDER_FRAMEWORK_ID = "framework-product-positioning-builder";
+export const CUSTOMER_DEMAND_TEST_FRAMEWORK_ID = "framework-customer-demand-test";
 
 export const frameworks: Framework[] = [
   {
@@ -646,6 +647,35 @@ export const frameworks: Framework[] = [
       "Build a positioning statement from action, product and outcome, and find out which of five attention-getting tactics fits your product.",
     published_at: "2026-08-11T09:00:00Z",
     next_step_framework_slug: "product-naming-system",
+  },
+  {
+    id: CUSTOMER_DEMAND_TEST_FRAMEWORK_ID,
+    status: "published",
+    name: "Customer Demand Test",
+    slug: "customer-demand-test",
+    short_description: "Test real demand for your idea through behaviour, not opinion, before you build anything.",
+    problem_statement:
+      "Founders ask friends and family what they think, get polite encouragement, and mistake it for evidence of demand. Opinions are cheap and generous; only real behaviour — clicks, signups, engagement — reliably signals whether anyone actually wants what you're offering.",
+    outcome_statement: "A recommended demand test, a runner-up, and the one factor that separated them.",
+    target_audience: "Founders with a specific idea who want to test real demand before building anything.",
+    when_to_use: "Use once you can state the idea in a sentence and want a real signal before you commit time to building it.",
+    when_not_to_use: "Not useful once you already have real paying customers — that's what Product/Market Fit Tracker is for.",
+    method_summary:
+      "Work out whether your idea is easy to explain in words or needs a demo to click, whether you could fulfil it manually for a handful of real users, whether there's an existing platform your target customers already use, and how many people you need to reach for a meaningful signal. Combining these ranks four named pretotyping techniques — Fake Door Test, Wizard of Oz, YouTube MVP and The Infiltrator — so you get a recommended test and the runner-up it beat.",
+    journey_stage: stageRef("validate"),
+    priority_score: 85,
+    priority_rationale:
+      "Ranked #13 in the source-material opportunity portfolio (spec v4 §37) and the seventh Tier 2 family. Reverts to the named-candidate scoring mechanic after Product Positioning Builder's departure (0032) — the source post names four directly comparable pretotyping techniques itself, so the scoring shape fits without inventing anything. Points forward to Better Decision Maker, a second branch into that family alongside Customer Discovery Kit, since a real demand signal — good or bad — is exactly the kind of evidence that family helps you act on.",
+    source_strength: "strong",
+    source_note:
+      "Developed from A Bit Gamey material on pretotyping (Fake Door Test, Wizard of Oz, YouTube MVP, The Infiltrator) and the Market Engagement Hypothesis format for setting a demand threshold before testing.",
+    flagship: false,
+    display_order: 13,
+    seo_title: "Customer Demand Test — test real demand before you build",
+    seo_description:
+      "Work out whether a Fake Door Test, Wizard of Oz, YouTube MVP or The Infiltrator fits testing real demand for your idea.",
+    published_at: "2026-08-11T09:00:00Z",
+    next_step_framework_slug: "better-decision-maker",
   },
 ];
 
@@ -3251,6 +3281,134 @@ const productPositioningBuilderFamilyOutputs: Product[] = [
   },
 ];
 
+// Seventh Tier 2 family (docs/decisions/0033) — its Template placeholder body lives at
+// content/seed/free-files/demand-test-experiment-planner.md.
+const customerDemandTestFamilyOutputs: Product[] = [
+  {
+    id: "customer-demand-test-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "Customer Demand Test: the Guide",
+    slug: "customer-demand-test",
+    short_description: "Four pretotyping techniques for testing real demand through behaviour, not opinion, before you build.",
+    full_description:
+      "Explains four pretotyping techniques — Fake Door Test, Wizard of Oz, YouTube MVP, The Infiltrator — and the Market Engagement Hypothesis format for setting a demand threshold before you test. Read this before the Template or the Tool — both assume the technique this guide teaches.",
+    outcome_statement: "A clear framework for testing real demand before you build anything.",
+    target_audience: "Founders with a specific idea who want to test real demand before building anything.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you already know your answers and just want a scored recommendation.",
+    completion_minutes_min: 8,
+    completion_minutes_max: 12,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("customer-research")],
+    stages: [stageRef("validate")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: CUSTOMER_DEMAND_TEST_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "Customer Demand Test guide — test real demand before you build",
+    seo_description: "Four pretotyping techniques for testing real demand: Fake Door Test, Wizard of Oz, YouTube MVP, The Infiltrator.",
+  },
+  {
+    id: "demand-test-experiment-planner",
+    product_type: "template",
+    access_type: "free",
+    status: "published",
+    name: "Demand Test Experiment Planner",
+    slug: "demand-test-experiment-planner",
+    short_description: "A worksheet for writing a Market Engagement Hypothesis and choosing which pretotype fits.",
+    full_description:
+      "A structured worksheet for defining your Market Engagement Hypothesis (idea, target market, threshold, timeframe), then choosing which of four pretotyping techniques — Fake Door Test, Wizard of Oz, YouTube MVP, The Infiltrator — fits your situation.",
+    outcome_statement: "A documented demand-test experiment with a defined threshold for what counts as a real signal.",
+    target_audience: "Founders with a specific idea who want to test real demand before building anything.",
+    when_to_use: "Use once you have a specific idea to test, before you start building it.",
+    when_not_to_use: "Not useful once you already have real paying customers.",
+    completion_minutes_min: 20,
+    completion_minutes_max: 30,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("customer-research")],
+    stages: [stageRef("validate")],
+    formats: ["markdown"],
+    is_placeholder: true,
+    framework_id: CUSTOMER_DEMAND_TEST_FRAMEWORK_ID,
+    tool_key: null,
+    licence: standardLicence,
+    quality_standard: {
+      purpose: true,
+      instructions: true,
+      thinkingPrompts: true,
+      evidenceFields: true,
+      decisionOutcome: true,
+      nextStep: true,
+    },
+    files: [
+      {
+        id: "demand-test-experiment-planner-md",
+        file_role: "template",
+        file_format: "markdown",
+        display_name: "Demand Test Experiment Planner (Markdown, AI-agent-ready)",
+        is_public_preview: false,
+      },
+    ],
+    seo_title: "Demand Test Experiment Planner — free demand-test experiment template",
+    seo_description: "Write a Market Engagement Hypothesis and choose a pretotyping technique, free.",
+  },
+  {
+    id: "customer-demand-test-tool",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "Demand Test Selector",
+    slug: "customer-demand-test-tool",
+    short_description: "Get a recommended demand test and a runner-up, based on your idea and situation.",
+    full_description:
+      "Answer four questions about your idea — how easy it is to explain, whether you can fulfil it manually, whether an existing platform fits, and how wide a signal you need — and get a recommended pretotyping technique, a runner-up, and one concrete next step. Usable anonymously, with no account required.",
+    outcome_statement: "A recommended demand test, a runner-up, and one clear next step.",
+    target_audience: "Founders with a specific idea who want to test real demand before building anything.",
+    when_to_use: "Use once you can state the idea in a sentence and want a real signal before you commit time to building it.",
+    when_not_to_use: "Not a substitute for actually running the test — it recommends which one to run, it doesn't run it for you.",
+    completion_minutes_min: 3,
+    completion_minutes_max: 5,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("customer-research")],
+    stages: [stageRef("validate")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: CUSTOMER_DEMAND_TEST_FRAMEWORK_ID,
+    tool_key: "customer-demand-test",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "Demand Test Selector — free demand test recommendation tool",
+    seo_description: "Get a recommended pretotyping technique and a runner-up for testing real demand, free, no account required.",
+  },
+];
+
 export const products: Product[] = [
   ...freeProducts,
   ...ideaValidationItems,
@@ -3267,6 +3425,7 @@ export const products: Product[] = [
   ...businessModelChooserFamilyOutputs,
   ...decisionFrameworkPickerFamilyOutputs,
   ...productPositioningBuilderFamilyOutputs,
+  ...customerDemandTestFamilyOutputs,
 ];
 
 // ---------------------------------------------------------------------------

@@ -20,6 +20,7 @@ import { ProductIdeaGeneratorRunner } from "@/components/tools/product-idea-gene
 import { BusinessModelChooserRunner } from "@/components/tools/business-model-chooser/tool-runner";
 import { DecisionFrameworkPickerRunner } from "@/components/tools/decision-framework-picker/tool-runner";
 import { ProductPositioningBuilderRunner } from "@/components/tools/product-positioning-builder/tool-runner";
+import { CustomerDemandTestRunner } from "@/components/tools/customer-demand-test/tool-runner";
 
 type Props = { params: Promise<{ toolKey: string }> };
 
@@ -41,6 +42,7 @@ const TOOL_RUNNERS: Record<string, ComponentType> = {
   "business-model-chooser": BusinessModelChooserRunner,
   "decision-framework-picker": DecisionFrameworkPickerRunner,
   "product-positioning-builder": ProductPositioningBuilderRunner,
+  "customer-demand-test": CustomerDemandTestRunner,
 };
 
 export async function generateStaticParams() {

@@ -35,6 +35,7 @@ export const OUTCOME_FRAMEWORK_SLUG: Record<Exclude<Outcome, "not_sure">, string
   choose_business_model: "business-model-chooser",
   pick_a_decision_framework: "decision-framework-picker",
   build_positioning: "product-positioning-builder",
+  test_demand: "customer-demand-test",
 };
 
 const PROGRESS_OUTPUT_TYPE: Record<Progress, FinderOutputType> = {

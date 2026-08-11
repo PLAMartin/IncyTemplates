@@ -199,3 +199,20 @@ test("the published Product Positioning Builder family page shows full detail, i
   await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
   await expect(page.getByRole("link", { name: /Product Naming System/ })).toBeVisible();
 });
+
+test("the published Customer Demand Test family page shows full detail, its outputs, and links on to its next step", async ({
+  page,
+}) => {
+  await page.goto("/products/customer-demand-test");
+  await expect(page.getByRole("heading", { name: "Customer Demand Test", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Demand Test Experiment Planner/ })).toBeVisible();
+  // Seventh Tier 2 family — a second branch into Better Decision Maker alongside Customer
+  // Discovery Kit, since a real demand signal is exactly the evidence that family helps you
+  // act on (docs/decisions/0033).
+  await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Better Decision Maker/ })).toBeVisible();
+});

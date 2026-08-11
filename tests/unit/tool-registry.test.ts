@@ -13,6 +13,7 @@ import { PRODUCT_IDEA_GENERATOR_TOOL_KEY } from "@/lib/tools/product-idea-genera
 import { BUSINESS_MODEL_CHOOSER_TOOL_KEY } from "@/lib/tools/business-model-chooser";
 import { DECISION_FRAMEWORK_PICKER_TOOL_KEY } from "@/lib/tools/decision-framework-picker";
 import { PRODUCT_POSITIONING_BUILDER_TOOL_KEY } from "@/lib/tools/product-positioning-builder";
+import { CUSTOMER_DEMAND_TEST_TOOL_KEY } from "@/lib/tools/customer-demand-test";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -204,5 +205,18 @@ describe("tool registry", () => {
     const parsedResult = definition.resultSchema.parse(result) as { recommendedTactic: string; positioningStatement: string };
     expect(parsedResult.recommendedTactic).toBe("familiar");
     expect(parsedResult.positioningStatement).toContain("solo founders");
+  });
+
+  it("resolves the thirteenth registered tool (Customer Demand Test) independently of the others", () => {
+    const definition = getToolDefinition(CUSTOMER_DEMAND_TEST_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      explainability: "easy_to_explain_in_words",
+      manualFulfilment: "cant_fake_it_manually",
+      existingPlatform: "no_need_my_own_channel",
+      reachNeeded: "as_wide_as_possible",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { recommendedTest: string };
+    expect(parsedResult.recommendedTest).toBe("fake_door_test");
   });
 });
