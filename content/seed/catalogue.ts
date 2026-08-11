@@ -292,6 +292,7 @@ export const PRODUCT_MARKET_FIT_TRACKER_FRAMEWORK_ID = "framework-product-market
 export const PRICING_YOUR_PRODUCT_FRAMEWORK_ID = "framework-pricing-your-product";
 export const PRODUCT_IDEA_GENERATOR_FRAMEWORK_ID = "framework-product-idea-generator";
 export const BUSINESS_MODEL_CHOOSER_FRAMEWORK_ID = "framework-business-model-chooser";
+export const DECISION_FRAMEWORK_PICKER_FRAMEWORK_ID = "framework-decision-framework-picker";
 
 export const frameworks: Framework[] = [
   {
@@ -586,6 +587,35 @@ export const frameworks: Framework[] = [
       "Work out whether SaaS, Marketplace, Transactional or Advertising actually fits how your product delivers value and who pays for it.",
     published_at: "2026-08-11T09:00:00Z",
     next_step_framework_slug: "pricing-your-product",
+  },
+  {
+    id: DECISION_FRAMEWORK_PICKER_FRAMEWORK_ID,
+    status: "published",
+    name: "Decision Framework Picker",
+    slug: "decision-framework-picker",
+    short_description: "Pick the right thinking technique — Six Thinking Hats, First Principles, a Razor or the Boundary Rule — for the decision actually in front of you.",
+    problem_statement:
+      "Founders default to whichever thinking technique they used last time, or to no deliberate technique at all, regardless of whether it fits the decision at hand. A framework built for a group discussion doesn't help with a quick daily choice, and a quick rule of thumb doesn't help with a genuinely novel problem — reaching for the wrong tool wastes either time or rigour.",
+    outcome_statement: "A recommended thinking framework, a runner-up, and the one factor that separated them.",
+    target_audience: "Founders facing a lot of differently-shaped everyday decisions who want a quick reference rather than a deep process for each one.",
+    when_to_use: "Use whenever a decision shows up and you're not sure which technique actually fits it.",
+    when_not_to_use: "Not a substitute for Better Decision Maker's deeper process when a decision is genuinely consequential and hard to reverse — use that instead.",
+    method_summary:
+      "Work out whether multiple people or perspectives are involved, what shape the choice takes (a sequence of candidates, one decision to reason through, or a small frequent choice), whether there's a clear existing approach to copy, and how much time the decision actually warrants. Combining these ranks four named frameworks — Six Thinking Hats, First Principles Thinking, Razors and the Boundary Rule — so you get a recommended technique and the runner-up it beat.",
+    journey_stage: stageRef("decide"),
+    priority_score: 86,
+    priority_rationale:
+      "Ranked #11 in the source-material opportunity portfolio (spec v4 §37) and the fifth Tier 2 family. Reuses the named-candidate scoring mechanic a third time (Pricing Your Product, Business Model Chooser). Its four candidate frameworks are deliberately distinct from Better Decision Maker's own four techniques (reversibility, inversion, simple rules, expected value — see the Decision Worksheet template) so this family offers a genuinely different menu rather than re-picking what Better Decision Maker already bundles into one process. No next-step family is set — picking a thinking technique doesn't causally lead to one particular next family the way Business Model Chooser leads to Pricing Your Product.",
+    source_strength: "strong",
+    source_note:
+      "Developed from A Bit Gamey material on decision-making techniques, including Six Thinking Hats, first principles thinking, razors/rules of thumb, and boundary/stopping rules for sequential choices.",
+    flagship: false,
+    display_order: 11,
+    seo_title: "Decision Framework Picker — which thinking technique fits your decision",
+    seo_description:
+      "Work out whether Six Thinking Hats, First Principles Thinking, a Razor or the Boundary Rule fits the decision actually in front of you.",
+    published_at: "2026-08-11T09:00:00Z",
+    next_step_framework_slug: null,
   },
 ];
 
@@ -2935,6 +2965,134 @@ const businessModelChooserFamilyOutputs: Product[] = [
   },
 ];
 
+// Fifth Tier 2 family (docs/decisions/0031) — its Template placeholder body lives at
+// content/seed/free-files/decision-framework-cheat-sheet.md.
+const decisionFrameworkPickerFamilyOutputs: Product[] = [
+  {
+    id: "decision-framework-picker-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "Decision Framework Picker: the Guide",
+    slug: "decision-framework-picker",
+    short_description: "A quick reference for picking the right thinking technique for the decision actually in front of you.",
+    full_description:
+      "Explains four thinking frameworks — Six Thinking Hats, First Principles Thinking, Razors and the Boundary Rule — and when each one fits. Read this before the Template or the Tool — both assume the technique this guide teaches.",
+    outcome_statement: "A clear reference for choosing a thinking framework, before you default to whichever one you used last time.",
+    target_audience: "Founders facing a lot of differently-shaped everyday decisions who want a quick reference rather than a deep process for each one.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you already know your answers and just want a scored recommendation.",
+    completion_minutes_min: 8,
+    completion_minutes_max: 12,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("founder-management")],
+    stages: [stageRef("decide")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: DECISION_FRAMEWORK_PICKER_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "Decision Framework Picker guide — which thinking technique fits your decision",
+    seo_description: "A quick reference for choosing between Six Thinking Hats, First Principles Thinking, Razors and the Boundary Rule.",
+  },
+  {
+    id: "decision-framework-cheat-sheet",
+    product_type: "template",
+    access_type: "free",
+    status: "published",
+    name: "Decision Framework Cheat Sheet",
+    slug: "decision-framework-cheat-sheet",
+    short_description: "A one-page comparison of four thinking frameworks, so you can pick one in the moment a decision shows up.",
+    full_description:
+      "A quick-reference comparison of Six Thinking Hats, First Principles, Razors and the Boundary Rule — prompts to work out who's involved, the shape of the choice, precedent and how much time it's worth, then match them against the framework that fits.",
+    outcome_statement: "A quick, scannable reference for picking a thinking framework, and a chosen framework with reasons written down.",
+    target_audience: "Founders facing a lot of differently-shaped everyday decisions who want a quick reference rather than a deep process for each one.",
+    when_to_use: "Use whenever a decision shows up and you're not sure which technique actually fits it.",
+    when_not_to_use: "Not a substitute for Better Decision Maker's deeper process when a decision is genuinely consequential.",
+    completion_minutes_min: 10,
+    completion_minutes_max: 15,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("founder-management")],
+    stages: [stageRef("decide")],
+    formats: ["markdown"],
+    is_placeholder: true,
+    framework_id: DECISION_FRAMEWORK_PICKER_FRAMEWORK_ID,
+    tool_key: null,
+    licence: standardLicence,
+    quality_standard: {
+      purpose: true,
+      instructions: true,
+      thinkingPrompts: true,
+      evidenceFields: true,
+      decisionOutcome: true,
+      nextStep: true,
+    },
+    files: [
+      {
+        id: "decision-framework-cheat-sheet-md",
+        file_role: "template",
+        file_format: "markdown",
+        display_name: "Decision Framework Cheat Sheet (Markdown, AI-agent-ready)",
+        is_public_preview: false,
+      },
+    ],
+    seo_title: "Decision Framework Cheat Sheet — free decision framework comparison template",
+    seo_description: "Compare Six Thinking Hats, First Principles Thinking, Razors and the Boundary Rule side by side, free.",
+  },
+  {
+    id: "decision-framework-picker-tool",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "Decision Framework Recommender",
+    slug: "decision-framework-picker-tool",
+    short_description: "Get a recommended thinking framework and a runner-up, based on the decision actually in front of you.",
+    full_description:
+      "Answer four questions about the decision in front of you — who's involved, its shape, precedent and how much time it's worth — and get a recommended thinking framework, a runner-up, and one concrete next step. Usable anonymously, with no account required.",
+    outcome_statement: "A recommended thinking framework, a runner-up, and one clear next step.",
+    target_audience: "Founders facing a lot of differently-shaped everyday decisions who want a quick reference rather than a deep process for each one.",
+    when_to_use: "Use whenever a decision shows up and you're not sure which technique actually fits it.",
+    when_not_to_use: "Not a substitute for Better Decision Maker's deeper process when a decision is genuinely consequential and hard to reverse.",
+    completion_minutes_min: 3,
+    completion_minutes_max: 5,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("founder-management")],
+    stages: [stageRef("decide")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: DECISION_FRAMEWORK_PICKER_FRAMEWORK_ID,
+    tool_key: "decision-framework-picker",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "Decision Framework Recommender — free decision framework recommendation tool",
+    seo_description: "Get a recommended thinking framework and a runner-up based on the decision in front of you, free, no account required.",
+  },
+];
+
 export const products: Product[] = [
   ...freeProducts,
   ...ideaValidationItems,
@@ -2949,6 +3107,7 @@ export const products: Product[] = [
   ...pricingYourProductFamilyOutputs,
   ...productIdeaGeneratorFamilyOutputs,
   ...businessModelChooserFamilyOutputs,
+  ...decisionFrameworkPickerFamilyOutputs,
 ];
 
 // ---------------------------------------------------------------------------

@@ -11,6 +11,7 @@ import { PRODUCT_MARKET_FIT_TRACKER_TOOL_KEY } from "@/lib/tools/product-market-
 import { PRICING_YOUR_PRODUCT_TOOL_KEY } from "@/lib/tools/pricing-your-product";
 import { PRODUCT_IDEA_GENERATOR_TOOL_KEY } from "@/lib/tools/product-idea-generator";
 import { BUSINESS_MODEL_CHOOSER_TOOL_KEY } from "@/lib/tools/business-model-chooser";
+import { DECISION_FRAMEWORK_PICKER_TOOL_KEY } from "@/lib/tools/decision-framework-picker";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -175,5 +176,18 @@ describe("tool registry", () => {
     const result = definition.run(parsedInput);
     const parsedResult = definition.resultSchema.parse(result) as { recommendedModel: string };
     expect(parsedResult.recommendedModel).toBe("saas");
+  });
+
+  it("resolves the eleventh registered tool (Decision Framework Picker) independently of the others", () => {
+    const definition = getToolDefinition(DECISION_FRAMEWORK_PICKER_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      involvement: "just_me",
+      decisionShape: "sequence_of_options",
+      precedent: "clear_precedent_to_copy",
+      timeWorthInvesting: "worth_real_time_and_thought",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { recommendedFramework: string };
+    expect(parsedResult.recommendedFramework).toBe("boundary_rule");
   });
 });

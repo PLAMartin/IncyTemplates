@@ -167,3 +167,19 @@ test("the published Business Model Chooser family page shows full detail, its ou
   await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
   await expect(page.getByRole("link", { name: /Pricing Your Product/ })).toBeVisible();
 });
+
+test("the published Decision Framework Picker family page shows full detail and its outputs, with no next step", async ({
+  page,
+}) => {
+  await page.goto("/products/decision-framework-picker");
+  await expect(page.getByRole("heading", { name: "Decision Framework Picker", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Decision Framework Cheat Sheet/ })).toBeVisible();
+  // Fifth Tier 2 family — deliberately no next-step family set. Picking a thinking framework
+  // doesn't causally lead to one particular next family, unlike Business Model Chooser's link
+  // to Pricing Your Product (docs/decisions/0031).
+  await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
+});

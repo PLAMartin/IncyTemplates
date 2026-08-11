@@ -84,6 +84,18 @@ branch rather than either leading or extending the chain — Product/Market
 Fit Tracker already points at the same target — and is wired into the Next
 Step Finder alongside the other nine.
 
+An eleventh family has since shipped: **Decision Framework Picker** (see
+[`docs/decisions/0031`](docs/decisions/0031-decision-framework-picker-family.md)),
+the fifth Tier 2 family. Its four candidate techniques — Six Thinking Hats,
+First Principles Thinking, Razors and the Boundary Rule — were chosen
+deliberately distinct from Better Decision Maker's own four (reversibility,
+inversion, simple rules, expected value), even though spec §37's
+representative source posts overlap with Better Decision Maker's. It has no
+next-step family — picking a thinking technique doesn't causally lead
+anywhere in particular, unlike Business Model Chooser's link forward to
+Pricing Your Product — and is wired into the Next Step Finder alongside the
+other ten.
+
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per
 the spec's own phasing. Product/bundle pages still use a waitlist

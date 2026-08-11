@@ -40,6 +40,7 @@ const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
   framework("product-market-fit-tracker", { nextStepFrameworkSlug: "pricing-your-product" }),
   framework("pricing-your-product", { nextStepFrameworkSlug: null }),
   framework("business-model-chooser", { nextStepFrameworkSlug: "pricing-your-product" }),
+  framework("decision-framework-picker", { nextStepFrameworkSlug: null }),
 ];
 
 const baseInput = (overrides: Partial<FinderInput> = {}): FinderInput => ({
@@ -61,6 +62,7 @@ describe("resolveNextStep — outcome maps to the right framework", () => {
     ["choose_pricing", "pricing-your-product"],
     ["generate_ideas", "product-idea-generator"],
     ["choose_business_model", "business-model-chooser"],
+    ["pick_a_decision_framework", "decision-framework-picker"],
   ] as [Outcome, string][])("%s -> %s", (outcome, expectedSlug) => {
     const result = resolveNextStep(baseInput({ outcome }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe(expectedSlug);
@@ -183,6 +185,16 @@ describe("resolveNextStep — supporting recommendations", () => {
     );
     expect(result?.primary.frameworkSlug).toBe("business-model-chooser");
     expect(result?.supporting.some((s) => s.frameworkSlug === "pricing-your-product")).toBe(true);
+  });
+
+  it("Decision Framework Picker has no next-step supporting recommendation — a second, independent terminal family, not the chain's tail", () => {
+    const result = resolveNextStep(
+      baseInput({ outcome: "pick_a_decision_framework", outputPreference: "interactive_result" }),
+      ALL_FRAMEWORKS,
+    );
+    expect(result?.primary.frameworkSlug).toBe("decision-framework-picker");
+    expect(result?.supporting).toHaveLength(1);
+    expect(result?.supporting[0]?.outputType).toBe("guide");
   });
 
   it("the last family in the chain has no next-step supporting recommendation", () => {
