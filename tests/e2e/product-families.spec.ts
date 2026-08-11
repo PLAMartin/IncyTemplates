@@ -133,3 +133,20 @@ test("the published Pricing Your Product family page shows full detail and its o
   // `next_step_framework_slug` is null, so no "Next step" section should render at all.
   await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
 });
+
+test("the published Product Idea Generator family page shows full detail, its outputs, and links on to its next step", async ({
+  page,
+}) => {
+  await page.goto("/products/product-idea-generator");
+  await expect(page.getByRole("heading", { name: "Product Idea Generator", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Idea Capture Log/ })).toBeVisible();
+  // Third Tier 2 family — unlike every prior family, its `next_step_framework_slug` points at
+  // the front of the existing chain (Product Idea Assessor) rather than extending its tail,
+  // since the Idea journey stage precedes Validate (docs/decisions/0029).
+  await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Product Idea Assessor/ })).toBeVisible();
+});

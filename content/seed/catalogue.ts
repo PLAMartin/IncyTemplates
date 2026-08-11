@@ -290,6 +290,7 @@ export const PRODUCT_NAMING_SYSTEM_FRAMEWORK_ID = "framework-product-naming-syst
 export const FIRST_CUSTOMERS_PLANNER_FRAMEWORK_ID = "framework-first-customers-planner";
 export const PRODUCT_MARKET_FIT_TRACKER_FRAMEWORK_ID = "framework-product-market-fit-tracker";
 export const PRICING_YOUR_PRODUCT_FRAMEWORK_ID = "framework-pricing-your-product";
+export const PRODUCT_IDEA_GENERATOR_FRAMEWORK_ID = "framework-product-idea-generator";
 
 export const frameworks: Framework[] = [
   {
@@ -526,6 +527,35 @@ export const frameworks: Framework[] = [
       "Work out whether a one-time price, a flat subscription, usage-based pricing or a tiered subscription actually fits how your product delivers value.",
     published_at: "2026-08-10T09:00:00Z",
     next_step_framework_slug: null,
+  },
+  {
+    id: PRODUCT_IDEA_GENERATOR_FRAMEWORK_ID,
+    status: "published",
+    name: "Product Idea Generator",
+    slug: "product-idea-generator",
+    short_description: "Generate real product idea directions from your own frustrations, niche knowledge and the apps you already use — before you assess anything.",
+    problem_statement:
+      "Founders who want to start often stall at the very first step: they don't have an idea to test yet, and staring at a blank page rarely produces one. Waiting for inspiration is slower and less reliable than a repeatable process for surfacing ideas worth testing.",
+    outcome_statement: "One or more personalised idea directions, a recommended starting point, and a habit for generating more.",
+    target_audience: "Would-be founders who want to start building a pipeline of product ideas worth assessing.",
+    when_to_use: "Use before Product Idea Assessor, as soon as you want to start generating ideas rather than waiting for one to arrive.",
+    when_not_to_use: "Not useful once you already have a specific idea in mind — go straight to Product Idea Assessor instead.",
+    method_summary:
+      "Draw on three proven idea sources — a frustration you personally have (scratch your own itch), a niche you understand from the inside, and an existing product you use often and think could be improved — plus a repeatable five-step process (gather, digest, step away, let ideas surface, test) and a daily practice of writing ideas down without judging them. The generator turns whichever of your own inputs is richest into a concrete idea direction and a first test step.",
+    journey_stage: stageRef("idea"),
+    priority_score: 88,
+    priority_rationale:
+      "Ranked #9 in the source-material opportunity portfolio (spec v4 §37) and the third Tier 2 family. Unlike every family shipped so far, it sits before Product Idea Assessor in the founder journey rather than after the prior-shipped family — it's the first family to occupy the Idea journey stage, which none of the eight published families before it cover, and gives Product Idea Assessor an on-ramp for founders who don't have an idea yet.",
+    source_strength: "strong",
+    source_note:
+      "Developed from A Bit Gamey material on generating ideas, including the five-step idea generating process (gather, digest, step away, bubble up, test), the three ways to find an app idea (scratch your own itch, address a niche, improve an existing app) and the ten-ideas-per-day daily practice.",
+    flagship: false,
+    display_order: 9,
+    seo_title: "Product Idea Generator — turn your own frustrations and niches into idea directions",
+    seo_description:
+      "Generate personalised product idea directions from your own frustrations, niche knowledge and the apps you use, plus a daily idea-generation habit.",
+    published_at: "2026-08-11T09:00:00Z",
+    next_step_framework_slug: "product-idea-assessor",
   },
 ];
 
@@ -2619,6 +2649,134 @@ const pricingYourProductFamilyOutputs: Product[] = [
   },
 ];
 
+// Third Tier 2 family (docs/decisions/0029) — its Template placeholder body lives at
+// content/seed/free-files/idea-capture-log.md.
+const productIdeaGeneratorFamilyOutputs: Product[] = [
+  {
+    id: "product-idea-generator-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "Product Idea Generator: the Guide",
+    slug: "product-idea-generator",
+    short_description: "A repeatable process for finding product ideas worth testing, instead of waiting for inspiration.",
+    full_description:
+      "Explains three proven idea sources (scratch your own itch, address a niche, improve an existing product), a five-step idea process (gather, digest, step away, bubble up, test) and a daily no-judgment idea-writing habit. Read this before the Template or the Tool — both assume the technique this guide teaches.",
+    outcome_statement: "A repeatable process for generating product ideas worth testing.",
+    target_audience: "Would-be founders who want to start building a pipeline of product ideas worth assessing.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you already have raw material and just want a structured idea direction.",
+    completion_minutes_min: 6,
+    completion_minutes_max: 10,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-strategy")],
+    stages: [stageRef("idea")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: PRODUCT_IDEA_GENERATOR_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "Product Idea Generator guide — a repeatable process for finding product ideas",
+    seo_description: "Three proven idea sources, a five-step idea process, and a daily habit for generating product ideas worth testing.",
+  },
+  {
+    id: "idea-capture-log",
+    product_type: "template",
+    access_type: "free",
+    status: "published",
+    name: "Idea Capture Log",
+    slug: "idea-capture-log",
+    short_description: "A running log for capturing ideas daily, tagged by source, and reviewed on a regular cadence.",
+    full_description:
+      "A structured place to run the daily idea-writing habit properly: one entry per idea, tagged as scratch-your-own-itch, address-a-niche or improve-existing, reviewed weekly rather than judged on the spot.",
+    outcome_statement: "A growing log of ideas, tagged by source and reviewed regularly instead of judged the moment they're written.",
+    target_audience: "Founders and would-be founders building a repeatable idea-generation habit, before they have a specific idea to assess.",
+    when_to_use: "Use daily, alongside or instead of the Tool, once you want to build the idea-generation habit rather than get a single direction.",
+    when_not_to_use: "Not useful once you already have a specific idea in mind — go straight to Product Idea Assessor instead.",
+    completion_minutes_min: 3,
+    completion_minutes_max: 5,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-strategy")],
+    stages: [stageRef("idea")],
+    formats: ["markdown"],
+    is_placeholder: true,
+    framework_id: PRODUCT_IDEA_GENERATOR_FRAMEWORK_ID,
+    tool_key: null,
+    licence: standardLicence,
+    quality_standard: {
+      purpose: true,
+      instructions: true,
+      thinkingPrompts: true,
+      evidenceFields: true,
+      decisionOutcome: true,
+      nextStep: true,
+    },
+    files: [
+      {
+        id: "idea-capture-log-md",
+        file_role: "template",
+        file_format: "markdown",
+        display_name: "Idea Capture Log (Markdown, AI-agent-ready)",
+        is_public_preview: false,
+      },
+    ],
+    seo_title: "Idea Capture Log — free daily idea-capture template",
+    seo_description: "A running log for capturing and reviewing product ideas, tagged by source, free.",
+  },
+  {
+    id: "product-idea-generator-tool",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "Idea Direction Generator",
+    slug: "product-idea-generator-tool",
+    short_description: "Turn your own frustrations, niche knowledge or a product you use into a concrete idea direction.",
+    full_description:
+      "Answer whichever of three short questions apply to you — a frustration, a niche you know well, a product you use and think could be improved — plus how ready you are to build a daily idea-writing habit, and get a personalised idea direction and a first test step. Usable anonymously, with no account required.",
+    outcome_statement: "A personalised idea direction, a first test step, and a daily-practice nudge.",
+    target_audience: "Would-be founders who want to start building a pipeline of product ideas worth assessing.",
+    when_to_use: "Use as soon as you have even one frustration, niche or favourite product to draw on.",
+    when_not_to_use: "Not a substitute for testing the idea with real people — it gives you a direction and a first test, not validation.",
+    completion_minutes_min: 3,
+    completion_minutes_max: 5,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-strategy")],
+    stages: [stageRef("idea")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: PRODUCT_IDEA_GENERATOR_FRAMEWORK_ID,
+    tool_key: "product-idea-generator",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "Idea Direction Generator — free product idea generation tool",
+    seo_description: "Turn your own frustrations, niche knowledge or a favourite product into a concrete idea direction, free, no account required.",
+  },
+];
+
 export const products: Product[] = [
   ...freeProducts,
   ...ideaValidationItems,
@@ -2631,6 +2789,7 @@ export const products: Product[] = [
   ...firstCustomersPlannerFamilyOutputs,
   ...productMarketFitTrackerFamilyOutputs,
   ...pricingYourProductFamilyOutputs,
+  ...productIdeaGeneratorFamilyOutputs,
 ];
 
 // ---------------------------------------------------------------------------

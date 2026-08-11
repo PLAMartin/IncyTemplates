@@ -61,6 +61,18 @@ directly on from Product/Market Fit Tracker as the new terminal family in the
 founder journey, and is wired into the Next Step Finder alongside the other
 seven.
 
+A ninth family has since shipped: **Product Idea Generator** (see
+[`docs/decisions/0029`](docs/decisions/0029-product-idea-generator-family.md)),
+the third Tier 2 family and adopted under spec v4
+(`docs/Incytemplates-website-spec-v4.md`), which retains v3's product model
+for this purpose. It's the first family to occupy the **Idea** journey
+stage, and the first whose `next_step_framework_slug` leads *into* the
+existing chain (Product Idea Assessor) rather than extending its tail,
+since Idea precedes Validate in the founder journey. Its Tool is the first
+to mix optional free-text inputs with a select — a personalised idea
+direction generator, not another scorer — wired into the Next Step Finder
+alongside the other eight.
+
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per
 the spec's own phasing. Product/bundle pages still use a waitlist

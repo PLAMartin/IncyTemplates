@@ -6,6 +6,7 @@ import { productNamingSystemTool } from "./product-naming-system";
 import { firstCustomersPlannerTool } from "./first-customers-planner";
 import { productMarketFitTrackerTool } from "./product-market-fit-tracker";
 import { pricingYourProductTool } from "./pricing-your-product";
+import { productIdeaGeneratorTool } from "./product-idea-generator";
 import type { ToolDefinition } from "./types";
 import { ToolNotAvailableError } from "./types";
 
@@ -24,6 +25,7 @@ const TOOL_REGISTRY: Record<string, ToolDefinition<unknown, unknown>> = {
   [firstCustomersPlannerTool.key]: firstCustomersPlannerTool as ToolDefinition<unknown, unknown>,
   [productMarketFitTrackerTool.key]: productMarketFitTrackerTool as ToolDefinition<unknown, unknown>,
   [pricingYourProductTool.key]: pricingYourProductTool as ToolDefinition<unknown, unknown>,
+  [productIdeaGeneratorTool.key]: productIdeaGeneratorTool as ToolDefinition<unknown, unknown>,
 };
 
 /** Returns the Tool definition for `toolKey`, or null if none is registered. */

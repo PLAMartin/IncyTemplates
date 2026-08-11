@@ -21,8 +21,13 @@ function framework(
   };
 }
 
-/** Mirrors the real eight-family chain and its next-step links. */
+/**
+ * Mirrors the real nine-family chain and its next-step links. Product Idea Generator sits at
+ * the *front* of the chain (its own next step is Product Idea Assessor) rather than being
+ * appended after the previously-terminal family — see docs/decisions/0029.
+ */
 const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
+  framework("product-idea-generator", { nextStepFrameworkSlug: "product-idea-assessor" }),
   framework("product-idea-assessor", { nextStepFrameworkSlug: "customer-discovery-kit" }),
   framework("customer-discovery-kit", { nextStepFrameworkSlug: "better-decision-maker" }),
   framework("better-decision-maker", { nextStepFrameworkSlug: "mvp-scoper" }),
@@ -50,6 +55,7 @@ describe("resolveNextStep — outcome maps to the right framework", () => {
     ["find_customers", "first-customers-planner"],
     ["check_fit", "product-market-fit-tracker"],
     ["choose_pricing", "pricing-your-product"],
+    ["generate_ideas", "product-idea-generator"],
   ] as [Outcome, string][])("%s -> %s", (outcome, expectedSlug) => {
     const result = resolveNextStep(baseInput({ outcome }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe(expectedSlug);
@@ -154,6 +160,15 @@ describe("resolveNextStep — supporting recommendations", () => {
     );
     expect(result?.primary.frameworkSlug).toBe("product-market-fit-tracker");
     expect(result?.supporting.some((s) => s.frameworkSlug === "pricing-your-product")).toBe(true);
+  });
+
+  it("a family with a next step (Product Idea Generator) includes it as a supporting recommendation", () => {
+    const result = resolveNextStep(
+      baseInput({ outcome: "generate_ideas", outputPreference: "interactive_result" }),
+      ALL_FRAMEWORKS,
+    );
+    expect(result?.primary.frameworkSlug).toBe("product-idea-generator");
+    expect(result?.supporting.some((s) => s.frameworkSlug === "product-idea-assessor")).toBe(true);
   });
 
   it("the last family in the chain has no next-step supporting recommendation", () => {

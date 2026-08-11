@@ -9,6 +9,7 @@ import { PRODUCT_NAMING_SYSTEM_TOOL_KEY } from "@/lib/tools/product-naming-syste
 import { FIRST_CUSTOMERS_PLANNER_TOOL_KEY } from "@/lib/tools/first-customers-planner";
 import { PRODUCT_MARKET_FIT_TRACKER_TOOL_KEY } from "@/lib/tools/product-market-fit-tracker";
 import { PRICING_YOUR_PRODUCT_TOOL_KEY } from "@/lib/tools/pricing-your-product";
+import { PRODUCT_IDEA_GENERATOR_TOOL_KEY } from "@/lib/tools/product-idea-generator";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -147,5 +148,18 @@ describe("tool registry", () => {
     const result = definition.run(parsedInput);
     const parsedResult = definition.resultSchema.parse(result) as { recommendedModel: string };
     expect(parsedResult.recommendedModel).toBe("usage_based");
+  });
+
+  it("resolves the ninth registered tool (Product Idea Generator) independently of the others", () => {
+    const definition = getToolDefinition(PRODUCT_IDEA_GENERATOR_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      ownFrustration: "chasing unpaid invoices every month",
+      nicheKnowledge: "",
+      frequentlyUsedProduct: "",
+      dailyPracticeCommitment: "willing_to_try",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { recommendedMethod: string };
+    expect(parsedResult.recommendedMethod).toBe("scratch_your_own_itch");
   });
 });
