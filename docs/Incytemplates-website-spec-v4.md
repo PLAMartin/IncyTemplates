@@ -691,7 +691,7 @@ Do not refer to all outputs generically as “templates” in navigation or anal
 1. Visitor reviews purpose, intended user, completion time, preview and example.
 2. Visitor selects **Get template**.
 3. Download is available immediately.
-4. Optional email and separate marketing-consent checkbox may be offered.
+4. Optional email and separate marketing-consent checkbox may be offered. The free-template access email (§24.2) is sent only if the visitor supplies an email and requests it — never automatically.
 5. Server creates a short-lived signed URL.
 6. Thank-you state recommends instructions and one next-step family.
 
@@ -3446,7 +3446,7 @@ These decisions do not prevent foundation work but affect launch:
 9. Confirm customer licence types and future-update policy.
 10. Confirm refund policy.
 11. Confirm tax/merchant-of-record approach before paid launch.
-12. Confirm whether free downloads are emailed by default or only when requested.
+12. ~~Confirm whether free downloads are emailed by default or only when requested.~~ Resolved: emailed only when the visitor explicitly requests it (see §9.3, §24.2).
 13. Confirm product-update email consent model.
 14. Confirm final company/address details for legal pages.
 15. Confirm GA4 versus privacy-focused alternative.
