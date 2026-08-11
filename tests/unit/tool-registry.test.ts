@@ -12,6 +12,7 @@ import { PRICING_YOUR_PRODUCT_TOOL_KEY } from "@/lib/tools/pricing-your-product"
 import { PRODUCT_IDEA_GENERATOR_TOOL_KEY } from "@/lib/tools/product-idea-generator";
 import { BUSINESS_MODEL_CHOOSER_TOOL_KEY } from "@/lib/tools/business-model-chooser";
 import { DECISION_FRAMEWORK_PICKER_TOOL_KEY } from "@/lib/tools/decision-framework-picker";
+import { PRODUCT_POSITIONING_BUILDER_TOOL_KEY } from "@/lib/tools/product-positioning-builder";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -189,5 +190,19 @@ describe("tool registry", () => {
     const result = definition.run(parsedInput);
     const parsedResult = definition.resultSchema.parse(result) as { recommendedFramework: string };
     expect(parsedResult.recommendedFramework).toBe("boundary_rule");
+  });
+
+  it("resolves the twelfth registered tool (Product Positioning Builder) independently of the others", () => {
+    const definition = getToolDefinition(PRODUCT_POSITIONING_BUILDER_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      idealCustomer: "solo founders",
+      desiredAction: "score their idea",
+      desiredOutcome: "know what to do next",
+      cutThroughApproach: "building_repeated_content_over_time",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { recommendedTactic: string; positioningStatement: string };
+    expect(parsedResult.recommendedTactic).toBe("familiar");
+    expect(parsedResult.positioningStatement).toContain("solo founders");
   });
 });

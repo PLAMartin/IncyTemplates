@@ -22,6 +22,7 @@ export const outcomeSchema = z.enum([
   "generate_ideas",
   "choose_business_model",
   "pick_a_decision_framework",
+  "build_positioning",
   "not_sure",
 ]);
 export type Outcome = z.infer<typeof outcomeSchema>;

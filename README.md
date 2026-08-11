@@ -96,6 +96,16 @@ anywhere in particular, unlike Business Model Chooser's link forward to
 Pricing Your Product — and is wired into the Next Step Finder alongside the
 other ten.
 
+A twelfth family has since shipped: **Product Positioning Builder** (see
+[`docs/decisions/0032`](docs/decisions/0032-product-positioning-builder-family.md)),
+the sixth Tier 2 family and the first whose Tool isn't a named-candidate
+scoring matrix — its source material (an action/outcome/admiration brand
+formula and five non-competing cut-through tactics) doesn't support one, so
+its Tool assembles a positioning statement from free text instead, plus a
+direct lookup for which cut-through tactic fits. It's a second, independent
+branch into Product Naming System alongside MVP Scoper, and is wired into
+the Next Step Finder alongside the other eleven.
+
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per
 the spec's own phasing. Product/bundle pages still use a waitlist

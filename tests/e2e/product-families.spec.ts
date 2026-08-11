@@ -183,3 +183,19 @@ test("the published Decision Framework Picker family page shows full detail and 
   // to Pricing Your Product (docs/decisions/0031).
   await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
 });
+
+test("the published Product Positioning Builder family page shows full detail, its outputs, and links on to its next step", async ({
+  page,
+}) => {
+  await page.goto("/products/product-positioning-builder");
+  await expect(page.getByRole("heading", { name: "Product Positioning Builder", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Positioning One-Pager/ })).toBeVisible();
+  // Sixth Tier 2 family — a second branch into Product Naming System alongside MVP Scoper,
+  // since positioning naturally precedes settling on a name that matches it (docs/decisions/0032).
+  await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Product Naming System/ })).toBeVisible();
+});

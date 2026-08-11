@@ -41,6 +41,7 @@ const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
   framework("pricing-your-product", { nextStepFrameworkSlug: null }),
   framework("business-model-chooser", { nextStepFrameworkSlug: "pricing-your-product" }),
   framework("decision-framework-picker", { nextStepFrameworkSlug: null }),
+  framework("product-positioning-builder", { nextStepFrameworkSlug: "product-naming-system" }),
 ];
 
 const baseInput = (overrides: Partial<FinderInput> = {}): FinderInput => ({
@@ -63,6 +64,7 @@ describe("resolveNextStep — outcome maps to the right framework", () => {
     ["generate_ideas", "product-idea-generator"],
     ["choose_business_model", "business-model-chooser"],
     ["pick_a_decision_framework", "decision-framework-picker"],
+    ["build_positioning", "product-positioning-builder"],
   ] as [Outcome, string][])("%s -> %s", (outcome, expectedSlug) => {
     const result = resolveNextStep(baseInput({ outcome }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe(expectedSlug);
@@ -195,6 +197,15 @@ describe("resolveNextStep — supporting recommendations", () => {
     expect(result?.primary.frameworkSlug).toBe("decision-framework-picker");
     expect(result?.supporting).toHaveLength(1);
     expect(result?.supporting[0]?.outputType).toBe("guide");
+  });
+
+  it("Product Positioning Builder includes Product Naming System as a supporting recommendation, a second branch into that family alongside MVP Scoper", () => {
+    const result = resolveNextStep(
+      baseInput({ outcome: "build_positioning", outputPreference: "interactive_result" }),
+      ALL_FRAMEWORKS,
+    );
+    expect(result?.primary.frameworkSlug).toBe("product-positioning-builder");
+    expect(result?.supporting.some((s) => s.frameworkSlug === "product-naming-system")).toBe(true);
   });
 
   it("the last family in the chain has no next-step supporting recommendation", () => {

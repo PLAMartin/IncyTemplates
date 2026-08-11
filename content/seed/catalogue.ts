@@ -293,6 +293,7 @@ export const PRICING_YOUR_PRODUCT_FRAMEWORK_ID = "framework-pricing-your-product
 export const PRODUCT_IDEA_GENERATOR_FRAMEWORK_ID = "framework-product-idea-generator";
 export const BUSINESS_MODEL_CHOOSER_FRAMEWORK_ID = "framework-business-model-chooser";
 export const DECISION_FRAMEWORK_PICKER_FRAMEWORK_ID = "framework-decision-framework-picker";
+export const PRODUCT_POSITIONING_BUILDER_FRAMEWORK_ID = "framework-product-positioning-builder";
 
 export const frameworks: Framework[] = [
   {
@@ -616,6 +617,35 @@ export const frameworks: Framework[] = [
       "Work out whether Six Thinking Hats, First Principles Thinking, a Razor or the Boundary Rule fits the decision actually in front of you.",
     published_at: "2026-08-11T09:00:00Z",
     next_step_framework_slug: null,
+  },
+  {
+    id: PRODUCT_POSITIONING_BUILDER_FRAMEWORK_ID,
+    status: "published",
+    name: "Product Positioning Builder",
+    slug: "product-positioning-builder",
+    short_description: "Build a positioning statement that gets past the noise, and pick the cut-through tactic that actually fits.",
+    problem_statement:
+      "Founders describe their product with a list of features and hope something sticks, rather than deliberately pairing an action, a product and an outcome the way strong brands do. Even a good pairing goes nowhere if it never gets past a potential customer's mental filters in the first place.",
+    outcome_statement: "A positioning statement and a recommended way to cut through the noise and get it noticed.",
+    target_audience: "Founders who've named the problem they solve and now need to decide how to present the product so it actually gets noticed.",
+    when_to_use: "Use once you know your target customer and the core outcome you deliver, before you finalise a name or launch plan.",
+    when_not_to_use: "Not useful before you know who you're building for — that's what Customer Discovery Kit is for.",
+    method_summary:
+      "Pair the action your ideal customer takes with your product to the outcome they get, and tie it to what they admire if there's a natural connection — the same deliberate pairing strong brands use. Then pick one of five ways to get past the brain's limbic filter: a problem people already worry about, an unusual or unexpected offer, visually or emotionally striking presentation, something valuable given away upfront, or familiarity built through repeated content over time.",
+    journey_stage: stageRef("design"),
+    priority_score: 86,
+    priority_rationale:
+      "Ranked #12 in the source-material opportunity portfolio (spec v4 §37) and the sixth Tier 2 family. Its Tool assembles a positioning statement from free text rather than scoring named candidates — the source material's action/outcome/admiration brand-pairing formula and its five cut-through tactics don't fit a comparative scoring matrix the way Pricing Your Product's or Business Model Chooser's material did, so forcing that shape would mean inventing structure the source doesn't support. Points forward to Product Naming System, a second branch into that family alongside MVP Scoper, since positioning naturally precedes settling on a name that matches it.",
+    source_strength: "strong",
+    source_note:
+      "Developed from A Bit Gamey material on standing out in a crowded market (the five ways to get past the brain's limbic filter: scary, strange, sexy, free gifts, familiar) and on building a brand that makes money (pairing an action with a product to reach a desired outcome tied to what the customer admires).",
+    flagship: false,
+    display_order: 12,
+    seo_title: "Product Positioning Builder — build a positioning statement that cuts through the noise",
+    seo_description:
+      "Build a positioning statement from action, product and outcome, and find out which of five attention-getting tactics fits your product.",
+    published_at: "2026-08-11T09:00:00Z",
+    next_step_framework_slug: "product-naming-system",
   },
 ];
 
@@ -3093,6 +3123,134 @@ const decisionFrameworkPickerFamilyOutputs: Product[] = [
   },
 ];
 
+// Sixth Tier 2 family (docs/decisions/0032) — its Template placeholder body lives at
+// content/seed/free-files/positioning-one-pager.md.
+const productPositioningBuilderFamilyOutputs: Product[] = [
+  {
+    id: "product-positioning-builder-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "Product Positioning Builder: the Guide",
+    slug: "product-positioning-builder",
+    short_description: "How to build a positioning statement that gets past the noise, and pick the tactic that gets it noticed.",
+    full_description:
+      "Explains the action/outcome/admiration pairing behind strong brands and the five ways to get past a potential customer's mental filters — scary, strange, sexy, free gifts, familiar. Read this before the Template or the Tool — both assume the technique this guide teaches.",
+    outcome_statement: "A clear framework for building a positioning statement and choosing how to get it noticed.",
+    target_audience: "Founders who've named the problem they solve and now need to decide how to present the product so it actually gets noticed.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you already know your answers and just want an assembled statement.",
+    completion_minutes_min: 8,
+    completion_minutes_max: 12,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("go-to-market")],
+    stages: [stageRef("design")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: PRODUCT_POSITIONING_BUILDER_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "Product Positioning Builder guide — build a positioning statement that cuts through the noise",
+    seo_description: "How to pair action, product and outcome into a positioning statement, and which of five tactics gets it noticed.",
+  },
+  {
+    id: "positioning-one-pager",
+    product_type: "template",
+    access_type: "free",
+    status: "published",
+    name: "Positioning One-Pager",
+    slug: "positioning-one-pager",
+    short_description: "A one-page worksheet for building a positioning statement and picking a cut-through tactic.",
+    full_description:
+      "A structured worksheet for pairing your product's action, outcome and (if relevant) admired identity into a positioning statement, then choosing which of five cut-through tactics — scary, strange, sexy, free gifts, familiar — fits your situation.",
+    outcome_statement: "A documented positioning statement and a chosen cut-through tactic, with reasons written down.",
+    target_audience: "Founders who've named the problem they solve and now need to decide how to present the product so it actually gets noticed.",
+    when_to_use: "Use once you know your target customer and the core outcome you deliver.",
+    when_not_to_use: "Not useful before you know who you're building for.",
+    completion_minutes_min: 15,
+    completion_minutes_max: 20,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("go-to-market")],
+    stages: [stageRef("design")],
+    formats: ["markdown"],
+    is_placeholder: true,
+    framework_id: PRODUCT_POSITIONING_BUILDER_FRAMEWORK_ID,
+    tool_key: null,
+    licence: standardLicence,
+    quality_standard: {
+      purpose: true,
+      instructions: true,
+      thinkingPrompts: true,
+      evidenceFields: true,
+      decisionOutcome: true,
+      nextStep: true,
+    },
+    files: [
+      {
+        id: "positioning-one-pager-md",
+        file_role: "template",
+        file_format: "markdown",
+        display_name: "Positioning One-Pager (Markdown, AI-agent-ready)",
+        is_public_preview: false,
+      },
+    ],
+    seo_title: "Positioning One-Pager — free positioning statement template",
+    seo_description: "Build a positioning statement and pick a cut-through tactic in one worksheet, free.",
+  },
+  {
+    id: "product-positioning-builder-tool",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "Positioning Statement Builder",
+    slug: "product-positioning-builder-tool",
+    short_description: "Assemble a positioning statement from your own answers, and get a recommended cut-through tactic.",
+    full_description:
+      "Answer a few questions about your ideal customer, the action they take, the outcome they get, and (optionally) what they admire — and get an assembled positioning statement plus a recommended way to cut through the noise. Usable anonymously, with no account required.",
+    outcome_statement: "An assembled positioning statement and a recommended cut-through tactic.",
+    target_audience: "Founders who've named the problem they solve and now need to decide how to present the product so it actually gets noticed.",
+    when_to_use: "Use once you can describe your ideal customer, the action they take and the outcome they get.",
+    when_not_to_use: "Not a substitute for testing the statement with real prospective customers — it assembles a starting point, not a validated tagline.",
+    completion_minutes_min: 3,
+    completion_minutes_max: 5,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("go-to-market")],
+    stages: [stageRef("design")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: PRODUCT_POSITIONING_BUILDER_FRAMEWORK_ID,
+    tool_key: "product-positioning-builder",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "Positioning Statement Builder — free positioning statement tool",
+    seo_description: "Assemble a positioning statement and get a recommended cut-through tactic, free, no account required.",
+  },
+];
+
 export const products: Product[] = [
   ...freeProducts,
   ...ideaValidationItems,
@@ -3108,6 +3266,7 @@ export const products: Product[] = [
   ...productIdeaGeneratorFamilyOutputs,
   ...businessModelChooserFamilyOutputs,
   ...decisionFrameworkPickerFamilyOutputs,
+  ...productPositioningBuilderFamilyOutputs,
 ];
 
 // ---------------------------------------------------------------------------
