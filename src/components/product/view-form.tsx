@@ -35,8 +35,9 @@ export function ViewForm({ productId, fileId, slug, source, className }: ViewFor
     event.preventDefault();
     setFieldError(null);
 
-    if (!isValidEmail(email)) {
-      setFieldError("Enter a valid email address to view this template.");
+    const trimmedEmail = email.trim();
+    if (trimmedEmail && !isValidEmail(trimmedEmail)) {
+      setFieldError("Enter a valid email address, or leave this blank.");
       return;
     }
 
@@ -48,8 +49,8 @@ export function ViewForm({ productId, fileId, slug, source, className }: ViewFor
           body: JSON.stringify({
             productId,
             fileId,
-            email,
-            marketingConsent,
+            email: trimmedEmail || undefined,
+            marketingConsent: trimmedEmail ? marketingConsent : false,
             consentTextVersion: CONSENT_TEXT_VERSION,
             source,
           }),
@@ -95,14 +96,13 @@ export function ViewForm({ productId, fileId, slug, source, className }: ViewFor
     <form onSubmit={handleSubmit} className={cn("space-y-3", className)} noValidate>
       <div>
         <label htmlFor={inputId} className="block text-sm font-medium text-ink-900">
-          Email address
+          Email address <span className="font-normal text-ink-500">(optional)</span>
         </label>
         <input
           id={inputId}
           type="email"
           name="email"
           autoComplete="email"
-          required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           aria-describedby={fieldError ? errorId : undefined}
@@ -117,12 +117,13 @@ export function ViewForm({ productId, fileId, slug, source, className }: ViewFor
         ) : null}
       </div>
 
-      <label className="flex items-start gap-2 text-sm text-ink-700">
+      <label className={cn("flex items-start gap-2 text-sm", email.trim() ? "text-ink-700" : "text-ink-300")}>
         <input
           type="checkbox"
-          checked={marketingConsent}
+          checked={marketingConsent && !!email.trim()}
+          disabled={!email.trim()}
           onChange={(e) => setMarketingConsent(e.target.checked)}
-          className="mt-0.5 size-4 rounded border-ink-200 focus-visible:outline-2 focus-visible:outline-focus-ring"
+          className="mt-0.5 size-4 rounded border-ink-200 focus-visible:outline-2 focus-visible:outline-focus-ring disabled:cursor-not-allowed"
         />
         <span>Also email me when new free templates are published. No spam, unsubscribe anytime.</span>
       </label>
