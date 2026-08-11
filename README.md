@@ -199,6 +199,19 @@ next-step family), since editing well is a practice to repeat on every
 draft, not a one-time step. Wired into the Next Step Finder alongside the
 other nineteen.
 
+A twenty-first family has since shipped: **App Design Review** (see
+[`docs/decisions/0041`](docs/decisions/0041-app-design-review-family.md)), the
+seventh Tier 3 family, again started at the user's explicit request. Its
+Tool is the third use of the completeness-checklist mechanic Story Builder
+introduced, back to its original polarity: it checks a product against ten
+of Dieter Rams' design principles for presence of the principle (good),
+unlike Writing Editor's inverted checklist of problems. Like Decision
+Framework Picker, Product Prioritisation Tool, User Engagement Designer,
+Meeting Reset and Writing Editor, it's deliberately terminal (no next-step
+family), since reviewing a design against fixed principles is revisited
+every release, not a one-time step. Wired into the Next Step Finder
+alongside the other twenty.
+
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per
 the spec's own phasing. Product/bundle pages still use a waitlist

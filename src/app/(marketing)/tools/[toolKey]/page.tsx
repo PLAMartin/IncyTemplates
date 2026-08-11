@@ -28,6 +28,7 @@ import { StoryBuilderRunner } from "@/components/tools/story-builder/tool-runner
 import { StartupLaunchPlannerRunner } from "@/components/tools/startup-launch-planner/tool-runner";
 import { MeetingResetRunner } from "@/components/tools/meeting-reset/tool-runner";
 import { WritingEditorRunner } from "@/components/tools/writing-editor/tool-runner";
+import { AppDesignReviewRunner } from "@/components/tools/app-design-review/tool-runner";
 
 type Props = { params: Promise<{ toolKey: string }> };
 
@@ -57,6 +58,7 @@ const TOOL_RUNNERS: Record<string, ComponentType> = {
   "startup-launch-planner": StartupLaunchPlannerRunner,
   "meeting-reset": MeetingResetRunner,
   "writing-editor": WritingEditorRunner,
+  "app-design-review": AppDesignReviewRunner,
 };
 
 export async function generateStaticParams() {

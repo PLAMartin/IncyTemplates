@@ -18,6 +18,7 @@ import { storyBuilderTool } from "./story-builder";
 import { startupLaunchPlannerTool } from "./startup-launch-planner";
 import { meetingResetTool } from "./meeting-reset";
 import { writingEditorTool } from "./writing-editor";
+import { appDesignReviewTool } from "./app-design-review";
 import type { ToolDefinition } from "./types";
 import { ToolNotAvailableError } from "./types";
 
@@ -48,6 +49,7 @@ const TOOL_REGISTRY: Record<string, ToolDefinition<unknown, unknown>> = {
   [startupLaunchPlannerTool.key]: startupLaunchPlannerTool as ToolDefinition<unknown, unknown>,
   [meetingResetTool.key]: meetingResetTool as ToolDefinition<unknown, unknown>,
   [writingEditorTool.key]: writingEditorTool as ToolDefinition<unknown, unknown>,
+  [appDesignReviewTool.key]: appDesignReviewTool as ToolDefinition<unknown, unknown>,
 };
 
 /** Returns the Tool definition for `toolKey`, or null if none is registered. */

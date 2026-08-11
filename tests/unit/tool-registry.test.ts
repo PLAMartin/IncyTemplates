@@ -21,6 +21,7 @@ import { STORY_BUILDER_TOOL_KEY } from "@/lib/tools/story-builder";
 import { STARTUP_LAUNCH_PLANNER_TOOL_KEY } from "@/lib/tools/startup-launch-planner";
 import { MEETING_RESET_TOOL_KEY } from "@/lib/tools/meeting-reset";
 import { WRITING_EDITOR_TOOL_KEY } from "@/lib/tools/writing-editor";
+import { APP_DESIGN_REVIEW_TOOL_KEY } from "@/lib/tools/app-design-review";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -317,5 +318,25 @@ describe("tool registry", () => {
     const parsedResult = definition.resultSchema.parse(result) as { ruleStates: { rule: string; present: boolean }[] };
     expect(parsedResult.ruleStates.find((s) => s.rule === "cliched_language")?.present).toBe(true);
     expect(parsedResult.ruleStates.filter((s) => s.present)).toHaveLength(1);
+  });
+
+  it("resolves the twenty-first registered tool (App Design Review) independently of the others", () => {
+    const definition = getToolDefinition(APP_DESIGN_REVIEW_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      innovative: "not_yet",
+      useful: "already_there",
+      aesthetic: "already_there",
+      understandable: "already_there",
+      unobtrusive: "already_there",
+      honest: "already_there",
+      longLasting: "already_there",
+      thorough: "already_there",
+      environmentallyFriendly: "already_there",
+      asLittleAsPossible: "already_there",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { principleStates: { principle: string; present: boolean }[] };
+    expect(parsedResult.principleStates.find((s) => s.principle === "innovative")?.present).toBe(false);
+    expect(parsedResult.principleStates.filter((s) => !s.present)).toHaveLength(1);
   });
 });

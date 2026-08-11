@@ -320,3 +320,16 @@ test("the published Writing Editor family page shows full detail and its outputs
   // a recurring practice rather than a one-time step (docs/decisions/0040).
   await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
 });
+
+test("the published App Design Review family page shows full detail and its outputs, with no next step", async ({ page }) => {
+  await page.goto("/products/app-design-review");
+  await expect(page.getByRole("heading", { name: "App Design Review", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Design Checklist/ })).toBeVisible();
+  // Seventh Tier 3 family, built at explicit user request — deliberately no next-step family,
+  // a recurring practice rather than a one-time step (docs/decisions/0041).
+  await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
+});
