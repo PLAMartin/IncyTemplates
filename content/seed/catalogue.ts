@@ -295,6 +295,7 @@ export const BUSINESS_MODEL_CHOOSER_FRAMEWORK_ID = "framework-business-model-cho
 export const DECISION_FRAMEWORK_PICKER_FRAMEWORK_ID = "framework-decision-framework-picker";
 export const PRODUCT_POSITIONING_BUILDER_FRAMEWORK_ID = "framework-product-positioning-builder";
 export const CUSTOMER_DEMAND_TEST_FRAMEWORK_ID = "framework-customer-demand-test";
+export const PRODUCT_PRIORITISATION_TOOL_FRAMEWORK_ID = "framework-product-prioritisation-tool";
 
 export const frameworks: Framework[] = [
   {
@@ -676,6 +677,35 @@ export const frameworks: Framework[] = [
       "Work out whether a Fake Door Test, Wizard of Oz, YouTube MVP or The Infiltrator fits testing real demand for your idea.",
     published_at: "2026-08-11T09:00:00Z",
     next_step_framework_slug: "better-decision-maker",
+  },
+  {
+    id: PRODUCT_PRIORITISATION_TOOL_FRAMEWORK_ID,
+    status: "published",
+    name: "Product Prioritisation Tool",
+    slug: "product-prioritisation-tool",
+    short_description: "Work out which scheduling strategy actually fits your task list right now.",
+    problem_statement:
+      "Founders order their task list on instinct — usually whatever feels most urgent — without ever naming what they're actually trying to optimise. Deadline compliance, avoiding overload, momentum and getting the most valuable things done all call for a genuinely different order, and picking the wrong one wastes effort even when every individual task gets done well.",
+    outcome_statement: "A recommended scheduling strategy, a runner-up, and the one factor that separated them.",
+    target_audience: "Founders and small teams with more tasks than time who want a deliberate way to decide what to work on next.",
+    when_to_use: "Use whenever your task list has grown past what you can hold in your head, or you're not confident you're working on the right thing.",
+    when_not_to_use: "Not useful for a single isolated decision — that's what Better Decision Maker is for. This is for ordering a list of many tasks.",
+    method_summary:
+      "Work out whether your tasks have hard deadlines or flexible timing, whether everything is realistically achievable or something has to give, whether your tasks vary a lot in value, and what would help most right now — momentum or confidence nothing important slips. Combining these ranks four named scheduling strategies — Earliest Due Date, Moore's Algorithm, Shortest Processing Time and Weighted Processing Time — so you get a recommended strategy and the runner-up it beat.",
+    journey_stage: stageRef("build"),
+    priority_score: 84,
+    priority_rationale:
+      "Ranked #14 in the source-material opportunity portfolio (spec v4 §37) and the eighth and final Tier 2 family. Its source material names four comparable scheduling strategies directly, so it reuses the named-candidate scoring mechanic. No next-step family is set — prioritising a task list is a recurring operational practice, not a one-time step that causally leads to one particular next family, the same reasoning Decision Framework Picker used (0031).",
+    source_strength: "strong",
+    source_note:
+      "Developed from A Bit Gamey material on task scheduling (Earliest Due Date, Moore's Algorithm, Shortest Processing Time, Weighted Processing Time) and the Eisenhower importance/urgency decision matrix.",
+    flagship: false,
+    display_order: 14,
+    seo_title: "Product Prioritisation Tool — four ways to order your task list",
+    seo_description:
+      "Work out whether Earliest Due Date, Moore's Algorithm, Shortest Processing Time or Weighted Processing Time fits your task list.",
+    published_at: "2026-08-11T09:00:00Z",
+    next_step_framework_slug: null,
   },
 ];
 
@@ -3409,6 +3439,134 @@ const customerDemandTestFamilyOutputs: Product[] = [
   },
 ];
 
+// Eighth and final Tier 2 family (docs/decisions/0034) — its Template placeholder body lives
+// at content/seed/free-files/weighted-priority-matrix.md.
+const productPrioritisationToolFamilyOutputs: Product[] = [
+  {
+    id: "product-prioritisation-tool-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "Product Prioritisation Tool: the Guide",
+    slug: "product-prioritisation-tool",
+    short_description: "Four scheduling strategies for ordering a task list, and how to pick the one that fits.",
+    full_description:
+      "Explains four scheduling strategies — Earliest Due Date, Moore's Algorithm, Shortest Processing Time, Weighted Processing Time — plus the Eisenhower importance/urgency matrix as a sense-check. Read this before the Template or the Tool — both assume the technique this guide teaches.",
+    outcome_statement: "A clear framework for deciding which scheduling strategy fits your task list right now.",
+    target_audience: "Founders and small teams with more tasks than time who want a deliberate way to decide what to work on next.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you already know your answers and just want a scored recommendation.",
+    completion_minutes_min: 8,
+    completion_minutes_max: 12,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-development")],
+    stages: [stageRef("build")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: PRODUCT_PRIORITISATION_TOOL_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "Product Prioritisation Tool guide — four ways to order your task list",
+    seo_description: "Four scheduling strategies for prioritising tasks: Earliest Due Date, Moore's Algorithm, Shortest Processing Time, Weighted Processing Time.",
+  },
+  {
+    id: "weighted-priority-matrix",
+    product_type: "template",
+    access_type: "free",
+    status: "published",
+    name: "Weighted Priority Matrix",
+    slug: "weighted-priority-matrix",
+    short_description: "A worksheet combining importance/urgency sorting with value-per-duration scoring.",
+    full_description:
+      "A structured worksheet for sorting tasks by the Eisenhower importance/urgency matrix first, then ranking what's left by value divided by duration — so you end up with a documented, defensible task order.",
+    outcome_statement: "A prioritised task list, with reasons for the order written down.",
+    target_audience: "Founders and small teams with more tasks than time who want a deliberate way to decide what to work on next.",
+    when_to_use: "Use whenever your task list has grown past what you can hold in your head.",
+    when_not_to_use: "Not useful for a single isolated decision — that's what Better Decision Maker is for.",
+    completion_minutes_min: 15,
+    completion_minutes_max: 20,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-development")],
+    stages: [stageRef("build")],
+    formats: ["markdown"],
+    is_placeholder: true,
+    framework_id: PRODUCT_PRIORITISATION_TOOL_FRAMEWORK_ID,
+    tool_key: null,
+    licence: standardLicence,
+    quality_standard: {
+      purpose: true,
+      instructions: true,
+      thinkingPrompts: true,
+      evidenceFields: true,
+      decisionOutcome: true,
+      nextStep: true,
+    },
+    files: [
+      {
+        id: "weighted-priority-matrix-md",
+        file_role: "template",
+        file_format: "markdown",
+        display_name: "Weighted Priority Matrix (Markdown, AI-agent-ready)",
+        is_public_preview: false,
+      },
+    ],
+    seo_title: "Weighted Priority Matrix — free task prioritisation template",
+    seo_description: "Sort tasks by importance, urgency and value-per-duration in one worksheet, free.",
+  },
+  {
+    id: "priority-scorer",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "Priority Scorer",
+    slug: "priority-scorer",
+    short_description: "Get a recommended scheduling strategy and a runner-up, based on your task list right now.",
+    full_description:
+      "Answer four questions about your task list — deadlines, achievability, value variation and what would help most — and get a recommended scheduling strategy, a runner-up, and one concrete next step. Usable anonymously, with no account required.",
+    outcome_statement: "A recommended scheduling strategy, a runner-up, and one clear next step.",
+    target_audience: "Founders and small teams with more tasks than time who want a deliberate way to decide what to work on next.",
+    when_to_use: "Use whenever your task list has grown past what you can hold in your head.",
+    when_not_to_use: "Not useful for a single isolated decision — that's what Better Decision Maker is for.",
+    completion_minutes_min: 3,
+    completion_minutes_max: 5,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-development")],
+    stages: [stageRef("build")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: PRODUCT_PRIORITISATION_TOOL_FRAMEWORK_ID,
+    tool_key: "product-prioritisation-tool",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "Priority Scorer — free task prioritisation tool",
+    seo_description: "Get a recommended scheduling strategy and a runner-up for your task list, free, no account required.",
+  },
+];
+
 export const products: Product[] = [
   ...freeProducts,
   ...ideaValidationItems,
@@ -3426,6 +3584,7 @@ export const products: Product[] = [
   ...decisionFrameworkPickerFamilyOutputs,
   ...productPositioningBuilderFamilyOutputs,
   ...customerDemandTestFamilyOutputs,
+  ...productPrioritisationToolFamilyOutputs,
 ];
 
 // ---------------------------------------------------------------------------

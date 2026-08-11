@@ -117,6 +117,18 @@ family, pointing forward to Better Decision Maker alongside Customer
 Discovery Kit, and is wired into the Next Step Finder alongside the other
 twelve.
 
+A fourteenth family has since shipped: **Product Prioritisation Tool** (see
+[`docs/decisions/0034`](docs/decisions/0034-product-prioritisation-tool-family.md)),
+the eighth and final Tier 2 family. Its Tool scores four named task-scheduling
+strategies — Earliest Due Date, Moore's Algorithm, Shortest Processing Time,
+Weighted Processing Time — and, like Decision Framework Picker, is
+deliberately terminal (no next-step family), since prioritising a task list
+is a recurring practice rather than a one-time step. **This completes spec
+§37.1's Tier 2** (ranks 7–14, all eight families). Tier 3 (ranks 15–25) is
+explicitly scoped as "broaden only after demand evidence" — continuing
+family-by-family into it is not assumed to be the default next action the
+way Tier 2 followed on from Tier 1.
+
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per
 the spec's own phasing. Product/bundle pages still use a waitlist

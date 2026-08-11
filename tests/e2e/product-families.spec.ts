@@ -216,3 +216,18 @@ test("the published Customer Demand Test family page shows full detail, its outp
   await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
   await expect(page.getByRole("link", { name: /Better Decision Maker/ })).toBeVisible();
 });
+
+test("the published Product Prioritisation Tool family page shows full detail and its outputs, with no next step", async ({
+  page,
+}) => {
+  await page.goto("/products/product-prioritisation-tool");
+  await expect(page.getByRole("heading", { name: "Product Prioritisation Tool", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Weighted Priority Matrix/ })).toBeVisible();
+  // Eighth and final Tier 2 family — deliberately no next-step family set, the same
+  // legitimately-terminal reasoning as Decision Framework Picker (docs/decisions/0031, 0034).
+  await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
+});

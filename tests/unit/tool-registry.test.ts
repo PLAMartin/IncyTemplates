@@ -14,6 +14,7 @@ import { BUSINESS_MODEL_CHOOSER_TOOL_KEY } from "@/lib/tools/business-model-choo
 import { DECISION_FRAMEWORK_PICKER_TOOL_KEY } from "@/lib/tools/decision-framework-picker";
 import { PRODUCT_POSITIONING_BUILDER_TOOL_KEY } from "@/lib/tools/product-positioning-builder";
 import { CUSTOMER_DEMAND_TEST_TOOL_KEY } from "@/lib/tools/customer-demand-test";
+import { PRODUCT_PRIORITISATION_TOOL_TOOL_KEY } from "@/lib/tools/product-prioritisation-tool";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -218,5 +219,18 @@ describe("tool registry", () => {
     const result = definition.run(parsedInput);
     const parsedResult = definition.resultSchema.parse(result) as { recommendedTest: string };
     expect(parsedResult.recommendedTest).toBe("fake_door_test");
+  });
+
+  it("resolves the fourteenth and final registered tool (Product Prioritisation Tool) independently of the others", () => {
+    const definition = getToolDefinition(PRODUCT_PRIORITISATION_TOOL_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      deadlines: "yes_hard_deadlines",
+      everythingAchievable: "yes_its_all_achievable",
+      valueVariation: "roughly_equally_important",
+      whatWouldHelpMost: "confidence_nothing_important_slips",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { recommendedStrategy: string };
+    expect(parsedResult.recommendedStrategy).toBe("earliest_due_date");
   });
 });

@@ -43,6 +43,7 @@ const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
   framework("decision-framework-picker", { nextStepFrameworkSlug: null }),
   framework("product-positioning-builder", { nextStepFrameworkSlug: "product-naming-system" }),
   framework("customer-demand-test", { nextStepFrameworkSlug: "better-decision-maker" }),
+  framework("product-prioritisation-tool", { nextStepFrameworkSlug: null }),
 ];
 
 const baseInput = (overrides: Partial<FinderInput> = {}): FinderInput => ({
@@ -67,6 +68,7 @@ describe("resolveNextStep — outcome maps to the right framework", () => {
     ["pick_a_decision_framework", "decision-framework-picker"],
     ["build_positioning", "product-positioning-builder"],
     ["test_demand", "customer-demand-test"],
+    ["prioritise_tasks", "product-prioritisation-tool"],
   ] as [Outcome, string][])("%s -> %s", (outcome, expectedSlug) => {
     const result = resolveNextStep(baseInput({ outcome }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe(expectedSlug);
@@ -217,6 +219,16 @@ describe("resolveNextStep — supporting recommendations", () => {
     );
     expect(result?.primary.frameworkSlug).toBe("customer-demand-test");
     expect(result?.supporting.some((s) => s.frameworkSlug === "better-decision-maker")).toBe(true);
+  });
+
+  it("Product Prioritisation Tool has no next-step supporting recommendation — the last Tier 2 family, legitimately terminal", () => {
+    const result = resolveNextStep(
+      baseInput({ outcome: "prioritise_tasks", outputPreference: "interactive_result" }),
+      ALL_FRAMEWORKS,
+    );
+    expect(result?.primary.frameworkSlug).toBe("product-prioritisation-tool");
+    expect(result?.supporting).toHaveLength(1);
+    expect(result?.supporting[0]?.outputType).toBe("guide");
   });
 
   it("the last family in the chain has no next-step supporting recommendation", () => {
