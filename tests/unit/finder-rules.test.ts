@@ -45,6 +45,7 @@ const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
   framework("customer-demand-test", { nextStepFrameworkSlug: "better-decision-maker" }),
   framework("product-prioritisation-tool", { nextStepFrameworkSlug: null }),
   framework("lateral-thinking-toolkit", { nextStepFrameworkSlug: "product-idea-assessor" }),
+  framework("user-engagement-designer", { nextStepFrameworkSlug: null }),
 ];
 
 const baseInput = (overrides: Partial<FinderInput> = {}): FinderInput => ({
@@ -71,6 +72,7 @@ describe("resolveNextStep — outcome maps to the right framework", () => {
     ["test_demand", "customer-demand-test"],
     ["prioritise_tasks", "product-prioritisation-tool"],
     ["unblock_thinking", "lateral-thinking-toolkit"],
+    ["design_engagement", "user-engagement-designer"],
   ] as [Outcome, string][])("%s -> %s", (outcome, expectedSlug) => {
     const result = resolveNextStep(baseInput({ outcome }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe(expectedSlug);
@@ -240,6 +242,16 @@ describe("resolveNextStep — supporting recommendations", () => {
     );
     expect(result?.primary.frameworkSlug).toBe("lateral-thinking-toolkit");
     expect(result?.supporting.some((s) => s.frameworkSlug === "product-idea-assessor")).toBe(true);
+  });
+
+  it("User Engagement Designer has no next-step supporting recommendation — a recurring diagnostic, not a one-time step", () => {
+    const result = resolveNextStep(
+      baseInput({ outcome: "design_engagement", outputPreference: "interactive_result" }),
+      ALL_FRAMEWORKS,
+    );
+    expect(result?.primary.frameworkSlug).toBe("user-engagement-designer");
+    expect(result?.supporting).toHaveLength(1);
+    expect(result?.supporting[0]?.outputType).toBe("guide");
   });
 
   it("the last family in the chain has no next-step supporting recommendation", () => {

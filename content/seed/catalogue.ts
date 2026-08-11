@@ -297,6 +297,7 @@ export const PRODUCT_POSITIONING_BUILDER_FRAMEWORK_ID = "framework-product-posit
 export const CUSTOMER_DEMAND_TEST_FRAMEWORK_ID = "framework-customer-demand-test";
 export const PRODUCT_PRIORITISATION_TOOL_FRAMEWORK_ID = "framework-product-prioritisation-tool";
 export const LATERAL_THINKING_TOOLKIT_FRAMEWORK_ID = "framework-lateral-thinking-toolkit";
+export const USER_ENGAGEMENT_DESIGNER_FRAMEWORK_ID = "framework-user-engagement-designer";
 
 export const frameworks: Framework[] = [
   {
@@ -736,6 +737,35 @@ export const frameworks: Framework[] = [
       "Five lateral thinking techniques for approaching a stuck problem from a new angle: perceptual change, random input, provocation, specificity, scale.",
     published_at: "2026-08-11T09:00:00Z",
     next_step_framework_slug: "product-idea-assessor",
+  },
+  {
+    id: USER_ENGAGEMENT_DESIGNER_FRAMEWORK_ID,
+    status: "published",
+    name: "User Engagement Designer",
+    slug: "user-engagement-designer",
+    short_description: "Find the weakest link in your product's engagement loop, and what to fix first.",
+    problem_statement:
+      "Founders try to make their product more engaging by polishing everything at once — more notifications, more rewards, more onboarding polish — without ever diagnosing which specific stage of the engagement loop is actually broken. Effort spent strengthening an already-strong stage doesn't move the needle; effort spent on the genuinely weakest stage does.",
+    outcome_statement: "Your weakest engagement-loop link, and the one thing worth fixing first.",
+    target_audience: "Founders with a live product who want to understand why users do or don't come back.",
+    when_to_use: "Use once you have real users interacting with the product, not before.",
+    when_not_to_use: "Not useful before you have real usage to assess — that's what Product/Market Fit Tracker and Customer Demand Test are for.",
+    method_summary:
+      "Score each of Nir Eyal's four Hook Model stages — Trigger, Action, Reward, Investment — from a single question about its current strength, then surface the weakest one: the stage genuinely worth fixing first, not the one that feels most urgent. A weak trigger means people forget you exist; a hard action means they mean to act but don't; a flat reward means the habit never forms; no investment means every session starts from zero.",
+    journey_stage: stageRef("improve"),
+    priority_score: 82,
+    priority_rationale:
+      "Ranked #16 in the source-material opportunity portfolio (spec v4 §37) and the second Tier 3 family, built at the user's explicit request. Its Tool inverts the usual named-candidate scoring matrix (docs/decisions/0028): rather than scoring several candidates against shared dimensions and picking the highest, each of the four Hook Model stages is scored from its own single, non-overlapping question, and the Tool reports the lowest-scoring stage rather than the highest — the point is finding what to fix, not what's already working. No next-step family is set — like Product Prioritisation Tool, this is a diagnostic worth revisiting as the product changes, not a one-time step with a causal next family.",
+    source_strength: "strong",
+    source_note:
+      "Developed from A Bit Gamey material on Nir Eyal's Hook Model (trigger, action, variable reward, investment), the B=MAT behaviour model, and the Bowling Alley Framework for helping new users reach value quickly.",
+    flagship: false,
+    display_order: 16,
+    seo_title: "User Engagement Designer — find the weakest link in your engagement loop",
+    seo_description:
+      "Score your product's trigger, action, reward and investment, and find out which stage of the Hook Model is holding engagement back.",
+    published_at: "2026-08-11T09:00:00Z",
+    next_step_framework_slug: null,
   },
 ];
 
@@ -3726,6 +3756,134 @@ const lateralThinkingToolkitFamilyOutputs: Product[] = [
   },
 ];
 
+// Second Tier 3 family (docs/decisions/0036), built at explicit user request. Its Template
+// placeholder body lives at content/seed/free-files/engagement-loop-canvas.md.
+const userEngagementDesignerFamilyOutputs: Product[] = [
+  {
+    id: "user-engagement-designer-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "User Engagement Designer: the Guide",
+    slug: "user-engagement-designer",
+    short_description: "Nir Eyal's Hook Model and how to find the weakest link in your product's engagement loop.",
+    full_description:
+      "Explains the four-stage Hook Model (Trigger, Action, Reward, Investment), the B=MAT behaviour model, and the Bowling Alley Framework for helping new users reach value quickly. Read this before the Template or the Tool — both assume the technique this guide teaches.",
+    outcome_statement: "A clear framework for diagnosing and strengthening your product's engagement loop.",
+    target_audience: "Founders with a live product who want to understand why users do or don't come back.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you already know your answers and just want a diagnosis.",
+    completion_minutes_min: 8,
+    completion_minutes_max: 12,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-development")],
+    stages: [stageRef("improve")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: USER_ENGAGEMENT_DESIGNER_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "User Engagement Designer guide — find the weakest link in your engagement loop",
+    seo_description: "Nir Eyal's Hook Model, the B=MAT behaviour model and the Bowling Alley Framework, applied to find your weakest engagement link.",
+  },
+  {
+    id: "engagement-loop-canvas",
+    product_type: "template",
+    access_type: "free",
+    status: "published",
+    name: "Engagement Loop Canvas",
+    slug: "engagement-loop-canvas",
+    short_description: "A worksheet for mapping your product's trigger, action, reward and investment.",
+    full_description:
+      "A structured worksheet for mapping each of the four Hook Model stages for your own product, assessing their strength honestly, and identifying which one is worth fixing first.",
+    outcome_statement: "A documented map of your engagement loop, and the one stage worth fixing first.",
+    target_audience: "Founders with a live product who want to understand why users do or don't come back.",
+    when_to_use: "Use once you have real users interacting with the product, not before.",
+    when_not_to_use: "Not useful before you have real usage to assess.",
+    completion_minutes_min: 20,
+    completion_minutes_max: 30,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-development")],
+    stages: [stageRef("improve")],
+    formats: ["markdown"],
+    is_placeholder: true,
+    framework_id: USER_ENGAGEMENT_DESIGNER_FRAMEWORK_ID,
+    tool_key: null,
+    licence: standardLicence,
+    quality_standard: {
+      purpose: true,
+      instructions: true,
+      thinkingPrompts: true,
+      evidenceFields: true,
+      decisionOutcome: true,
+      nextStep: true,
+    },
+    files: [
+      {
+        id: "engagement-loop-canvas-md",
+        file_role: "template",
+        file_format: "markdown",
+        display_name: "Engagement Loop Canvas (Markdown, AI-agent-ready)",
+        is_public_preview: false,
+      },
+    ],
+    seo_title: "Engagement Loop Canvas — free engagement loop mapping template",
+    seo_description: "Map your product's trigger, action, reward and investment in one worksheet, free.",
+  },
+  {
+    id: "user-engagement-designer-tool",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "Engagement Loop Mapper",
+    slug: "user-engagement-designer-tool",
+    short_description: "Find the weakest link in your engagement loop, based on your product as it works today.",
+    full_description:
+      "Answer four questions about your product — trigger strength, action ease, reward quality and investment depth — and find out which stage of the Hook Model is your weakest link, with a concrete next step. Usable anonymously, with no account required.",
+    outcome_statement: "Your weakest engagement-loop link, and one clear next step.",
+    target_audience: "Founders with a live product who want to understand why users do or don't come back.",
+    when_to_use: "Use once you have real users interacting with the product, not before.",
+    when_not_to_use: "Not a substitute for real usage data — it's a quick diagnostic starting point, not a replacement for analytics.",
+    completion_minutes_min: 3,
+    completion_minutes_max: 5,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-development")],
+    stages: [stageRef("improve")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: USER_ENGAGEMENT_DESIGNER_FRAMEWORK_ID,
+    tool_key: "user-engagement-designer",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "Engagement Loop Mapper — free engagement loop diagnostic tool",
+    seo_description: "Find the weakest link in your product's engagement loop, free, no account required.",
+  },
+];
+
 export const products: Product[] = [
   ...freeProducts,
   ...ideaValidationItems,
@@ -3745,6 +3903,7 @@ export const products: Product[] = [
   ...customerDemandTestFamilyOutputs,
   ...productPrioritisationToolFamilyOutputs,
   ...lateralThinkingToolkitFamilyOutputs,
+  ...userEngagementDesignerFamilyOutputs,
 ];
 
 // ---------------------------------------------------------------------------

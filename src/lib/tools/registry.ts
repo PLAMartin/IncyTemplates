@@ -13,6 +13,7 @@ import { productPositioningBuilderTool } from "./product-positioning-builder";
 import { customerDemandTestTool } from "./customer-demand-test";
 import { productPrioritisationToolTool } from "./product-prioritisation-tool";
 import { lateralThinkingToolkitTool } from "./lateral-thinking-toolkit";
+import { userEngagementDesignerTool } from "./user-engagement-designer";
 import type { ToolDefinition } from "./types";
 import { ToolNotAvailableError } from "./types";
 
@@ -38,6 +39,7 @@ const TOOL_REGISTRY: Record<string, ToolDefinition<unknown, unknown>> = {
   [customerDemandTestTool.key]: customerDemandTestTool as ToolDefinition<unknown, unknown>,
   [productPrioritisationToolTool.key]: productPrioritisationToolTool as ToolDefinition<unknown, unknown>,
   [lateralThinkingToolkitTool.key]: lateralThinkingToolkitTool as ToolDefinition<unknown, unknown>,
+  [userEngagementDesignerTool.key]: userEngagementDesignerTool as ToolDefinition<unknown, unknown>,
 };
 
 /** Returns the Tool definition for `toolKey`, or null if none is registered. */

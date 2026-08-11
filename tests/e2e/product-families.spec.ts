@@ -247,3 +247,18 @@ test("the published Lateral Thinking Toolkit family page shows full detail, its 
   await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
   await expect(page.getByRole("link", { name: /Product Idea Assessor/ })).toBeVisible();
 });
+
+test("the published User Engagement Designer family page shows full detail and its outputs, with no next step", async ({
+  page,
+}) => {
+  await page.goto("/products/user-engagement-designer");
+  await expect(page.getByRole("heading", { name: "User Engagement Designer", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Engagement Loop Canvas/ })).toBeVisible();
+  // Second Tier 3 family, built at explicit user request — deliberately no next-step family,
+  // the same "recurring diagnostic" reasoning as Product Prioritisation Tool (docs/decisions/0034, 0036).
+  await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
+});

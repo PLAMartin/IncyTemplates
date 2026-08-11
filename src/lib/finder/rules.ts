@@ -38,6 +38,7 @@ export const OUTCOME_FRAMEWORK_SLUG: Record<Exclude<Outcome, "not_sure">, string
   test_demand: "customer-demand-test",
   prioritise_tasks: "product-prioritisation-tool",
   unblock_thinking: "lateral-thinking-toolkit",
+  design_engagement: "user-engagement-designer",
 };
 
 const PROGRESS_OUTPUT_TYPE: Record<Progress, FinderOutputType> = {

@@ -16,6 +16,7 @@ import { PRODUCT_POSITIONING_BUILDER_TOOL_KEY } from "@/lib/tools/product-positi
 import { CUSTOMER_DEMAND_TEST_TOOL_KEY } from "@/lib/tools/customer-demand-test";
 import { PRODUCT_PRIORITISATION_TOOL_TOOL_KEY } from "@/lib/tools/product-prioritisation-tool";
 import { LATERAL_THINKING_TOOLKIT_TOOL_KEY } from "@/lib/tools/lateral-thinking-toolkit";
+import { USER_ENGAGEMENT_DESIGNER_TOOL_KEY } from "@/lib/tools/user-engagement-designer";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -242,5 +243,18 @@ describe("tool registry", () => {
     const parsedResult = definition.resultSchema.parse(result) as { prompts: { technique: string }[] };
     expect(parsedResult.prompts).toHaveLength(5);
     expect(parsedResult.prompts[0]?.technique).toBe("perceptual_change");
+  });
+
+  it("resolves the sixteenth registered tool (User Engagement Designer) independently of the others", () => {
+    const definition = getToolDefinition(USER_ENGAGEMENT_DESIGNER_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      triggerStrength: "no_users_have_to_remember_on_their_own",
+      actionEase: "one_simple_step",
+      rewardQuality: "yes_varied_and_satisfying",
+      investmentDepth: "yes_they_build_something_that_compounds",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { weakestStage: string };
+    expect(parsedResult.weakestStage).toBe("trigger");
   });
 });

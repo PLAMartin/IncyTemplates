@@ -140,6 +140,18 @@ lesson that creative volume has to come before judgement. It's a second
 entry point into Product Idea Assessor alongside Product Idea Generator,
 and is wired into the Next Step Finder alongside the other fourteen.
 
+A sixteenth family has since shipped: **User Engagement Designer** (see
+[`docs/decisions/0036`](docs/decisions/0036-user-engagement-designer-family.md)),
+the second Tier 3 family, again started at the user's explicit request. Its
+Tool inverts the usual named-candidate scoring matrix: rather than scoring
+several options and picking the highest, it scores Nir Eyal's four Hook
+Model stages (Trigger, Action, Reward, Investment) from four independent
+questions and surfaces the *weakest* one — the stage genuinely worth fixing
+first. Like Product Prioritisation Tool, it's deliberately terminal (no
+next-step family), since diagnosing an engagement loop is something to
+revisit repeatedly, not a one-time step. Wired into the Next Step Finder
+alongside the other fifteen.
+
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per
 the spec's own phasing. Product/bundle pages still use a waitlist
