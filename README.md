@@ -73,6 +73,17 @@ to mix optional free-text inputs with a select — a personalised idea
 direction generator, not another scorer — wired into the Next Step Finder
 alongside the other eight.
 
+A tenth family has since shipped: **Business Model Chooser** (see
+[`docs/decisions/0030`](docs/decisions/0030-business-model-chooser-family.md)),
+the fourth Tier 2 family. Its Tool reuses Pricing Your Product's
+named-candidate scoring mechanic (four business models — SaaS, Marketplace,
+Transactional, Advertising — scored across four dimensions), without a
+disqualification gate. It's the first family to point forward to an
+existing family's next step (Pricing Your Product) as a second, independent
+branch rather than either leading or extending the chain — Product/Market
+Fit Tracker already points at the same target — and is wired into the Next
+Step Finder alongside the other nine.
+
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per
 the spec's own phasing. Product/bundle pages still use a waitlist

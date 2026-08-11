@@ -10,6 +10,7 @@ import { FIRST_CUSTOMERS_PLANNER_TOOL_KEY } from "@/lib/tools/first-customers-pl
 import { PRODUCT_MARKET_FIT_TRACKER_TOOL_KEY } from "@/lib/tools/product-market-fit-tracker";
 import { PRICING_YOUR_PRODUCT_TOOL_KEY } from "@/lib/tools/pricing-your-product";
 import { PRODUCT_IDEA_GENERATOR_TOOL_KEY } from "@/lib/tools/product-idea-generator";
+import { BUSINESS_MODEL_CHOOSER_TOOL_KEY } from "@/lib/tools/business-model-chooser";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -161,5 +162,18 @@ describe("tool registry", () => {
     const result = definition.run(parsedInput);
     const parsedResult = definition.resultSchema.parse(result) as { recommendedMethod: string };
     expect(parsedResult.recommendedMethod).toBe("scratch_your_own_itch");
+  });
+
+  it("resolves the tenth registered tool (Business Model Chooser) independently of the others", () => {
+    const definition = getToolDefinition(BUSINESS_MODEL_CHOOSER_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      audienceStructure: "one_sided",
+      payer: "end_user_directly",
+      valueDeliveryPattern: "ongoing_access",
+      growthLever: "self_serve_or_sales_led",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { recommendedModel: string };
+    expect(parsedResult.recommendedModel).toBe("saas");
   });
 });

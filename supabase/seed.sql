@@ -213,6 +213,26 @@ on conflict (id) do update set status = excluded.status, name = excluded.name, s
   source_strength = excluded.source_strength, source_note = excluded.source_note,
   flagship = excluded.flagship, display_order = excluded.display_order, seo_title = excluded.seo_title,
   seo_description = excluded.seo_description, published_at = excluded.published_at;
+insert into public.it_frameworks (
+  id, status, name, slug, short_description, problem_statement, outcome_statement,
+  target_audience, when_to_use, when_not_to_use, method_summary, journey_stage_id,
+  priority_score, priority_rationale, source_strength, source_note, flagship,
+  display_order, seo_title, seo_description, published_at
+) values (
+  '3aa044a5-b513-0185-8621-fdd2faa7684b', 'published', 'Business Model Chooser', 'business-model-chooser', 'Choose the structural business model that actually fits how your product delivers value, before you price it.', 'Founders default to whichever business model is fashionable — usually SaaS, because that''s what most startup advice assumes — without checking whether it actually fits who pays them, how their product delivers value, and how they''ll realistically grow. The wrong structural model makes every later decision, including pricing, harder than it needs to be.', 'A recommended business model, a runner-up, and the one factor that separated them.',
+  'Founders who''ve validated a problem worth solving and now need to decide the commercial shape of the business before building or pricing it.', 'Use once you know what problem you''re solving and for whom, before you scope what to build or decide how to price it.', 'Not useful before you''ve validated that the underlying problem is real — that''s what Product Idea Assessor and Customer Discovery Kit are for.', 'Work out whether your product connects two distinct kinds of users or serves one audience directly, who actually pays you (the end user, a third-party advertiser, or a fee on each transaction), whether value is delivered as ongoing access or in discrete completed transactions, and what growth lever you can realistically pull. Combining these rules ranks four named candidate models — SaaS, Marketplace, Transactional and Advertising — so you get a recommended model and the runner-up it beat.', '3f7a87a9-2a65-573c-b0ed-c66ad4f7d9f0',
+  87, 'Ranked #10 in the source-material opportunity portfolio (spec v4 §37) and the fourth Tier 2 family. Reuses Pricing Your Product''s named-candidate scoring mechanic (four models scored across four dimensions) rather than introducing a new one, and gives founders the structural business-model decision that logically precedes Pricing Your Product''s pricing-mechanic decision within it — it points forward to Pricing Your Product as its next step.', 'strong', 'Developed from A Bit Gamey material on choosing a business model, including the SaaS/Marketplace/Transactional/Advertising distinctions, who pays, cold-start problems and growth levers by model.', false,
+  10, 'Business Model Chooser — choose the right business model before you price it', 'Work out whether SaaS, Marketplace, Transactional or Advertising actually fits how your product delivers value and who pays for it.', '2026-08-11T09:00:00Z'
+)
+on conflict (id) do update set status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, problem_statement = excluded.problem_statement,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  method_summary = excluded.method_summary, journey_stage_id = excluded.journey_stage_id,
+  priority_score = excluded.priority_score, priority_rationale = excluded.priority_rationale,
+  source_strength = excluded.source_strength, source_note = excluded.source_note,
+  flagship = excluded.flagship, display_order = excluded.display_order, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, published_at = excluded.published_at;
 
 -- it_frameworks next-step links (second pass, see comment above)
 update public.it_frameworks set next_step_framework_id = '1c2a8bbd-308d-3e5c-c08e-30a596a3f716' where id = 'bd063cd6-3bdc-e7a0-47fa-dabc2cd8a448';
@@ -224,6 +244,7 @@ update public.it_frameworks set next_step_framework_id = '51b832a2-019f-c47a-1d7
 update public.it_frameworks set next_step_framework_id = 'a358fbce-aa36-7746-2f0b-1d93f2764830' where id = '51b832a2-019f-c47a-1d77-d150590bf525';
 update public.it_frameworks set next_step_framework_id = null where id = 'a358fbce-aa36-7746-2f0b-1d93f2764830';
 update public.it_frameworks set next_step_framework_id = 'bd063cd6-3bdc-e7a0-47fa-dabc2cd8a448' where id = '8557a22c-656d-c4f4-a1f6-525139231fb2';
+update public.it_frameworks set next_step_framework_id = 'a358fbce-aa36-7746-2f0b-1d93f2764830' where id = '3aa044a5-b513-0185-8621-fdd2faa7684b';
 
 -- it_products
 insert into public.it_products (
@@ -1584,6 +1605,87 @@ insert into public.it_products (
   published_at, scheduled_for, seo_title, seo_description, schema_data,
   framework_id, tool_key
 ) values (
+  '3eac5044-7d80-171b-aa76-d23be877263a', 'guide', 'free', 'published', 'Business Model Chooser: the Guide', 'business-model-chooser', 'How to choose between SaaS, Marketplace, Transactional and Advertising business models, before you price anything.', 'Explains what actually separates business models — who pays you and how your product delivers value — and walks through four common models: SaaS, Marketplace, Transactional and Advertising. Read this before the Template or the Tool — both assume the technique this guide teaches.',
+  'A clear framework for choosing a business model, before you decide how to price it.', 'Founders who''ve validated a problem worth solving and now need to decide the commercial shape of the business before building or pricing it.', 'Read this first, before the Template or the Tool.', 'Skip straight to the Tool if you already know your answers and just want a scored recommendation.',
+  8, 12, 'beginner', '1.0',
+  null, null, 'GBP', null, true,
+  '2026-08-11T09:00:00Z', null, 'Business Model Chooser guide — choose the right business model before you price it', 'How to choose between SaaS, Marketplace, Transactional and Advertising business models, based on who pays you and how value is delivered.', '{"placeholder":true}'::jsonb,
+  '3aa044a5-b513-0185-8621-fdd2faa7684b', null
+)
+on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
+  status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, full_description = excluded.full_description,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  completion_minutes_min = excluded.completion_minutes_min, completion_minutes_max = excluded.completion_minutes_max,
+  skill_level = excluded.skill_level, current_version = excluded.current_version,
+  price_minor = excluded.price_minor, compare_at_price_minor = excluded.compare_at_price_minor,
+  currency_code = excluded.currency_code, licence_id = excluded.licence_id, featured = excluded.featured,
+  published_at = excluded.published_at, scheduled_for = excluded.scheduled_for, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, schema_data = excluded.schema_data,
+  framework_id = excluded.framework_id, tool_key = excluded.tool_key;
+insert into public.it_products (
+  id, product_type, access_type, status, name, slug, short_description, full_description,
+  outcome_statement, target_audience, when_to_use, when_not_to_use,
+  completion_minutes_min, completion_minutes_max, skill_level, current_version,
+  price_minor, compare_at_price_minor, currency_code, licence_id, featured,
+  published_at, scheduled_for, seo_title, seo_description, schema_data,
+  framework_id, tool_key
+) values (
+  'f263b3ac-91c6-f1b7-f592-7658f2f4ccec', 'template', 'free', 'published', 'Business Model Comparison Canvas', 'business-model-comparison-canvas', 'A worksheet comparing four business models against your product, so you pick one deliberately.', 'A structured comparison of SaaS, Marketplace, Transactional and Advertising — prompts to work out your own audience structure, payer, value-delivery pattern and growth lever, then match them against the model that fits.',
+  'A worked comparison of business models against your product, and a chosen model with reasons written down.', 'Founders who''ve validated a problem worth solving and now need to decide the commercial shape of the business before building or pricing it.', 'Use once you know what problem you''re solving and for whom, before you scope what to build or decide how to price it.', 'Not useful before you''ve validated that the underlying problem is real.',
+  20, 30, 'beginner', '1.0',
+  null, null, 'GBP', '488fbee7-849e-4e17-2d2e-e386ec5328ca', true,
+  '2026-08-11T09:00:00Z', null, 'Business Model Comparison Canvas — free business model comparison template', 'Compare SaaS, Marketplace, Transactional and Advertising business models against your product, free.', '{"placeholder":true}'::jsonb,
+  '3aa044a5-b513-0185-8621-fdd2faa7684b', null
+)
+on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
+  status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, full_description = excluded.full_description,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  completion_minutes_min = excluded.completion_minutes_min, completion_minutes_max = excluded.completion_minutes_max,
+  skill_level = excluded.skill_level, current_version = excluded.current_version,
+  price_minor = excluded.price_minor, compare_at_price_minor = excluded.compare_at_price_minor,
+  currency_code = excluded.currency_code, licence_id = excluded.licence_id, featured = excluded.featured,
+  published_at = excluded.published_at, scheduled_for = excluded.scheduled_for, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, schema_data = excluded.schema_data,
+  framework_id = excluded.framework_id, tool_key = excluded.tool_key;
+insert into public.it_products (
+  id, product_type, access_type, status, name, slug, short_description, full_description,
+  outcome_statement, target_audience, when_to_use, when_not_to_use,
+  completion_minutes_min, completion_minutes_max, skill_level, current_version,
+  price_minor, compare_at_price_minor, currency_code, licence_id, featured,
+  published_at, scheduled_for, seo_title, seo_description, schema_data,
+  framework_id, tool_key
+) values (
+  '0e3c2c30-0b8e-5a0a-e6a1-1b65dee3a73f', 'tool', 'free', 'published', 'Business Model Recommender', 'business-model-chooser-tool', 'Get a recommended business model and a runner-up, based on who pays you and how your product delivers value.', 'Answer four questions about your situation — audience structure, who pays, value-delivery pattern and growth lever — and get a recommended business model, a runner-up, and one concrete next step. Usable anonymously, with no account required.',
+  'A recommended business model, a runner-up, and one clear next step.', 'Founders who''ve validated a problem worth solving and now need to decide the commercial shape of the business before building or pricing it.', 'Use once you want a structured recommendation rather than defaulting to whatever''s fashionable.', 'Not a substitute for testing the model with real customers — it recommends a structure, it doesn''t validate demand.',
+  3, 5, 'beginner', '1.0',
+  null, null, 'GBP', null, true,
+  '2026-08-11T09:00:00Z', null, 'Business Model Recommender — free business model recommendation tool', 'Get a recommended business model and a runner-up based on who pays you and how your product delivers value, free, no account required.', '{"placeholder":true}'::jsonb,
+  '3aa044a5-b513-0185-8621-fdd2faa7684b', 'business-model-chooser'
+)
+on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
+  status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, full_description = excluded.full_description,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  completion_minutes_min = excluded.completion_minutes_min, completion_minutes_max = excluded.completion_minutes_max,
+  skill_level = excluded.skill_level, current_version = excluded.current_version,
+  price_minor = excluded.price_minor, compare_at_price_minor = excluded.compare_at_price_minor,
+  currency_code = excluded.currency_code, licence_id = excluded.licence_id, featured = excluded.featured,
+  published_at = excluded.published_at, scheduled_for = excluded.scheduled_for, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, schema_data = excluded.schema_data,
+  framework_id = excluded.framework_id, tool_key = excluded.tool_key;
+insert into public.it_products (
+  id, product_type, access_type, status, name, slug, short_description, full_description,
+  outcome_statement, target_audience, when_to_use, when_not_to_use,
+  completion_minutes_min, completion_minutes_max, skill_level, current_version,
+  price_minor, compare_at_price_minor, currency_code, licence_id, featured,
+  published_at, scheduled_for, seo_title, seo_description, schema_data,
+  framework_id, tool_key
+) values (
   'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', 'bundle', 'paid', 'published', 'Idea Validation Pack', 'idea-validation-pack', 'Nine templates that take you from a raw idea to a documented proceed-revise-pause decision, backed by evidence rather than confidence.', 'The Idea Validation Pack is the complete evidence-led path from a raw idea to a defensible decision. It sequences nine templates — intake, founder fit, problem evidence, competitive alternatives, a team Copy–Improve–Differentiate workshop, assumption ranking, a full interview system, evidence synthesis, and a closing proceed/revise/pause decision — into a single 1–2 week process, instead of leaving you to assemble one from separate free worksheets.',
   'A documented, evidence-based decision on whether to proceed, revise or pause — not just a folder of worksheets.', 'Founders who want a structured, complete path through idea validation rather than assembling their own process from free templates.', 'Use end-to-end over 1–2 weeks when you''re serious about validating a new idea before committing real time or money.', 'If you only need one part of the process — for example, just customer interviews — the free Customer Interview Planner may be enough on its own.',
   240, 480, 'intermediate', '1.0',
@@ -1632,7 +1734,7 @@ on conflict (id) do update set product_type = excluded.product_type, access_type
   framework_id = excluded.framework_id, tool_key = excluded.tool_key;
 
 -- it_product_categories (full replace for the products this script manages)
-delete from public.it_product_categories where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', '1dca4420-0caf-b736-a6b9-63e9d09c9c82', 'e6306744-459c-6a1a-a183-e51c4a7ad76d', '1b97b540-1b26-effb-101b-1067402e856d', '3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', 'b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', '7524c705-aa52-f6bc-151a-e699fe26efc6', 'cdb247be-c798-9652-2bcd-e2ad96b9f38e', '89b057d3-dcfb-5d47-9b19-2fa03e4588f6', 'd8879821-22d4-2153-8179-304945c081ee', '05e2a961-0fc4-d866-32f1-6cb21e3a4e5a', '9b97f282-6ba8-2d4a-4113-512054395334', '9d72f523-64a3-e4d1-ae09-8beb6bfb10ea', 'bf251141-3eee-f299-82d1-d3ff7b33090d', '3f0d4428-0ff5-086f-b220-039fd6b962fa', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
+delete from public.it_product_categories where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', '1dca4420-0caf-b736-a6b9-63e9d09c9c82', 'e6306744-459c-6a1a-a183-e51c4a7ad76d', '1b97b540-1b26-effb-101b-1067402e856d', '3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', 'b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', '7524c705-aa52-f6bc-151a-e699fe26efc6', 'cdb247be-c798-9652-2bcd-e2ad96b9f38e', '89b057d3-dcfb-5d47-9b19-2fa03e4588f6', 'd8879821-22d4-2153-8179-304945c081ee', '05e2a961-0fc4-d866-32f1-6cb21e3a4e5a', '9b97f282-6ba8-2d4a-4113-512054395334', '9d72f523-64a3-e4d1-ae09-8beb6bfb10ea', 'bf251141-3eee-f299-82d1-d3ff7b33090d', '3f0d4428-0ff5-086f-b220-039fd6b962fa', '3eac5044-7d80-171b-aa76-d23be877263a', 'f263b3ac-91c6-f1b7-f592-7658f2f4ccec', '0e3c2c30-0b8e-5a0a-e6a1-1b65dee3a73f', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('af2edcc3-4630-bbd6-e144-29ff50d794b1', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', '9c66d23e-6490-8df9-1a77-759635564cfc', true);
@@ -1683,11 +1785,14 @@ insert into public.it_product_categories (product_id, category_id, is_primary) v
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('9d72f523-64a3-e4d1-ae09-8beb6bfb10ea', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('bf251141-3eee-f299-82d1-d3ff7b33090d', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('3f0d4428-0ff5-086f-b220-039fd6b962fa', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
+insert into public.it_product_categories (product_id, category_id, is_primary) values ('3eac5044-7d80-171b-aa76-d23be877263a', '75951e14-d5ab-2f5e-e12e-a82a3c5e97fb', true);
+insert into public.it_product_categories (product_id, category_id, is_primary) values ('f263b3ac-91c6-f1b7-f592-7658f2f4ccec', '75951e14-d5ab-2f5e-e12e-a82a3c5e97fb', true);
+insert into public.it_product_categories (product_id, category_id, is_primary) values ('0e3c2c30-0b8e-5a0a-e6a1-1b65dee3a73f', '75951e14-d5ab-2f5e-e12e-a82a3c5e97fb', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb', 'e11948c4-e14f-706e-2968-269c8566f9f6', true);
 
 -- it_product_stages (full replace for the products this script manages)
-delete from public.it_product_stages where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', '1dca4420-0caf-b736-a6b9-63e9d09c9c82', 'e6306744-459c-6a1a-a183-e51c4a7ad76d', '1b97b540-1b26-effb-101b-1067402e856d', '3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', 'b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', '7524c705-aa52-f6bc-151a-e699fe26efc6', 'cdb247be-c798-9652-2bcd-e2ad96b9f38e', '89b057d3-dcfb-5d47-9b19-2fa03e4588f6', 'd8879821-22d4-2153-8179-304945c081ee', '05e2a961-0fc4-d866-32f1-6cb21e3a4e5a', '9b97f282-6ba8-2d4a-4113-512054395334', '9d72f523-64a3-e4d1-ae09-8beb6bfb10ea', 'bf251141-3eee-f299-82d1-d3ff7b33090d', '3f0d4428-0ff5-086f-b220-039fd6b962fa', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
+delete from public.it_product_stages where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', '1dca4420-0caf-b736-a6b9-63e9d09c9c82', 'e6306744-459c-6a1a-a183-e51c4a7ad76d', '1b97b540-1b26-effb-101b-1067402e856d', '3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', 'b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', '7524c705-aa52-f6bc-151a-e699fe26efc6', 'cdb247be-c798-9652-2bcd-e2ad96b9f38e', '89b057d3-dcfb-5d47-9b19-2fa03e4588f6', 'd8879821-22d4-2153-8179-304945c081ee', '05e2a961-0fc4-d866-32f1-6cb21e3a4e5a', '9b97f282-6ba8-2d4a-4113-512054395334', '9d72f523-64a3-e4d1-ae09-8beb6bfb10ea', 'bf251141-3eee-f299-82d1-d3ff7b33090d', '3f0d4428-0ff5-086f-b220-039fd6b962fa', '3eac5044-7d80-171b-aa76-d23be877263a', 'f263b3ac-91c6-f1b7-f592-7658f2f4ccec', '0e3c2c30-0b8e-5a0a-e6a1-1b65dee3a73f', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('af2edcc3-4630-bbd6-e144-29ff50d794b1', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', '8f0f32b0-bba6-e3a0-a144-46ebfbcab4c0', true);
@@ -1738,6 +1843,9 @@ insert into public.it_product_stages (product_id, stage_id, is_primary) values (
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('9d72f523-64a3-e4d1-ae09-8beb6bfb10ea', '8f0f32b0-bba6-e3a0-a144-46ebfbcab4c0', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('bf251141-3eee-f299-82d1-d3ff7b33090d', '8f0f32b0-bba6-e3a0-a144-46ebfbcab4c0', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('3f0d4428-0ff5-086f-b220-039fd6b962fa', '8f0f32b0-bba6-e3a0-a144-46ebfbcab4c0', true);
+insert into public.it_product_stages (product_id, stage_id, is_primary) values ('3eac5044-7d80-171b-aa76-d23be877263a', '3f7a87a9-2a65-573c-b0ed-c66ad4f7d9f0', true);
+insert into public.it_product_stages (product_id, stage_id, is_primary) values ('f263b3ac-91c6-f1b7-f592-7658f2f4ccec', '3f7a87a9-2a65-573c-b0ed-c66ad4f7d9f0', true);
+insert into public.it_product_stages (product_id, stage_id, is_primary) values ('0e3c2c30-0b8e-5a0a-e6a1-1b65dee3a73f', '3f7a87a9-2a65-573c-b0ed-c66ad4f7d9f0', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb', 'cf668b0e-b443-8f64-21ed-80ac162bfc1e', true);
 

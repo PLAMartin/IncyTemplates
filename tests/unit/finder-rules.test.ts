@@ -22,9 +22,12 @@ function framework(
 }
 
 /**
- * Mirrors the real nine-family chain and its next-step links. Product Idea Generator sits at
+ * Mirrors the real ten-family chain and its next-step links. Product Idea Generator sits at
  * the *front* of the chain (its own next step is Product Idea Assessor) rather than being
- * appended after the previously-terminal family — see docs/decisions/0029.
+ * appended after the previously-terminal family — see docs/decisions/0029. Business Model
+ * Chooser is a second, independent branch that also points at Pricing Your Product — a
+ * "next step" link is many-to-one, not exclusive, the same way Launch already serves both
+ * First Customers Planner and Pricing Your Product as a journey stage — see docs/decisions/0030.
  */
 const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
   framework("product-idea-generator", { nextStepFrameworkSlug: "product-idea-assessor" }),
@@ -36,6 +39,7 @@ const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
   framework("first-customers-planner", { nextStepFrameworkSlug: "product-market-fit-tracker" }),
   framework("product-market-fit-tracker", { nextStepFrameworkSlug: "pricing-your-product" }),
   framework("pricing-your-product", { nextStepFrameworkSlug: null }),
+  framework("business-model-chooser", { nextStepFrameworkSlug: "pricing-your-product" }),
 ];
 
 const baseInput = (overrides: Partial<FinderInput> = {}): FinderInput => ({
@@ -56,6 +60,7 @@ describe("resolveNextStep — outcome maps to the right framework", () => {
     ["check_fit", "product-market-fit-tracker"],
     ["choose_pricing", "pricing-your-product"],
     ["generate_ideas", "product-idea-generator"],
+    ["choose_business_model", "business-model-chooser"],
   ] as [Outcome, string][])("%s -> %s", (outcome, expectedSlug) => {
     const result = resolveNextStep(baseInput({ outcome }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe(expectedSlug);
@@ -169,6 +174,15 @@ describe("resolveNextStep — supporting recommendations", () => {
     );
     expect(result?.primary.frameworkSlug).toBe("product-idea-generator");
     expect(result?.supporting.some((s) => s.frameworkSlug === "product-idea-assessor")).toBe(true);
+  });
+
+  it("Business Model Chooser includes Pricing Your Product as a supporting recommendation, the same target Product/Market Fit Tracker also points at", () => {
+    const result = resolveNextStep(
+      baseInput({ outcome: "choose_business_model", outputPreference: "interactive_result" }),
+      ALL_FRAMEWORKS,
+    );
+    expect(result?.primary.frameworkSlug).toBe("business-model-chooser");
+    expect(result?.supporting.some((s) => s.frameworkSlug === "pricing-your-product")).toBe(true);
   });
 
   it("the last family in the chain has no next-step supporting recommendation", () => {

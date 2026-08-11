@@ -291,6 +291,7 @@ export const FIRST_CUSTOMERS_PLANNER_FRAMEWORK_ID = "framework-first-customers-p
 export const PRODUCT_MARKET_FIT_TRACKER_FRAMEWORK_ID = "framework-product-market-fit-tracker";
 export const PRICING_YOUR_PRODUCT_FRAMEWORK_ID = "framework-pricing-your-product";
 export const PRODUCT_IDEA_GENERATOR_FRAMEWORK_ID = "framework-product-idea-generator";
+export const BUSINESS_MODEL_CHOOSER_FRAMEWORK_ID = "framework-business-model-chooser";
 
 export const frameworks: Framework[] = [
   {
@@ -556,6 +557,35 @@ export const frameworks: Framework[] = [
       "Generate personalised product idea directions from your own frustrations, niche knowledge and the apps you use, plus a daily idea-generation habit.",
     published_at: "2026-08-11T09:00:00Z",
     next_step_framework_slug: "product-idea-assessor",
+  },
+  {
+    id: BUSINESS_MODEL_CHOOSER_FRAMEWORK_ID,
+    status: "published",
+    name: "Business Model Chooser",
+    slug: "business-model-chooser",
+    short_description: "Choose the structural business model that actually fits how your product delivers value, before you price it.",
+    problem_statement:
+      "Founders default to whichever business model is fashionable — usually SaaS, because that's what most startup advice assumes — without checking whether it actually fits who pays them, how their product delivers value, and how they'll realistically grow. The wrong structural model makes every later decision, including pricing, harder than it needs to be.",
+    outcome_statement: "A recommended business model, a runner-up, and the one factor that separated them.",
+    target_audience: "Founders who've validated a problem worth solving and now need to decide the commercial shape of the business before building or pricing it.",
+    when_to_use: "Use once you know what problem you're solving and for whom, before you scope what to build or decide how to price it.",
+    when_not_to_use: "Not useful before you've validated that the underlying problem is real — that's what Product Idea Assessor and Customer Discovery Kit are for.",
+    method_summary:
+      "Work out whether your product connects two distinct kinds of users or serves one audience directly, who actually pays you (the end user, a third-party advertiser, or a fee on each transaction), whether value is delivered as ongoing access or in discrete completed transactions, and what growth lever you can realistically pull. Combining these rules ranks four named candidate models — SaaS, Marketplace, Transactional and Advertising — so you get a recommended model and the runner-up it beat.",
+    journey_stage: stageRef("decide"),
+    priority_score: 87,
+    priority_rationale:
+      "Ranked #10 in the source-material opportunity portfolio (spec v4 §37) and the fourth Tier 2 family. Reuses Pricing Your Product's named-candidate scoring mechanic (four models scored across four dimensions) rather than introducing a new one, and gives founders the structural business-model decision that logically precedes Pricing Your Product's pricing-mechanic decision within it — it points forward to Pricing Your Product as its next step.",
+    source_strength: "strong",
+    source_note:
+      "Developed from A Bit Gamey material on choosing a business model, including the SaaS/Marketplace/Transactional/Advertising distinctions, who pays, cold-start problems and growth levers by model.",
+    flagship: false,
+    display_order: 10,
+    seo_title: "Business Model Chooser — choose the right business model before you price it",
+    seo_description:
+      "Work out whether SaaS, Marketplace, Transactional or Advertising actually fits how your product delivers value and who pays for it.",
+    published_at: "2026-08-11T09:00:00Z",
+    next_step_framework_slug: "pricing-your-product",
   },
 ];
 
@@ -2777,6 +2807,134 @@ const productIdeaGeneratorFamilyOutputs: Product[] = [
   },
 ];
 
+// Fourth Tier 2 family (docs/decisions/0030) — its Template placeholder body lives at
+// content/seed/free-files/business-model-comparison-canvas.md.
+const businessModelChooserFamilyOutputs: Product[] = [
+  {
+    id: "business-model-chooser-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "Business Model Chooser: the Guide",
+    slug: "business-model-chooser",
+    short_description: "How to choose between SaaS, Marketplace, Transactional and Advertising business models, before you price anything.",
+    full_description:
+      "Explains what actually separates business models — who pays you and how your product delivers value — and walks through four common models: SaaS, Marketplace, Transactional and Advertising. Read this before the Template or the Tool — both assume the technique this guide teaches.",
+    outcome_statement: "A clear framework for choosing a business model, before you decide how to price it.",
+    target_audience: "Founders who've validated a problem worth solving and now need to decide the commercial shape of the business before building or pricing it.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you already know your answers and just want a scored recommendation.",
+    completion_minutes_min: 8,
+    completion_minutes_max: 12,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("business-planning")],
+    stages: [stageRef("decide")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: BUSINESS_MODEL_CHOOSER_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "Business Model Chooser guide — choose the right business model before you price it",
+    seo_description: "How to choose between SaaS, Marketplace, Transactional and Advertising business models, based on who pays you and how value is delivered.",
+  },
+  {
+    id: "business-model-comparison-canvas",
+    product_type: "template",
+    access_type: "free",
+    status: "published",
+    name: "Business Model Comparison Canvas",
+    slug: "business-model-comparison-canvas",
+    short_description: "A worksheet comparing four business models against your product, so you pick one deliberately.",
+    full_description:
+      "A structured comparison of SaaS, Marketplace, Transactional and Advertising — prompts to work out your own audience structure, payer, value-delivery pattern and growth lever, then match them against the model that fits.",
+    outcome_statement: "A worked comparison of business models against your product, and a chosen model with reasons written down.",
+    target_audience: "Founders who've validated a problem worth solving and now need to decide the commercial shape of the business before building or pricing it.",
+    when_to_use: "Use once you know what problem you're solving and for whom, before you scope what to build or decide how to price it.",
+    when_not_to_use: "Not useful before you've validated that the underlying problem is real.",
+    completion_minutes_min: 20,
+    completion_minutes_max: 30,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("business-planning")],
+    stages: [stageRef("decide")],
+    formats: ["markdown"],
+    is_placeholder: true,
+    framework_id: BUSINESS_MODEL_CHOOSER_FRAMEWORK_ID,
+    tool_key: null,
+    licence: standardLicence,
+    quality_standard: {
+      purpose: true,
+      instructions: true,
+      thinkingPrompts: true,
+      evidenceFields: true,
+      decisionOutcome: true,
+      nextStep: true,
+    },
+    files: [
+      {
+        id: "business-model-comparison-canvas-md",
+        file_role: "template",
+        file_format: "markdown",
+        display_name: "Business Model Comparison Canvas (Markdown, AI-agent-ready)",
+        is_public_preview: false,
+      },
+    ],
+    seo_title: "Business Model Comparison Canvas — free business model comparison template",
+    seo_description: "Compare SaaS, Marketplace, Transactional and Advertising business models against your product, free.",
+  },
+  {
+    id: "business-model-chooser-tool",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "Business Model Recommender",
+    slug: "business-model-chooser-tool",
+    short_description: "Get a recommended business model and a runner-up, based on who pays you and how your product delivers value.",
+    full_description:
+      "Answer four questions about your situation — audience structure, who pays, value-delivery pattern and growth lever — and get a recommended business model, a runner-up, and one concrete next step. Usable anonymously, with no account required.",
+    outcome_statement: "A recommended business model, a runner-up, and one clear next step.",
+    target_audience: "Founders who've validated a problem worth solving and now need to decide the commercial shape of the business before building or pricing it.",
+    when_to_use: "Use once you want a structured recommendation rather than defaulting to whatever's fashionable.",
+    when_not_to_use: "Not a substitute for testing the model with real customers — it recommends a structure, it doesn't validate demand.",
+    completion_minutes_min: 3,
+    completion_minutes_max: 5,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("business-planning")],
+    stages: [stageRef("decide")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: BUSINESS_MODEL_CHOOSER_FRAMEWORK_ID,
+    tool_key: "business-model-chooser",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "Business Model Recommender — free business model recommendation tool",
+    seo_description: "Get a recommended business model and a runner-up based on who pays you and how your product delivers value, free, no account required.",
+  },
+];
+
 export const products: Product[] = [
   ...freeProducts,
   ...ideaValidationItems,
@@ -2790,6 +2948,7 @@ export const products: Product[] = [
   ...productMarketFitTrackerFamilyOutputs,
   ...pricingYourProductFamilyOutputs,
   ...productIdeaGeneratorFamilyOutputs,
+  ...businessModelChooserFamilyOutputs,
 ];
 
 // ---------------------------------------------------------------------------

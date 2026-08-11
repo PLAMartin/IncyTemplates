@@ -150,3 +150,20 @@ test("the published Product Idea Generator family page shows full detail, its ou
   await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
   await expect(page.getByRole("link", { name: /Product Idea Assessor/ })).toBeVisible();
 });
+
+test("the published Business Model Chooser family page shows full detail, its outputs, and links on to its next step", async ({
+  page,
+}) => {
+  await page.goto("/products/business-model-chooser");
+  await expect(page.getByRole("heading", { name: "Business Model Chooser", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Business Model Comparison Canvas/ })).toBeVisible();
+  // Fourth Tier 2 family — reuses Pricing Your Product's next-step target, the same "many
+  // families can point at one target" pattern Launch already uses as a shared journey stage
+  // (docs/decisions/0030).
+  await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Pricing Your Product/ })).toBeVisible();
+});

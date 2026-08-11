@@ -17,6 +17,7 @@ import { FirstCustomersPlannerRunner } from "@/components/tools/first-customers-
 import { ProductMarketFitTrackerRunner } from "@/components/tools/product-market-fit-tracker/tool-runner";
 import { PricingYourProductRunner } from "@/components/tools/pricing-your-product/tool-runner";
 import { ProductIdeaGeneratorRunner } from "@/components/tools/product-idea-generator/tool-runner";
+import { BusinessModelChooserRunner } from "@/components/tools/business-model-chooser/tool-runner";
 
 type Props = { params: Promise<{ toolKey: string }> };
 
@@ -35,6 +36,7 @@ const TOOL_RUNNERS: Record<string, ComponentType> = {
   "product-market-fit-tracker": ProductMarketFitTrackerRunner,
   "pricing-your-product": PricingYourProductRunner,
   "product-idea-generator": ProductIdeaGeneratorRunner,
+  "business-model-chooser": BusinessModelChooserRunner,
 };
 
 export async function generateStaticParams() {
