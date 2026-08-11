@@ -44,6 +44,7 @@ const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
   framework("product-positioning-builder", { nextStepFrameworkSlug: "product-naming-system" }),
   framework("customer-demand-test", { nextStepFrameworkSlug: "better-decision-maker" }),
   framework("product-prioritisation-tool", { nextStepFrameworkSlug: null }),
+  framework("lateral-thinking-toolkit", { nextStepFrameworkSlug: "product-idea-assessor" }),
 ];
 
 const baseInput = (overrides: Partial<FinderInput> = {}): FinderInput => ({
@@ -69,6 +70,7 @@ describe("resolveNextStep — outcome maps to the right framework", () => {
     ["build_positioning", "product-positioning-builder"],
     ["test_demand", "customer-demand-test"],
     ["prioritise_tasks", "product-prioritisation-tool"],
+    ["unblock_thinking", "lateral-thinking-toolkit"],
   ] as [Outcome, string][])("%s -> %s", (outcome, expectedSlug) => {
     const result = resolveNextStep(baseInput({ outcome }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe(expectedSlug);
@@ -229,6 +231,15 @@ describe("resolveNextStep — supporting recommendations", () => {
     expect(result?.primary.frameworkSlug).toBe("product-prioritisation-tool");
     expect(result?.supporting).toHaveLength(1);
     expect(result?.supporting[0]?.outputType).toBe("guide");
+  });
+
+  it("Lateral Thinking Toolkit includes Product Idea Assessor as a supporting recommendation, a second entry point alongside Product Idea Generator", () => {
+    const result = resolveNextStep(
+      baseInput({ outcome: "unblock_thinking", outputPreference: "interactive_result" }),
+      ALL_FRAMEWORKS,
+    );
+    expect(result?.primary.frameworkSlug).toBe("lateral-thinking-toolkit");
+    expect(result?.supporting.some((s) => s.frameworkSlug === "product-idea-assessor")).toBe(true);
   });
 
   it("the last family in the chain has no next-step supporting recommendation", () => {

@@ -313,6 +313,26 @@ on conflict (id) do update set status = excluded.status, name = excluded.name, s
   source_strength = excluded.source_strength, source_note = excluded.source_note,
   flagship = excluded.flagship, display_order = excluded.display_order, seo_title = excluded.seo_title,
   seo_description = excluded.seo_description, published_at = excluded.published_at;
+insert into public.it_frameworks (
+  id, status, name, slug, short_description, problem_statement, outcome_statement,
+  target_audience, when_to_use, when_not_to_use, method_summary, journey_stage_id,
+  priority_score, priority_rationale, source_strength, source_note, flagship,
+  display_order, seo_title, seo_description, published_at
+) values (
+  '5512a79d-6966-0c5a-9f13-008790d31dba', 'published', 'Lateral Thinking Toolkit', 'lateral-thinking-toolkit', 'Five techniques for approaching a stuck problem or idea from an angle you haven''t tried yet.', 'Founders get stuck on a problem and default to grinding at it the same way, from the same angle, hoping harder effort will eventually produce a different answer. Lateral thinking techniques exist precisely because ordinary, sequential logic often can''t reach the answer that random input, provocation or reframing gets to directly.', 'Five personalised prompts, one per technique, to jog your thinking on whatever you''re stuck on.',
+  'Founders and small teams stuck on a problem or idea who want a different angle, not more of the same thinking.', 'Use whenever you''re stuck — on a product problem, a piece of writing, a name, or anything else.', 'Not useful once you already have a specific idea and just need to assess it — that''s what Product Idea Assessor is for.', 'Apply five techniques to whatever you''re stuck on: perceptual change (view it from someone else''s position), random input (force a connection to something unrelated), provocation (state the opposite and ask what if), specificity (swap generic description for one concrete detail) and scale (push it to its extremes). Generate prompts from all five before judging any of them — the technique only works if you resist filtering too early.', '8f0f32b0-bba6-e3a0-a144-46ebfbcab4c0',
+  83, 'Ranked #15 in the source-material opportunity portfolio (spec v4 §37) and the first Tier 3 family, started at the user''s explicit direction rather than by default rank-order continuation from Tier 2 (spec §37.1 frames Tier 3 as ''broaden only after demand evidence,'' not an automatic next step). Its Tool is the first to generate several prompts with no ranking or recommended winner — scoring one prompt above the others would contradict the source material''s own lesson that volume must come before judgement. Points forward to Product Idea Assessor, a second entry point alongside Product Idea Generator, since a prompt that sparks a real direction still needs assessing.', 'strong', 'Developed from A Bit Gamey material on lateral thinking techniques (perceptual change, random input, provocation, Po), creative perspectives (specificity, scale, surprise) and the case for generating volume before judging quality.', false,
+  15, 'Lateral Thinking Toolkit — five techniques for getting unstuck', 'Five lateral thinking techniques for approaching a stuck problem from a new angle: perceptual change, random input, provocation, specificity, scale.', '2026-08-11T09:00:00Z'
+)
+on conflict (id) do update set status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, problem_statement = excluded.problem_statement,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  method_summary = excluded.method_summary, journey_stage_id = excluded.journey_stage_id,
+  priority_score = excluded.priority_score, priority_rationale = excluded.priority_rationale,
+  source_strength = excluded.source_strength, source_note = excluded.source_note,
+  flagship = excluded.flagship, display_order = excluded.display_order, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, published_at = excluded.published_at;
 
 -- it_frameworks next-step links (second pass, see comment above)
 update public.it_frameworks set next_step_framework_id = '1c2a8bbd-308d-3e5c-c08e-30a596a3f716' where id = 'bd063cd6-3bdc-e7a0-47fa-dabc2cd8a448';
@@ -329,6 +349,7 @@ update public.it_frameworks set next_step_framework_id = null where id = '56a1d8
 update public.it_frameworks set next_step_framework_id = '46a94166-2f8a-ceb8-98c3-56610ca412aa' where id = 'e18f5299-6393-38b5-a62c-f97526ed1498';
 update public.it_frameworks set next_step_framework_id = '4d32e24c-2646-908d-569c-a9789dfb06e1' where id = '1f89a87d-7453-562b-4325-176c604587bf';
 update public.it_frameworks set next_step_framework_id = null where id = '8205be51-5547-9286-0ce3-a3da135056c2';
+update public.it_frameworks set next_step_framework_id = 'bd063cd6-3bdc-e7a0-47fa-dabc2cd8a448' where id = '5512a79d-6966-0c5a-9f13-008790d31dba';
 
 -- it_products
 insert into public.it_products (
@@ -2094,6 +2115,87 @@ insert into public.it_products (
   published_at, scheduled_for, seo_title, seo_description, schema_data,
   framework_id, tool_key
 ) values (
+  'ecdd231d-90d2-56b1-673a-68dc78007740', 'guide', 'free', 'published', 'Lateral Thinking Toolkit: the Guide', 'lateral-thinking-toolkit', 'Five lateral thinking techniques for approaching a stuck problem from an angle you haven''t tried yet.', 'Explains five lateral thinking techniques — perceptual change, random input, provocation, specificity, scale — and why generating volume before judging quality is essential to the process working at all. Read this before the Template or the Tool — both assume the technique this guide teaches.',
+  'A clear set of techniques for getting unstuck on a problem or idea.', 'Founders and small teams stuck on a problem or idea who want a different angle, not more of the same thinking.', 'Read this first, before the Template or the Tool.', 'Skip straight to the Tool if you already know the techniques and just want personalised prompts.',
+  6, 10, 'beginner', '1.0',
+  null, null, 'GBP', null, true,
+  '2026-08-11T09:00:00Z', null, 'Lateral Thinking Toolkit guide — five techniques for getting unstuck', 'Five lateral thinking techniques for approaching a stuck problem from a new angle, plus why volume beats early judgement.', '{"placeholder":true}'::jsonb,
+  '5512a79d-6966-0c5a-9f13-008790d31dba', null
+)
+on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
+  status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, full_description = excluded.full_description,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  completion_minutes_min = excluded.completion_minutes_min, completion_minutes_max = excluded.completion_minutes_max,
+  skill_level = excluded.skill_level, current_version = excluded.current_version,
+  price_minor = excluded.price_minor, compare_at_price_minor = excluded.compare_at_price_minor,
+  currency_code = excluded.currency_code, licence_id = excluded.licence_id, featured = excluded.featured,
+  published_at = excluded.published_at, scheduled_for = excluded.scheduled_for, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, schema_data = excluded.schema_data,
+  framework_id = excluded.framework_id, tool_key = excluded.tool_key;
+insert into public.it_products (
+  id, product_type, access_type, status, name, slug, short_description, full_description,
+  outcome_statement, target_audience, when_to_use, when_not_to_use,
+  completion_minutes_min, completion_minutes_max, skill_level, current_version,
+  price_minor, compare_at_price_minor, currency_code, licence_id, featured,
+  published_at, scheduled_for, seo_title, seo_description, schema_data,
+  framework_id, tool_key
+) values (
+  '12b14aff-d653-4738-6165-4d111ce0ed57', 'template', 'free', 'published', 'Lateral Thinking Prompt Cards', 'lateral-thinking-prompt-cards', 'Five lateral thinking technique cards, usable as a physical or written deck whenever you''re stuck.', 'Five prompt cards — perceptual change, random input, provocation, specificity, scale — each with a generic prompt you can apply to whatever problem you''re facing, without needing a screen.',
+  'A repeatable deck of prompts for getting unstuck, usable again and again.', 'Founders who want a quick, repeatable way to approach a stuck problem from a different angle.', 'Use whenever you''re stuck, not as a one-off exercise.', 'Not useful once you already have a specific idea and just need to assess it.',
+  10, 15, 'beginner', '1.0',
+  null, null, 'GBP', '488fbee7-849e-4e17-2d2e-e386ec5328ca', true,
+  '2026-08-11T09:00:00Z', null, 'Lateral Thinking Prompt Cards — free lateral thinking prompt deck', 'Five lateral thinking technique cards for getting unstuck, free.', '{"placeholder":true}'::jsonb,
+  '5512a79d-6966-0c5a-9f13-008790d31dba', null
+)
+on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
+  status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, full_description = excluded.full_description,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  completion_minutes_min = excluded.completion_minutes_min, completion_minutes_max = excluded.completion_minutes_max,
+  skill_level = excluded.skill_level, current_version = excluded.current_version,
+  price_minor = excluded.price_minor, compare_at_price_minor = excluded.compare_at_price_minor,
+  currency_code = excluded.currency_code, licence_id = excluded.licence_id, featured = excluded.featured,
+  published_at = excluded.published_at, scheduled_for = excluded.scheduled_for, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, schema_data = excluded.schema_data,
+  framework_id = excluded.framework_id, tool_key = excluded.tool_key;
+insert into public.it_products (
+  id, product_type, access_type, status, name, slug, short_description, full_description,
+  outcome_statement, target_audience, when_to_use, when_not_to_use,
+  completion_minutes_min, completion_minutes_max, skill_level, current_version,
+  price_minor, compare_at_price_minor, currency_code, licence_id, featured,
+  published_at, scheduled_for, seo_title, seo_description, schema_data,
+  framework_id, tool_key
+) values (
+  'cc3b6d2a-811d-2017-9ecf-0c4edecc49ee', 'tool', 'free', 'published', 'Lateral Thinking Prompt Generator', 'lateral-thinking-toolkit-tool', 'Turn whatever you''re stuck on into five personalised prompts, one per technique.', 'Describe whatever problem or idea you''re stuck on, and get five personalised prompts back — one per lateral thinking technique — ready to write against. No ranking or recommended winner: generate all five, then judge afterwards. Usable anonymously, with no account required.',
+  'Five personalised prompts to jog your thinking from different angles.', 'Founders and small teams stuck on a problem or idea who want a different angle, not more of the same thinking.', 'Use whenever you''re stuck and want prompts tailored to your specific situation.', 'Not a substitute for actually writing the ideas down and testing them — it generates starting points, not answers.',
+  2, 4, 'beginner', '1.0',
+  null, null, 'GBP', null, true,
+  '2026-08-11T09:00:00Z', null, 'Lateral Thinking Prompt Generator — free lateral thinking prompt tool', 'Turn whatever you''re stuck on into five personalised lateral thinking prompts, free, no account required.', '{"placeholder":true}'::jsonb,
+  '5512a79d-6966-0c5a-9f13-008790d31dba', 'lateral-thinking-toolkit'
+)
+on conflict (id) do update set product_type = excluded.product_type, access_type = excluded.access_type,
+  status = excluded.status, name = excluded.name, slug = excluded.slug,
+  short_description = excluded.short_description, full_description = excluded.full_description,
+  outcome_statement = excluded.outcome_statement, target_audience = excluded.target_audience,
+  when_to_use = excluded.when_to_use, when_not_to_use = excluded.when_not_to_use,
+  completion_minutes_min = excluded.completion_minutes_min, completion_minutes_max = excluded.completion_minutes_max,
+  skill_level = excluded.skill_level, current_version = excluded.current_version,
+  price_minor = excluded.price_minor, compare_at_price_minor = excluded.compare_at_price_minor,
+  currency_code = excluded.currency_code, licence_id = excluded.licence_id, featured = excluded.featured,
+  published_at = excluded.published_at, scheduled_for = excluded.scheduled_for, seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description, schema_data = excluded.schema_data,
+  framework_id = excluded.framework_id, tool_key = excluded.tool_key;
+insert into public.it_products (
+  id, product_type, access_type, status, name, slug, short_description, full_description,
+  outcome_statement, target_audience, when_to_use, when_not_to_use,
+  completion_minutes_min, completion_minutes_max, skill_level, current_version,
+  price_minor, compare_at_price_minor, currency_code, licence_id, featured,
+  published_at, scheduled_for, seo_title, seo_description, schema_data,
+  framework_id, tool_key
+) values (
   'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', 'bundle', 'paid', 'published', 'Idea Validation Pack', 'idea-validation-pack', 'Nine templates that take you from a raw idea to a documented proceed-revise-pause decision, backed by evidence rather than confidence.', 'The Idea Validation Pack is the complete evidence-led path from a raw idea to a defensible decision. It sequences nine templates — intake, founder fit, problem evidence, competitive alternatives, a team Copy–Improve–Differentiate workshop, assumption ranking, a full interview system, evidence synthesis, and a closing proceed/revise/pause decision — into a single 1–2 week process, instead of leaving you to assemble one from separate free worksheets.',
   'A documented, evidence-based decision on whether to proceed, revise or pause — not just a folder of worksheets.', 'Founders who want a structured, complete path through idea validation rather than assembling their own process from free templates.', 'Use end-to-end over 1–2 weeks when you''re serious about validating a new idea before committing real time or money.', 'If you only need one part of the process — for example, just customer interviews — the free Customer Interview Planner may be enough on its own.',
   240, 480, 'intermediate', '1.0',
@@ -2142,7 +2244,7 @@ on conflict (id) do update set product_type = excluded.product_type, access_type
   framework_id = excluded.framework_id, tool_key = excluded.tool_key;
 
 -- it_product_categories (full replace for the products this script manages)
-delete from public.it_product_categories where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', '1dca4420-0caf-b736-a6b9-63e9d09c9c82', 'e6306744-459c-6a1a-a183-e51c4a7ad76d', '1b97b540-1b26-effb-101b-1067402e856d', '3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', 'b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', '7524c705-aa52-f6bc-151a-e699fe26efc6', 'cdb247be-c798-9652-2bcd-e2ad96b9f38e', '89b057d3-dcfb-5d47-9b19-2fa03e4588f6', 'd8879821-22d4-2153-8179-304945c081ee', '05e2a961-0fc4-d866-32f1-6cb21e3a4e5a', '9b97f282-6ba8-2d4a-4113-512054395334', '9d72f523-64a3-e4d1-ae09-8beb6bfb10ea', 'bf251141-3eee-f299-82d1-d3ff7b33090d', '3f0d4428-0ff5-086f-b220-039fd6b962fa', '3eac5044-7d80-171b-aa76-d23be877263a', 'f263b3ac-91c6-f1b7-f592-7658f2f4ccec', '0e3c2c30-0b8e-5a0a-e6a1-1b65dee3a73f', '2bea6e24-9188-02ac-5377-a57965260f08', '633badec-080c-406c-9164-15600d6a29f5', 'bfcfc79d-5684-810c-f206-2363e9a4ecf8', '70748516-169e-c555-84c5-a9df376bceba', 'bf08e0a2-ebb6-1a55-3110-c7d3e9dde72e', 'ba745155-308d-c42d-6dbb-1de3569ae003', '01a003e3-8469-fa1c-3821-a2b2f79b382d', '7bd765ac-a37e-57ae-55f6-15a6e2d90f6a', '707cc89f-adbe-39dd-04cd-890e72e68305', 'd80b3dd7-cf23-f19e-d8f4-9ce178bb7827', 'bc1e9a01-04f6-171b-676f-a2ff016b9e38', 'ff6944f7-acf4-bf8e-9e09-0c07d6410549', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
+delete from public.it_product_categories where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', '1dca4420-0caf-b736-a6b9-63e9d09c9c82', 'e6306744-459c-6a1a-a183-e51c4a7ad76d', '1b97b540-1b26-effb-101b-1067402e856d', '3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', 'b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', '7524c705-aa52-f6bc-151a-e699fe26efc6', 'cdb247be-c798-9652-2bcd-e2ad96b9f38e', '89b057d3-dcfb-5d47-9b19-2fa03e4588f6', 'd8879821-22d4-2153-8179-304945c081ee', '05e2a961-0fc4-d866-32f1-6cb21e3a4e5a', '9b97f282-6ba8-2d4a-4113-512054395334', '9d72f523-64a3-e4d1-ae09-8beb6bfb10ea', 'bf251141-3eee-f299-82d1-d3ff7b33090d', '3f0d4428-0ff5-086f-b220-039fd6b962fa', '3eac5044-7d80-171b-aa76-d23be877263a', 'f263b3ac-91c6-f1b7-f592-7658f2f4ccec', '0e3c2c30-0b8e-5a0a-e6a1-1b65dee3a73f', '2bea6e24-9188-02ac-5377-a57965260f08', '633badec-080c-406c-9164-15600d6a29f5', 'bfcfc79d-5684-810c-f206-2363e9a4ecf8', '70748516-169e-c555-84c5-a9df376bceba', 'bf08e0a2-ebb6-1a55-3110-c7d3e9dde72e', 'ba745155-308d-c42d-6dbb-1de3569ae003', '01a003e3-8469-fa1c-3821-a2b2f79b382d', '7bd765ac-a37e-57ae-55f6-15a6e2d90f6a', '707cc89f-adbe-39dd-04cd-890e72e68305', 'd80b3dd7-cf23-f19e-d8f4-9ce178bb7827', 'bc1e9a01-04f6-171b-676f-a2ff016b9e38', 'ff6944f7-acf4-bf8e-9e09-0c07d6410549', 'ecdd231d-90d2-56b1-673a-68dc78007740', '12b14aff-d653-4738-6165-4d111ce0ed57', 'cc3b6d2a-811d-2017-9ecf-0c4edecc49ee', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('af2edcc3-4630-bbd6-e144-29ff50d794b1', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', '9c66d23e-6490-8df9-1a77-759635564cfc', true);
@@ -2208,11 +2310,14 @@ insert into public.it_product_categories (product_id, category_id, is_primary) v
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('d80b3dd7-cf23-f19e-d8f4-9ce178bb7827', 'e11948c4-e14f-706e-2968-269c8566f9f6', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('bc1e9a01-04f6-171b-676f-a2ff016b9e38', 'e11948c4-e14f-706e-2968-269c8566f9f6', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('ff6944f7-acf4-bf8e-9e09-0c07d6410549', 'e11948c4-e14f-706e-2968-269c8566f9f6', true);
+insert into public.it_product_categories (product_id, category_id, is_primary) values ('ecdd231d-90d2-56b1-673a-68dc78007740', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
+insert into public.it_product_categories (product_id, category_id, is_primary) values ('12b14aff-d653-4738-6165-4d111ce0ed57', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
+insert into public.it_product_categories (product_id, category_id, is_primary) values ('cc3b6d2a-811d-2017-9ecf-0c4edecc49ee', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '71cd6a65-22e7-216a-7b76-cfd6ddc346f9', true);
 insert into public.it_product_categories (product_id, category_id, is_primary) values ('7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb', 'e11948c4-e14f-706e-2968-269c8566f9f6', true);
 
 -- it_product_stages (full replace for the products this script manages)
-delete from public.it_product_stages where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', '1dca4420-0caf-b736-a6b9-63e9d09c9c82', 'e6306744-459c-6a1a-a183-e51c4a7ad76d', '1b97b540-1b26-effb-101b-1067402e856d', '3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', 'b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', '7524c705-aa52-f6bc-151a-e699fe26efc6', 'cdb247be-c798-9652-2bcd-e2ad96b9f38e', '89b057d3-dcfb-5d47-9b19-2fa03e4588f6', 'd8879821-22d4-2153-8179-304945c081ee', '05e2a961-0fc4-d866-32f1-6cb21e3a4e5a', '9b97f282-6ba8-2d4a-4113-512054395334', '9d72f523-64a3-e4d1-ae09-8beb6bfb10ea', 'bf251141-3eee-f299-82d1-d3ff7b33090d', '3f0d4428-0ff5-086f-b220-039fd6b962fa', '3eac5044-7d80-171b-aa76-d23be877263a', 'f263b3ac-91c6-f1b7-f592-7658f2f4ccec', '0e3c2c30-0b8e-5a0a-e6a1-1b65dee3a73f', '2bea6e24-9188-02ac-5377-a57965260f08', '633badec-080c-406c-9164-15600d6a29f5', 'bfcfc79d-5684-810c-f206-2363e9a4ecf8', '70748516-169e-c555-84c5-a9df376bceba', 'bf08e0a2-ebb6-1a55-3110-c7d3e9dde72e', 'ba745155-308d-c42d-6dbb-1de3569ae003', '01a003e3-8469-fa1c-3821-a2b2f79b382d', '7bd765ac-a37e-57ae-55f6-15a6e2d90f6a', '707cc89f-adbe-39dd-04cd-890e72e68305', 'd80b3dd7-cf23-f19e-d8f4-9ce178bb7827', 'bc1e9a01-04f6-171b-676f-a2ff016b9e38', 'ff6944f7-acf4-bf8e-9e09-0c07d6410549', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
+delete from public.it_product_stages where product_id in ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', 'af2edcc3-4630-bbd6-e144-29ff50d794b1', '9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', 'bde66657-b6ae-eecf-b995-64f809042223', 'd5d2c2c9-b207-fabd-d00b-5e38d2f10716', '8b916848-981c-8b5e-732a-e5da758afa6b', 'aae370e5-ad0b-92f7-b547-094452885b28', '8b732700-eacb-a42e-0474-750284ca5573', '1ca2f681-5c9d-120c-6258-0f5107d1b5dc', 'f8f13a28-d2c1-4f73-38fb-2025cd04b95c', '5c9b8de1-7352-cc24-6ca6-0c080c741959', '4b0d0890-c7a0-e662-8ba9-d236874c5797', '62fc9437-397c-7e65-98c9-4ed1c9f46143', 'b59f87ba-b249-13ae-0744-40975bf9ba0b', 'e52a4f43-428d-8146-2220-5e281811cf03', '48c6802f-b771-a0f5-0033-59faecb8b55a', 'ca8fd5a8-4028-749c-b010-9dd70ad1db36', '2f501db6-c592-1b67-b26a-90ca54f8b35c', '8ce4ec62-7cdd-fb93-0018-54b0b0279d9a', '7ba23d60-15ef-8ecf-b908-084f719e8571', '11d08b0a-0f20-3db7-1e50-40ea60deaa74', '9f62eb73-0243-cb70-c8a8-8d0b9465cdea', '28968ffa-b559-7f5b-b867-b641007d1713', '2586cb55-d050-0a1d-952a-ca6e8175ebc6', '63caca78-788b-c53f-8c2a-463cc87158ac', 'faf677d9-aac4-9684-0c18-37422c44417c', 'ba929ce1-8f41-1834-0a4f-ae45b80fff7f', 'dcf1f382-9957-c65e-c3fc-84fbe30d3c02', '16f7ea01-c4e9-2774-946b-a996c991ee9b', '571eb076-f984-4c5d-eca7-4a81eda90a16', '8a89a76f-2289-3369-c1eb-f33755a0cc23', 'd1073e5d-0539-162a-2665-3d01ecc1d821', '8adc006c-06fb-911d-340c-3ec0fadf6724', 'b9a22c33-c0c8-976a-d6ad-0864b9e6aa23', '97adee85-d743-a743-f6a3-1299a8edd695', '1dca4420-0caf-b736-a6b9-63e9d09c9c82', 'e6306744-459c-6a1a-a183-e51c4a7ad76d', '1b97b540-1b26-effb-101b-1067402e856d', '3ab4ad61-6e09-05c1-8f13-0ec60708ca7f', '750eb6a3-54bb-016d-dab0-ff5d4b0e7d5b', 'b8ebdeab-5bf1-e8c8-13f3-7da26cf7adfa', '7524c705-aa52-f6bc-151a-e699fe26efc6', 'cdb247be-c798-9652-2bcd-e2ad96b9f38e', '89b057d3-dcfb-5d47-9b19-2fa03e4588f6', 'd8879821-22d4-2153-8179-304945c081ee', '05e2a961-0fc4-d866-32f1-6cb21e3a4e5a', '9b97f282-6ba8-2d4a-4113-512054395334', '9d72f523-64a3-e4d1-ae09-8beb6bfb10ea', 'bf251141-3eee-f299-82d1-d3ff7b33090d', '3f0d4428-0ff5-086f-b220-039fd6b962fa', '3eac5044-7d80-171b-aa76-d23be877263a', 'f263b3ac-91c6-f1b7-f592-7658f2f4ccec', '0e3c2c30-0b8e-5a0a-e6a1-1b65dee3a73f', '2bea6e24-9188-02ac-5377-a57965260f08', '633badec-080c-406c-9164-15600d6a29f5', 'bfcfc79d-5684-810c-f206-2363e9a4ecf8', '70748516-169e-c555-84c5-a9df376bceba', 'bf08e0a2-ebb6-1a55-3110-c7d3e9dde72e', 'ba745155-308d-c42d-6dbb-1de3569ae003', '01a003e3-8469-fa1c-3821-a2b2f79b382d', '7bd765ac-a37e-57ae-55f6-15a6e2d90f6a', '707cc89f-adbe-39dd-04cd-890e72e68305', 'd80b3dd7-cf23-f19e-d8f4-9ce178bb7827', 'bc1e9a01-04f6-171b-676f-a2ff016b9e38', 'ff6944f7-acf4-bf8e-9e09-0c07d6410549', 'ecdd231d-90d2-56b1-673a-68dc78007740', '12b14aff-d653-4738-6165-4d111ce0ed57', 'cc3b6d2a-811d-2017-9ecf-0c4edecc49ee', 'a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb');
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('4a4bf14a-af34-dfa8-dca5-9c49cda6e795', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('af2edcc3-4630-bbd6-e144-29ff50d794b1', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('9af774f9-eb82-e36a-f3a1-68c76c9e3f2a', '8f0f32b0-bba6-e3a0-a144-46ebfbcab4c0', true);
@@ -2278,6 +2383,9 @@ insert into public.it_product_stages (product_id, stage_id, is_primary) values (
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('d80b3dd7-cf23-f19e-d8f4-9ce178bb7827', '81e350e5-2342-79a0-b21e-5ded01bef450', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('bc1e9a01-04f6-171b-676f-a2ff016b9e38', '81e350e5-2342-79a0-b21e-5ded01bef450', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('ff6944f7-acf4-bf8e-9e09-0c07d6410549', '81e350e5-2342-79a0-b21e-5ded01bef450', true);
+insert into public.it_product_stages (product_id, stage_id, is_primary) values ('ecdd231d-90d2-56b1-673a-68dc78007740', '8f0f32b0-bba6-e3a0-a144-46ebfbcab4c0', true);
+insert into public.it_product_stages (product_id, stage_id, is_primary) values ('12b14aff-d653-4738-6165-4d111ce0ed57', '8f0f32b0-bba6-e3a0-a144-46ebfbcab4c0', true);
+insert into public.it_product_stages (product_id, stage_id, is_primary) values ('cc3b6d2a-811d-2017-9ecf-0c4edecc49ee', '8f0f32b0-bba6-e3a0-a144-46ebfbcab4c0', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('a90f8e93-c85c-5f0f-5410-a2d6c2e89744', '503582d1-29fb-9e68-af12-1375bd33ab3a', true);
 insert into public.it_product_stages (product_id, stage_id, is_primary) values ('7ac12b65-9f01-d7fe-3776-e1e67c0eb0cb', 'cf668b0e-b443-8f64-21ed-80ac162bfc1e', true);
 

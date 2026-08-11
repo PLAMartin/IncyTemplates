@@ -231,3 +231,19 @@ test("the published Product Prioritisation Tool family page shows full detail an
   // legitimately-terminal reasoning as Decision Framework Picker (docs/decisions/0031, 0034).
   await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
 });
+
+test("the published Lateral Thinking Toolkit family page shows full detail, its outputs, and links on to its next step", async ({
+  page,
+}) => {
+  await page.goto("/products/lateral-thinking-toolkit");
+  await expect(page.getByRole("heading", { name: "Lateral Thinking Toolkit", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Lateral Thinking Prompt Cards/ })).toBeVisible();
+  // First Tier 3 family, started at explicit user direction. A second entry point into
+  // Product Idea Assessor alongside Product Idea Generator (docs/decisions/0035).
+  await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Product Idea Assessor/ })).toBeVisible();
+});

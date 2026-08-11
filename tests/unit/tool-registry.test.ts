@@ -15,6 +15,7 @@ import { DECISION_FRAMEWORK_PICKER_TOOL_KEY } from "@/lib/tools/decision-framewo
 import { PRODUCT_POSITIONING_BUILDER_TOOL_KEY } from "@/lib/tools/product-positioning-builder";
 import { CUSTOMER_DEMAND_TEST_TOOL_KEY } from "@/lib/tools/customer-demand-test";
 import { PRODUCT_PRIORITISATION_TOOL_TOOL_KEY } from "@/lib/tools/product-prioritisation-tool";
+import { LATERAL_THINKING_TOOLKIT_TOOL_KEY } from "@/lib/tools/lateral-thinking-toolkit";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -232,5 +233,14 @@ describe("tool registry", () => {
     const result = definition.run(parsedInput);
     const parsedResult = definition.resultSchema.parse(result) as { recommendedStrategy: string };
     expect(parsedResult.recommendedStrategy).toBe("earliest_due_date");
+  });
+
+  it("resolves the fifteenth registered tool (Lateral Thinking Toolkit) independently of the others", () => {
+    const definition = getToolDefinition(LATERAL_THINKING_TOOLKIT_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({ problemOrIdea: "our onboarding feels generic" });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { prompts: { technique: string }[] };
+    expect(parsedResult.prompts).toHaveLength(5);
+    expect(parsedResult.prompts[0]?.technique).toBe("perceptual_change");
   });
 });

@@ -129,6 +129,17 @@ explicitly scoped as "broaden only after demand evidence" — continuing
 family-by-family into it is not assumed to be the default next action the
 way Tier 2 followed on from Tier 1.
 
+A fifteenth family has since shipped: **Lateral Thinking Toolkit** (see
+[`docs/decisions/0035`](docs/decisions/0035-lateral-thinking-toolkit-family.md)),
+**the first Tier 3 family, started at the user's explicit direction** rather
+than a default rank-order continuation. Its Tool is the first to depart
+entirely from picking a "winner" — it generates five lateral-thinking
+prompts from one free-text input and presents all five unranked, since
+scoring one above the others would contradict the source material's own
+lesson that creative volume has to come before judgement. It's a second
+entry point into Product Idea Assessor alongside Product Idea Generator,
+and is wired into the Next Step Finder alongside the other fourteen.
+
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per
 the spec's own phasing. Product/bundle pages still use a waitlist

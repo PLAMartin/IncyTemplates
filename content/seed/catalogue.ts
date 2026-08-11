@@ -296,6 +296,7 @@ export const DECISION_FRAMEWORK_PICKER_FRAMEWORK_ID = "framework-decision-framew
 export const PRODUCT_POSITIONING_BUILDER_FRAMEWORK_ID = "framework-product-positioning-builder";
 export const CUSTOMER_DEMAND_TEST_FRAMEWORK_ID = "framework-customer-demand-test";
 export const PRODUCT_PRIORITISATION_TOOL_FRAMEWORK_ID = "framework-product-prioritisation-tool";
+export const LATERAL_THINKING_TOOLKIT_FRAMEWORK_ID = "framework-lateral-thinking-toolkit";
 
 export const frameworks: Framework[] = [
   {
@@ -706,6 +707,35 @@ export const frameworks: Framework[] = [
       "Work out whether Earliest Due Date, Moore's Algorithm, Shortest Processing Time or Weighted Processing Time fits your task list.",
     published_at: "2026-08-11T09:00:00Z",
     next_step_framework_slug: null,
+  },
+  {
+    id: LATERAL_THINKING_TOOLKIT_FRAMEWORK_ID,
+    status: "published",
+    name: "Lateral Thinking Toolkit",
+    slug: "lateral-thinking-toolkit",
+    short_description: "Five techniques for approaching a stuck problem or idea from an angle you haven't tried yet.",
+    problem_statement:
+      "Founders get stuck on a problem and default to grinding at it the same way, from the same angle, hoping harder effort will eventually produce a different answer. Lateral thinking techniques exist precisely because ordinary, sequential logic often can't reach the answer that random input, provocation or reframing gets to directly.",
+    outcome_statement: "Five personalised prompts, one per technique, to jog your thinking on whatever you're stuck on.",
+    target_audience: "Founders and small teams stuck on a problem or idea who want a different angle, not more of the same thinking.",
+    when_to_use: "Use whenever you're stuck — on a product problem, a piece of writing, a name, or anything else.",
+    when_not_to_use: "Not useful once you already have a specific idea and just need to assess it — that's what Product Idea Assessor is for.",
+    method_summary:
+      "Apply five techniques to whatever you're stuck on: perceptual change (view it from someone else's position), random input (force a connection to something unrelated), provocation (state the opposite and ask what if), specificity (swap generic description for one concrete detail) and scale (push it to its extremes). Generate prompts from all five before judging any of them — the technique only works if you resist filtering too early.",
+    journey_stage: stageRef("idea"),
+    priority_score: 83,
+    priority_rationale:
+      "Ranked #15 in the source-material opportunity portfolio (spec v4 §37) and the first Tier 3 family, started at the user's explicit direction rather than by default rank-order continuation from Tier 2 (spec §37.1 frames Tier 3 as 'broaden only after demand evidence,' not an automatic next step). Its Tool is the first to generate several prompts with no ranking or recommended winner — scoring one prompt above the others would contradict the source material's own lesson that volume must come before judgement. Points forward to Product Idea Assessor, a second entry point alongside Product Idea Generator, since a prompt that sparks a real direction still needs assessing.",
+    source_strength: "strong",
+    source_note:
+      "Developed from A Bit Gamey material on lateral thinking techniques (perceptual change, random input, provocation, Po), creative perspectives (specificity, scale, surprise) and the case for generating volume before judging quality.",
+    flagship: false,
+    display_order: 15,
+    seo_title: "Lateral Thinking Toolkit — five techniques for getting unstuck",
+    seo_description:
+      "Five lateral thinking techniques for approaching a stuck problem from a new angle: perceptual change, random input, provocation, specificity, scale.",
+    published_at: "2026-08-11T09:00:00Z",
+    next_step_framework_slug: "product-idea-assessor",
   },
 ];
 
@@ -3567,6 +3597,135 @@ const productPrioritisationToolFamilyOutputs: Product[] = [
   },
 ];
 
+// First Tier 3 family (docs/decisions/0035), started at explicit user direction rather than
+// default rank-order continuation from Tier 2. Its Template placeholder body lives at
+// content/seed/free-files/lateral-thinking-prompt-cards.md.
+const lateralThinkingToolkitFamilyOutputs: Product[] = [
+  {
+    id: "lateral-thinking-toolkit-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "Lateral Thinking Toolkit: the Guide",
+    slug: "lateral-thinking-toolkit",
+    short_description: "Five lateral thinking techniques for approaching a stuck problem from an angle you haven't tried yet.",
+    full_description:
+      "Explains five lateral thinking techniques — perceptual change, random input, provocation, specificity, scale — and why generating volume before judging quality is essential to the process working at all. Read this before the Template or the Tool — both assume the technique this guide teaches.",
+    outcome_statement: "A clear set of techniques for getting unstuck on a problem or idea.",
+    target_audience: "Founders and small teams stuck on a problem or idea who want a different angle, not more of the same thinking.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you already know the techniques and just want personalised prompts.",
+    completion_minutes_min: 6,
+    completion_minutes_max: 10,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-strategy")],
+    stages: [stageRef("idea")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: LATERAL_THINKING_TOOLKIT_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "Lateral Thinking Toolkit guide — five techniques for getting unstuck",
+    seo_description: "Five lateral thinking techniques for approaching a stuck problem from a new angle, plus why volume beats early judgement.",
+  },
+  {
+    id: "lateral-thinking-prompt-cards",
+    product_type: "template",
+    access_type: "free",
+    status: "published",
+    name: "Lateral Thinking Prompt Cards",
+    slug: "lateral-thinking-prompt-cards",
+    short_description: "Five lateral thinking technique cards, usable as a physical or written deck whenever you're stuck.",
+    full_description:
+      "Five prompt cards — perceptual change, random input, provocation, specificity, scale — each with a generic prompt you can apply to whatever problem you're facing, without needing a screen.",
+    outcome_statement: "A repeatable deck of prompts for getting unstuck, usable again and again.",
+    target_audience: "Founders who want a quick, repeatable way to approach a stuck problem from a different angle.",
+    when_to_use: "Use whenever you're stuck, not as a one-off exercise.",
+    when_not_to_use: "Not useful once you already have a specific idea and just need to assess it.",
+    completion_minutes_min: 10,
+    completion_minutes_max: 15,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-strategy")],
+    stages: [stageRef("idea")],
+    formats: ["markdown"],
+    is_placeholder: true,
+    framework_id: LATERAL_THINKING_TOOLKIT_FRAMEWORK_ID,
+    tool_key: null,
+    licence: standardLicence,
+    quality_standard: {
+      purpose: true,
+      instructions: true,
+      thinkingPrompts: true,
+      evidenceFields: true,
+      decisionOutcome: true,
+      nextStep: true,
+    },
+    files: [
+      {
+        id: "lateral-thinking-prompt-cards-md",
+        file_role: "template",
+        file_format: "markdown",
+        display_name: "Lateral Thinking Prompt Cards (Markdown, AI-agent-ready)",
+        is_public_preview: false,
+      },
+    ],
+    seo_title: "Lateral Thinking Prompt Cards — free lateral thinking prompt deck",
+    seo_description: "Five lateral thinking technique cards for getting unstuck, free.",
+  },
+  {
+    id: "lateral-thinking-toolkit-tool",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "Lateral Thinking Prompt Generator",
+    slug: "lateral-thinking-toolkit-tool",
+    short_description: "Turn whatever you're stuck on into five personalised prompts, one per technique.",
+    full_description:
+      "Describe whatever problem or idea you're stuck on, and get five personalised prompts back — one per lateral thinking technique — ready to write against. No ranking or recommended winner: generate all five, then judge afterwards. Usable anonymously, with no account required.",
+    outcome_statement: "Five personalised prompts to jog your thinking from different angles.",
+    target_audience: "Founders and small teams stuck on a problem or idea who want a different angle, not more of the same thinking.",
+    when_to_use: "Use whenever you're stuck and want prompts tailored to your specific situation.",
+    when_not_to_use: "Not a substitute for actually writing the ideas down and testing them — it generates starting points, not answers.",
+    completion_minutes_min: 2,
+    completion_minutes_max: 4,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("product-strategy")],
+    stages: [stageRef("idea")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: LATERAL_THINKING_TOOLKIT_FRAMEWORK_ID,
+    tool_key: "lateral-thinking-toolkit",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "Lateral Thinking Prompt Generator — free lateral thinking prompt tool",
+    seo_description: "Turn whatever you're stuck on into five personalised lateral thinking prompts, free, no account required.",
+  },
+];
+
 export const products: Product[] = [
   ...freeProducts,
   ...ideaValidationItems,
@@ -3585,6 +3744,7 @@ export const products: Product[] = [
   ...productPositioningBuilderFamilyOutputs,
   ...customerDemandTestFamilyOutputs,
   ...productPrioritisationToolFamilyOutputs,
+  ...lateralThinkingToolkitFamilyOutputs,
 ];
 
 // ---------------------------------------------------------------------------
