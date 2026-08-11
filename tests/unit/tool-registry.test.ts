@@ -19,6 +19,7 @@ import { LATERAL_THINKING_TOOLKIT_TOOL_KEY } from "@/lib/tools/lateral-thinking-
 import { USER_ENGAGEMENT_DESIGNER_TOOL_KEY } from "@/lib/tools/user-engagement-designer";
 import { STORY_BUILDER_TOOL_KEY } from "@/lib/tools/story-builder";
 import { STARTUP_LAUNCH_PLANNER_TOOL_KEY } from "@/lib/tools/startup-launch-planner";
+import { MEETING_RESET_TOOL_KEY } from "@/lib/tools/meeting-reset";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -287,5 +288,18 @@ describe("tool registry", () => {
     const parsedResult = definition.resultSchema.parse(result) as { plan: { option: string }[] };
     expect(parsedResult.plan[0]?.option).toBe("soft_launch_page");
     expect(parsedResult.plan).toHaveLength(4);
+  });
+
+  it("resolves the nineteenth registered tool (Meeting Reset) independently of the others", () => {
+    const definition = getToolDefinition(MEETING_RESET_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      purposeClarity: "vague_or_habitual",
+      interactionType: "spaghetti_many_people_need_to_discuss",
+      decisionNeeded: "yes_a_decision_or_alignment_is_needed",
+      attendeeNecessity: "everyone_invited_is_essential",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { verdict: string };
+    expect(parsedResult.verdict).toBe("cancel_it");
   });
 });

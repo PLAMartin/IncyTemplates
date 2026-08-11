@@ -171,6 +171,19 @@ community or social, press), not just a winner and runner-up — a genuine
 sequenced plan. A third branch into First Customers Planner, and wired into
 the Next Step Finder alongside the other seventeen.
 
+A nineteenth family has since shipped: **Meeting Reset** (see
+[`docs/decisions/0039`](docs/decisions/0039-meeting-reset-family.md)), the
+fifth Tier 3 family, again started at the user's explicit request. Its Tool
+returns to the gated decision tree first used by MVP Scoper: a vague
+purpose cancels the meeting outright regardless of every other answer, a
+one-way interaction with no decision needed becomes an async update,
+otherwise unnecessary attendees get cut, and only a meeting that survives
+all three gates is kept as-is — a single verdict, not a ranked list. Like
+Decision Framework Picker and User Engagement Designer, it's deliberately
+terminal (no next-step family), since diagnosing a meeting is something to
+revisit for every recurring meeting, not a one-time step. Wired into the
+Next Step Finder alongside the other eighteen.
+
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per
 the spec's own phasing. Product/bundle pages still use a waitlist

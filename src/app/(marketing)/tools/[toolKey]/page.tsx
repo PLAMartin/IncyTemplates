@@ -26,6 +26,7 @@ import { LateralThinkingToolkitRunner } from "@/components/tools/lateral-thinkin
 import { UserEngagementDesignerRunner } from "@/components/tools/user-engagement-designer/tool-runner";
 import { StoryBuilderRunner } from "@/components/tools/story-builder/tool-runner";
 import { StartupLaunchPlannerRunner } from "@/components/tools/startup-launch-planner/tool-runner";
+import { MeetingResetRunner } from "@/components/tools/meeting-reset/tool-runner";
 
 type Props = { params: Promise<{ toolKey: string }> };
 
@@ -53,6 +54,7 @@ const TOOL_RUNNERS: Record<string, ComponentType> = {
   "user-engagement-designer": UserEngagementDesignerRunner,
   "story-builder": StoryBuilderRunner,
   "startup-launch-planner": StartupLaunchPlannerRunner,
+  "meeting-reset": MeetingResetRunner,
 };
 
 export async function generateStaticParams() {

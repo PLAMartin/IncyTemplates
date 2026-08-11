@@ -294,3 +294,16 @@ test("the published Startup Launch Planner family page shows full detail, its ou
   await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
   await expect(page.getByRole("link", { name: /First Customers Planner/ })).toBeVisible();
 });
+
+test("the published Meeting Reset family page shows full detail and its outputs, with no next step", async ({ page }) => {
+  await page.goto("/products/meeting-reset");
+  await expect(page.getByRole("heading", { name: "Meeting Reset", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Meeting Agenda Template/ })).toBeVisible();
+  // Fifth Tier 3 family, built at explicit user request — deliberately no next-step family,
+  // a recurring practice rather than a one-time step (docs/decisions/0039).
+  await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
+});

@@ -300,6 +300,7 @@ export const LATERAL_THINKING_TOOLKIT_FRAMEWORK_ID = "framework-lateral-thinking
 export const USER_ENGAGEMENT_DESIGNER_FRAMEWORK_ID = "framework-user-engagement-designer";
 export const STORY_BUILDER_FRAMEWORK_ID = "framework-story-builder";
 export const STARTUP_LAUNCH_PLANNER_FRAMEWORK_ID = "framework-startup-launch-planner";
+export const MEETING_RESET_FRAMEWORK_ID = "framework-meeting-reset";
 
 export const frameworks: Framework[] = [
   {
@@ -822,6 +823,33 @@ export const frameworks: Framework[] = [
     seo_description: "Get a full launch plan across a soft launch page, friends and family, community and social, and press, in order.",
     published_at: "2026-08-11T09:00:00Z",
     next_step_framework_slug: "first-customers-planner",
+  },
+  {
+    id: MEETING_RESET_FRAMEWORK_ID,
+    status: "published",
+    name: "Meeting Reset",
+    slug: "meeting-reset",
+    short_description: "A quick way to tell whether a meeting deserves to be a meeting, and nine rules for the ones that do.",
+    problem_statement:
+      "Founders and teams default to meeting out of habit rather than necessity, and even the meetings that are worth having often lack a clear owner, purpose or conclusion. Around half of what happens in a typical meeting isn't relevant to most attendees or could have been handled without one at all.",
+    outcome_statement: "A clear verdict — keep it, trim it, replace it, or cancel it — for a specific meeting.",
+    target_audience: "Founders and small teams who want fewer, better meetings rather than better meeting etiquette alone.",
+    when_to_use: "Use for any recurring or proposed meeting you're not confident is earning its place.",
+    when_not_to_use: "Not useful for a meeting you're already confident has a clear purpose and the right people — save it for the ones you're unsure about.",
+    method_summary:
+      "Check whether the meeting has a clear, specific purpose — without one, cancel it outright. If it's mostly a 'star' interaction (one person broadcasting, or a one-on-one) and no group decision is needed, replace it with an async update instead. If the purpose is clear and real discussion is needed but not everyone invited is essential, cut the attendee list. Otherwise, it earns its place as a meeting — run it well using Ray Dalio's nine rules.",
+    journey_stage: stageRef("improve"),
+    priority_score: 78,
+    priority_rationale:
+      "Ranked #19 in the source-material opportunity portfolio (spec v4 §37) and the fifth Tier 3 family, built at the user's explicit request. Its Tool is a gated decision tree rather than a weighted scoring matrix or a named-candidate comparison — closer in spirit to MVP Scoper's non-additive gate than to the scoring-matrix families, since the source material's own criteria (no purpose, no meeting; star interactions belong outside the meeting room) are sequential yes/no checks, not values to weigh against each other. Deliberately terminal — meeting habits are revisited continuously, not fixed once.",
+    source_strength: "strong",
+    source_note: "Developed from A Bit Gamey material on effective meetings (Ray Dalio's nine rules) and reducing meeting overhead (the case for fewer meetings, and the star-versus-spaghetti interaction test).",
+    flagship: false,
+    display_order: 19,
+    seo_title: "Meeting Reset — fewer meetings, better ones",
+    seo_description: "A quick diagnostic for whether a meeting deserves to be a meeting, plus nine rules for running the ones that do well.",
+    published_at: "2026-08-11T09:00:00Z",
+    next_step_framework_slug: null,
   },
 ];
 
@@ -4196,6 +4224,134 @@ const startupLaunchPlannerFamilyOutputs: Product[] = [
   },
 ];
 
+// Fifth Tier 3 family (docs/decisions/0039), built at explicit user request. Its Template
+// placeholder body lives at content/seed/free-files/meeting-agenda-template.md.
+const meetingResetFamilyOutputs: Product[] = [
+  {
+    id: "meeting-reset-guide",
+    product_type: "guide",
+    access_type: "free",
+    status: "published",
+    name: "Meeting Reset: the Guide",
+    slug: "meeting-reset",
+    short_description: "Ray Dalio's nine rules for effective meetings, and a quick test for which meetings deserve to happen at all.",
+    full_description:
+      "Explains the case for fewer meetings, the star-versus-spaghetti interaction test for deciding which meetings deserve to be meetings, and Ray Dalio's nine rules for running the ones that do well. Read this before the Template or the Tool — both assume the technique this guide teaches.",
+    outcome_statement: "A clear framework for having fewer, better meetings.",
+    target_audience: "Founders and small teams who want fewer, better meetings rather than better meeting etiquette alone.",
+    when_to_use: "Read this first, before the Template or the Tool.",
+    when_not_to_use: "Skip straight to the Tool if you already know the framework and just want a verdict on one meeting.",
+    completion_minutes_min: 6,
+    completion_minutes_max: 10,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("founder-management")],
+    stages: [stageRef("improve")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: MEETING_RESET_FRAMEWORK_ID,
+    tool_key: null,
+    licence: null,
+    quality_standard: { purpose: true, instructions: true, thinkingPrompts: true, nextStep: true },
+    files: [],
+    seo_title: "Meeting Reset guide — fewer meetings, better ones",
+    seo_description: "Ray Dalio's nine rules for effective meetings and the star-versus-spaghetti test for deciding which meetings deserve to happen.",
+  },
+  {
+    id: "meeting-agenda-template",
+    product_type: "template",
+    access_type: "free",
+    status: "published",
+    name: "Meeting Agenda Template",
+    slug: "meeting-agenda-template",
+    short_description: "A worksheet for planning a meeting's purpose, outcomes, process and participants before it happens.",
+    full_description:
+      "A structured worksheet for defining a meeting's title, purpose, supporting outcomes, process, participants and time allocation, so the agenda exists before the meeting rather than being improvised during it.",
+    outcome_statement: "A documented meeting agenda, ready to send out ahead of time.",
+    target_audience: "Founders and small teams who want to plan a meeting properly rather than sending an invite with just a title.",
+    when_to_use: "Use whenever you're organising a meeting that involves more than one or two people.",
+    when_not_to_use: "Not useful for a genuinely quick one-on-one that doesn't need formal planning.",
+    completion_minutes_min: 10,
+    completion_minutes_max: 15,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("founder-management")],
+    stages: [stageRef("improve")],
+    formats: ["markdown"],
+    is_placeholder: true,
+    framework_id: MEETING_RESET_FRAMEWORK_ID,
+    tool_key: null,
+    licence: standardLicence,
+    quality_standard: {
+      purpose: true,
+      instructions: true,
+      thinkingPrompts: true,
+      evidenceFields: true,
+      decisionOutcome: true,
+      nextStep: true,
+    },
+    files: [
+      {
+        id: "meeting-agenda-template-md",
+        file_role: "template",
+        file_format: "markdown",
+        display_name: "Meeting Agenda Template (Markdown, AI-agent-ready)",
+        is_public_preview: false,
+      },
+    ],
+    seo_title: "Meeting Agenda Template — free meeting planning template",
+    seo_description: "Plan a meeting's purpose, outcomes, process and participants before it happens, free.",
+  },
+  {
+    id: "meeting-reset-tool",
+    product_type: "tool",
+    access_type: "free",
+    status: "published",
+    name: "Meeting Usefulness Diagnostic",
+    slug: "meeting-reset-tool",
+    short_description: "Get a clear verdict on whether a specific meeting deserves to happen.",
+    full_description:
+      "Answer four questions about a specific meeting — purpose clarity, interaction type, whether a decision is needed, and attendee necessity — and get a verdict: keep it, cut the attendee list, replace it with an async update, or cancel it. Usable anonymously, with no account required.",
+    outcome_statement: "A clear verdict on a specific meeting, and one concrete next step.",
+    target_audience: "Founders and small teams who want fewer, better meetings rather than better meeting etiquette alone.",
+    when_to_use: "Use for any recurring or proposed meeting you're not confident is earning its place.",
+    when_not_to_use: "Not useful for a meeting you're already confident has a clear purpose and the right people.",
+    completion_minutes_min: 2,
+    completion_minutes_max: 3,
+    skill_level: "beginner",
+    current_version: "1.0",
+    price_minor: null,
+    compare_at_price_minor: null,
+    currency_code: "GBP",
+    featured: true,
+    published_at: "2026-08-11T09:00:00Z",
+    scheduled_for: null,
+    categories: [catRef("founder-management")],
+    stages: [stageRef("improve")],
+    formats: [],
+    is_placeholder: true,
+    framework_id: MEETING_RESET_FRAMEWORK_ID,
+    tool_key: "meeting-reset",
+    licence: null,
+    quality_standard: { purpose: true, inputs: true, decisionOutcome: true, nextStep: true },
+    files: [],
+    seo_title: "Meeting Usefulness Diagnostic — free meeting usefulness tool",
+    seo_description: "Get a clear verdict on whether a specific meeting deserves to happen, free, no account required.",
+  },
+];
+
 export const products: Product[] = [
   ...freeProducts,
   ...ideaValidationItems,
@@ -4218,6 +4374,7 @@ export const products: Product[] = [
   ...userEngagementDesignerFamilyOutputs,
   ...storyBuilderFamilyOutputs,
   ...startupLaunchPlannerFamilyOutputs,
+  ...meetingResetFamilyOutputs,
 ];
 
 // ---------------------------------------------------------------------------

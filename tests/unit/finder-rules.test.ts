@@ -48,6 +48,7 @@ const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
   framework("user-engagement-designer", { nextStepFrameworkSlug: null }),
   framework("story-builder", { nextStepFrameworkSlug: "first-customers-planner" }),
   framework("startup-launch-planner", { nextStepFrameworkSlug: "first-customers-planner" }),
+  framework("meeting-reset", { nextStepFrameworkSlug: null }),
 ];
 
 const baseInput = (overrides: Partial<FinderInput> = {}): FinderInput => ({
@@ -77,6 +78,7 @@ describe("resolveNextStep — outcome maps to the right framework", () => {
     ["design_engagement", "user-engagement-designer"],
     ["build_story", "story-builder"],
     ["plan_launch", "startup-launch-planner"],
+    ["reset_meetings", "meeting-reset"],
   ] as [Outcome, string][])("%s -> %s", (outcome, expectedSlug) => {
     const result = resolveNextStep(baseInput({ outcome }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe(expectedSlug);
@@ -268,6 +270,13 @@ describe("resolveNextStep — supporting recommendations", () => {
     const result = resolveNextStep(baseInput({ outcome: "plan_launch", outputPreference: "interactive_result" }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe("startup-launch-planner");
     expect(result?.supporting.some((s) => s.frameworkSlug === "first-customers-planner")).toBe(true);
+  });
+
+  it("Meeting Reset has no next-step supporting recommendation — a recurring practice, not a one-time step", () => {
+    const result = resolveNextStep(baseInput({ outcome: "reset_meetings", outputPreference: "interactive_result" }), ALL_FRAMEWORKS);
+    expect(result?.primary.frameworkSlug).toBe("meeting-reset");
+    expect(result?.supporting).toHaveLength(1);
+    expect(result?.supporting[0]?.outputType).toBe("guide");
   });
 
   it("the last family in the chain has no next-step supporting recommendation", () => {
