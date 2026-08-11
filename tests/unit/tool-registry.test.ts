@@ -18,6 +18,7 @@ import { PRODUCT_PRIORITISATION_TOOL_TOOL_KEY } from "@/lib/tools/product-priori
 import { LATERAL_THINKING_TOOLKIT_TOOL_KEY } from "@/lib/tools/lateral-thinking-toolkit";
 import { USER_ENGAGEMENT_DESIGNER_TOOL_KEY } from "@/lib/tools/user-engagement-designer";
 import { STORY_BUILDER_TOOL_KEY } from "@/lib/tools/story-builder";
+import { STARTUP_LAUNCH_PLANNER_TOOL_KEY } from "@/lib/tools/startup-launch-planner";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -272,5 +273,19 @@ describe("tool registry", () => {
     const parsedResult = definition.resultSchema.parse(result) as { elements: { element: string; present: boolean }[] };
     expect(parsedResult.elements.find((e) => e.element === "place")?.present).toBe(true);
     expect(parsedResult.elements.find((e) => e.element === "action")?.present).toBe(false);
+  });
+
+  it("resolves the eighteenth registered tool (Startup Launch Planner) independently of the others", () => {
+    const definition = getToolDefinition(STARTUP_LAUNCH_PLANNER_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      hasSomethingToShow: "no_just_an_idea_so_far",
+      feedbackStakes: "ready_for_public_reaction",
+      existingAudience: "no_starting_from_zero",
+      newsworthiness: "not_particularly_newsworthy_yet",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { plan: { option: string }[] };
+    expect(parsedResult.plan[0]?.option).toBe("soft_launch_page");
+    expect(parsedResult.plan).toHaveLength(4);
   });
 });

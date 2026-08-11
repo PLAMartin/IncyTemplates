@@ -278,3 +278,19 @@ test("the published Story Builder family page shows full detail, its outputs, an
   await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
   await expect(page.getByRole("link", { name: /First Customers Planner/ })).toBeVisible();
 });
+
+test("the published Startup Launch Planner family page shows full detail, its outputs, and links on to its next step", async ({
+  page,
+}) => {
+  await page.goto("/products/startup-launch-planner");
+  await expect(page.getByRole("heading", { name: "Startup Launch Planner", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Launch Checklist & Calendar/ })).toBeVisible();
+  // Fourth Tier 3 family, built at explicit user request — a third branch into First
+  // Customers Planner (docs/decisions/0038).
+  await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /First Customers Planner/ })).toBeVisible();
+});

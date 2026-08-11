@@ -15,6 +15,7 @@ import { productPrioritisationToolTool } from "./product-prioritisation-tool";
 import { lateralThinkingToolkitTool } from "./lateral-thinking-toolkit";
 import { userEngagementDesignerTool } from "./user-engagement-designer";
 import { storyBuilderTool } from "./story-builder";
+import { startupLaunchPlannerTool } from "./startup-launch-planner";
 import type { ToolDefinition } from "./types";
 import { ToolNotAvailableError } from "./types";
 
@@ -42,6 +43,7 @@ const TOOL_REGISTRY: Record<string, ToolDefinition<unknown, unknown>> = {
   [lateralThinkingToolkitTool.key]: lateralThinkingToolkitTool as ToolDefinition<unknown, unknown>,
   [userEngagementDesignerTool.key]: userEngagementDesignerTool as ToolDefinition<unknown, unknown>,
   [storyBuilderTool.key]: storyBuilderTool as ToolDefinition<unknown, unknown>,
+  [startupLaunchPlannerTool.key]: startupLaunchPlannerTool as ToolDefinition<unknown, unknown>,
 };
 
 /** Returns the Tool definition for `toolKey`, or null if none is registered. */

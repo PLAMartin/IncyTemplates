@@ -47,6 +47,7 @@ const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
   framework("lateral-thinking-toolkit", { nextStepFrameworkSlug: "product-idea-assessor" }),
   framework("user-engagement-designer", { nextStepFrameworkSlug: null }),
   framework("story-builder", { nextStepFrameworkSlug: "first-customers-planner" }),
+  framework("startup-launch-planner", { nextStepFrameworkSlug: "first-customers-planner" }),
 ];
 
 const baseInput = (overrides: Partial<FinderInput> = {}): FinderInput => ({
@@ -75,6 +76,7 @@ describe("resolveNextStep — outcome maps to the right framework", () => {
     ["unblock_thinking", "lateral-thinking-toolkit"],
     ["design_engagement", "user-engagement-designer"],
     ["build_story", "story-builder"],
+    ["plan_launch", "startup-launch-planner"],
   ] as [Outcome, string][])("%s -> %s", (outcome, expectedSlug) => {
     const result = resolveNextStep(baseInput({ outcome }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe(expectedSlug);
@@ -259,6 +261,12 @@ describe("resolveNextStep — supporting recommendations", () => {
   it("Story Builder includes First Customers Planner as a supporting recommendation, a second branch into that family alongside Product Naming System", () => {
     const result = resolveNextStep(baseInput({ outcome: "build_story", outputPreference: "interactive_result" }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe("story-builder");
+    expect(result?.supporting.some((s) => s.frameworkSlug === "first-customers-planner")).toBe(true);
+  });
+
+  it("Startup Launch Planner includes First Customers Planner as a supporting recommendation, a third branch into that family", () => {
+    const result = resolveNextStep(baseInput({ outcome: "plan_launch", outputPreference: "interactive_result" }), ALL_FRAMEWORKS);
+    expect(result?.primary.frameworkSlug).toBe("startup-launch-planner");
     expect(result?.supporting.some((s) => s.frameworkSlug === "first-customers-planner")).toBe(true);
   });
 

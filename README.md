@@ -162,6 +162,15 @@ whichever element is missing first. A second branch into First Customers
 Planner alongside Product Naming System, and wired into the Next Step
 Finder alongside the other sixteen.
 
+An eighteenth family has since shipped: **Startup Launch Planner** (see
+[`docs/decisions/0038`](docs/decisions/0038-startup-launch-planner-family.md)),
+the fourth Tier 3 family, again started at the user's explicit request. Its
+Tool reuses the named-candidate scoring matrix but returns the *full ranked
+plan* across four launch options (soft launch page, friends and family,
+community or social, press), not just a winner and runner-up — a genuine
+sequenced plan. A third branch into First Customers Planner, and wired into
+the Next Step Finder alongside the other seventeen.
+
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per
 the spec's own phasing. Product/bundle pages still use a waitlist

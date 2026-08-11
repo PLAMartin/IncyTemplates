@@ -40,6 +40,7 @@ export const OUTCOME_FRAMEWORK_SLUG: Record<Exclude<Outcome, "not_sure">, string
   unblock_thinking: "lateral-thinking-toolkit",
   design_engagement: "user-engagement-designer",
   build_story: "story-builder",
+  plan_launch: "startup-launch-planner",
 };
 
 const PROGRESS_OUTPUT_TYPE: Record<Progress, FinderOutputType> = {
