@@ -20,6 +20,7 @@ import { USER_ENGAGEMENT_DESIGNER_TOOL_KEY } from "@/lib/tools/user-engagement-d
 import { STORY_BUILDER_TOOL_KEY } from "@/lib/tools/story-builder";
 import { STARTUP_LAUNCH_PLANNER_TOOL_KEY } from "@/lib/tools/startup-launch-planner";
 import { MEETING_RESET_TOOL_KEY } from "@/lib/tools/meeting-reset";
+import { WRITING_EDITOR_TOOL_KEY } from "@/lib/tools/writing-editor";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -301,5 +302,20 @@ describe("tool registry", () => {
     const result = definition.run(parsedInput);
     const parsedResult = definition.resultSchema.parse(result) as { verdict: string };
     expect(parsedResult.verdict).toBe("cancel_it");
+  });
+
+  it("resolves the twentieth registered tool (Writing Editor) independently of the others", () => {
+    const definition = getToolDefinition(WRITING_EDITOR_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      clichedLanguage: "still_a_problem",
+      inflatedVocabulary: "already_clean",
+      unnecessaryWords: "already_clean",
+      passiveVoice: "already_clean",
+      jargon: "already_clean",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { ruleStates: { rule: string; present: boolean }[] };
+    expect(parsedResult.ruleStates.find((s) => s.rule === "cliched_language")?.present).toBe(true);
+    expect(parsedResult.ruleStates.filter((s) => s.present)).toHaveLength(1);
   });
 });

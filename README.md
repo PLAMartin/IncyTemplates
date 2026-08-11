@@ -184,6 +184,21 @@ terminal (no next-step family), since diagnosing a meeting is something to
 revisit for every recurring meeting, not a one-time step. Wired into the
 Next Step Finder alongside the other eighteen.
 
+A twentieth family has since shipped: **Writing Editor** (see
+[`docs/decisions/0040`](docs/decisions/0040-writing-editor-family.md)), the
+sixth Tier 3 family, again started at the user's explicit request. Its Tool
+is the second use of the completeness-checklist mechanic Story Builder
+introduced, inverted: it checks a draft against five of George Orwell's
+writing rules for presence of a *problem* rather than presence of a
+*required part*, so an all-clean result is the best outcome rather than the
+worst. The spec's "self-edit checklist" and "structured editing review" map
+onto the Template and Tool respectively, rather than both living inside the
+Tool. Like Decision Framework Picker, Product Prioritisation Tool, User
+Engagement Designer and Meeting Reset, it's deliberately terminal (no
+next-step family), since editing well is a practice to repeat on every
+draft, not a one-time step. Wired into the Next Step Finder alongside the
+other nineteen.
+
 **No Stripe checkout, no customer accounts/library, no saved Tool runs, and
 no admin CRUD UI yet** — those remain out of scope for this milestone per
 the spec's own phasing. Product/bundle pages still use a waitlist

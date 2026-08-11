@@ -49,6 +49,7 @@ const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
   framework("story-builder", { nextStepFrameworkSlug: "first-customers-planner" }),
   framework("startup-launch-planner", { nextStepFrameworkSlug: "first-customers-planner" }),
   framework("meeting-reset", { nextStepFrameworkSlug: null }),
+  framework("writing-editor", { nextStepFrameworkSlug: null }),
 ];
 
 const baseInput = (overrides: Partial<FinderInput> = {}): FinderInput => ({
@@ -79,6 +80,7 @@ describe("resolveNextStep — outcome maps to the right framework", () => {
     ["build_story", "story-builder"],
     ["plan_launch", "startup-launch-planner"],
     ["reset_meetings", "meeting-reset"],
+    ["sharpen_writing", "writing-editor"],
   ] as [Outcome, string][])("%s -> %s", (outcome, expectedSlug) => {
     const result = resolveNextStep(baseInput({ outcome }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe(expectedSlug);
@@ -275,6 +277,13 @@ describe("resolveNextStep — supporting recommendations", () => {
   it("Meeting Reset has no next-step supporting recommendation — a recurring practice, not a one-time step", () => {
     const result = resolveNextStep(baseInput({ outcome: "reset_meetings", outputPreference: "interactive_result" }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe("meeting-reset");
+    expect(result?.supporting).toHaveLength(1);
+    expect(result?.supporting[0]?.outputType).toBe("guide");
+  });
+
+  it("Writing Editor has no next-step supporting recommendation — a recurring practice, not a one-time step", () => {
+    const result = resolveNextStep(baseInput({ outcome: "sharpen_writing", outputPreference: "interactive_result" }), ALL_FRAMEWORKS);
+    expect(result?.primary.frameworkSlug).toBe("writing-editor");
     expect(result?.supporting).toHaveLength(1);
     expect(result?.supporting[0]?.outputType).toBe("guide");
   });
