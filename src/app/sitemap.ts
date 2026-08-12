@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/config/site";
-import { getCategories, getFrameworks, getStages, searchCatalogue } from "@/server/queries";
-import { getAllGuides } from "@/lib/mdx/guides";
+import { getAllGuides, getCategories, getFrameworks, getStages, searchCatalogue } from "@/server/queries";
 import { productHref } from "@/components/catalogue/product-card";
 import type { ProductSummary } from "@/types/catalogue";
 

@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "e2e": "playwright test",
     "seed": "tsx scripts/seed.ts",
-    "seed:storage": "tsx scripts/seed-storage.ts"
+    "seed:storage": "tsx scripts/seed-storage.ts",
+    "import:guides": "tsx scripts/import-guides.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.3",

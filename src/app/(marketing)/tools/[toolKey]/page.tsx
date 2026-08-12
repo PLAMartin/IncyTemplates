@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ComponentType } from "react";
 import { getProductByToolKey, getFrameworkOutputs } from "@/server/queries";
+import { getToolCopyForToolKey } from "@/server/queries/tool-copy";
 import { canonicalUrl } from "@/lib/seo/canonical";
 import { breadcrumbJsonLd } from "@/lib/seo/structured-data";
 import { JsonLd } from "@/components/content/json-ld";
@@ -39,7 +40,7 @@ type Props = { params: Promise<{ toolKey: string }> };
  * dynamic import keyed by untrusted string — mirrors the same "database is a lookup key,
  * never executable code" boundary as `src/lib/tools/registry.ts`.
  */
-const TOOL_RUNNERS: Record<string, ComponentType> = {
+const TOOL_RUNNERS: Record<string, ComponentType<{ copy?: Record<string, string> }>> = {
   "product-idea-assessor": ProductIdeaAssessorRunner,
   "customer-discovery-kit": CustomerDiscoveryKitRunner,
   "better-decision-maker": BetterDecisionMakerRunner,
@@ -85,6 +86,8 @@ export default async function ToolPage({ params }: Props) {
   const [product, Runner] = [await getProductByToolKey(toolKey), TOOL_RUNNERS[toolKey]];
   if (!product || !Runner) notFound();
 
+  const copy = await getToolCopyForToolKey(toolKey);
+
   const familyOutputs = product.framework_id ? await getFrameworkOutputs(product.framework_id) : [];
   const sameFamily = familyOutputs.filter((o) => o.id !== product.id);
 
@@ -121,7 +124,7 @@ export default async function ToolPage({ params }: Props) {
       </dl>
 
       <div className="mt-8">
-        <Runner />
+        <Runner copy={copy} />
       </div>
 
       {sameFamily.length > 0 ? (

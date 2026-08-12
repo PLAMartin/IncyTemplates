@@ -1,5 +1,6 @@
 import catalogue, { toSummary } from "../../../content/seed/catalogue";
 import { rankProducts } from "@/lib/search/rank";
+import { getAllGuides as getAllGuideFiles, getGuideBySlug as getGuideFileBySlug } from "@/lib/mdx/guides";
 import type {
   Bundle,
   CatalogueFilters,
@@ -7,6 +8,7 @@ import type {
   Category,
   Framework,
   FrameworkTeaser,
+  Guide,
   Product,
   ProductSummary,
   Stage,
@@ -35,6 +37,16 @@ const DEFAULT_PAGE_SIZE = 12;
  * unlisted/archived products must never reach a public page through this
  * class, matching what `SupabaseCatalogueSource`'s public-read RLS policies
  * enforce for real once a live project exists.
+ *
+ * v4 adds a second, independent `public_visibility` axis
+ * (public/unlisted/hidden — see SupabaseCatalogueSource's `.eq/.in
+ * ("public_visibility", ...)` filters) on top of `status`. It's
+ * deliberately not modelled here: no fixture row in
+ * `content/seed/catalogue.ts` is anything other than implicitly public
+ * (there's no admin UI acting on fixture data to make one hidden/unlisted),
+ * so adding a field with only one real value everywhere would be dead
+ * plumbing. If fixtures ever need to exercise non-public visibility, add
+ * `public_visibility` to the fixture type/data then and filter here.
  */
 export class FixtureCatalogueSource implements CatalogueSource {
   private publishedProducts(): Product[] {
@@ -203,6 +215,19 @@ export class FixtureCatalogueSource implements CatalogueSource {
       (p) => p.tool_key === toolKey && p.status === "published" && p.product_type === "tool",
     );
     return product ?? null;
+  }
+
+  // --- v4: Guides -----------------------------------------------------
+  // Fixtures keep reading content/guides/*.mdx directly (see types.ts's
+  // CatalogueSource comment) rather than duplicating that content into
+  // content/seed/catalogue.ts.
+
+  async getAllGuides(): Promise<Guide[]> {
+    return getAllGuideFiles();
+  }
+
+  async getGuideBySlug(slug: string): Promise<Guide | null> {
+    return getGuideFileBySlug(slug);
   }
 }
 

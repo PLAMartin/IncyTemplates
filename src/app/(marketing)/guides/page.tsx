@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getAllGuides } from "@/lib/mdx/guides";
+import { getAllGuides } from "@/server/queries";
 import { GuideCard } from "@/components/content/guide-card";
 import { canonicalUrl } from "@/lib/seo/canonical";
 

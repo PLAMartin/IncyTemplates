@@ -5,6 +5,7 @@ import type {
   Category,
   Framework,
   FrameworkTeaser,
+  Guide,
   Product,
   ProductSummary,
   Stage,
@@ -44,4 +45,16 @@ export type CatalogueSource = {
   getFrameworkOutputs(frameworkId: string): Promise<ProductSummary[]>;
   /** Resolves a published Tool product by its stable `tool_key` (spec §12.3), not by slug. */
   getProductByToolKey(toolKey: string): Promise<Product | null>;
+
+  // --- v4: DB-backed Guide content revisions (spec §14.7.1, Phase 6) -----
+  // Guide content is now an `it_products` row (product_type='guide') plus its
+  // published `it_product_content_revisions` row, not a repository file read
+  // directly by the page. `content/guides/*.mdx` remains as the fixture
+  // source's backing data (spec line 1245: repo Markdown may remain useful
+  // as seed/backup) and as the one-off import script's input — see
+  // `scripts/import-guides.ts`.
+
+  /** Published guides only, newest first. */
+  getAllGuides(): Promise<Guide[]>;
+  getGuideBySlug(slug: string): Promise<Guide | null>;
 };

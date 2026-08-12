@@ -3,9 +3,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import rehypeSlug from "rehype-slug";
-import { getAllGuides, getGuideBySlug } from "@/lib/mdx/guides";
 import { extractToc } from "@/lib/mdx/toc";
-import { getBundleBySlug, getFrameworkBySlug, getFrameworkOutputs, getProductBySlug } from "@/server/queries";
+import {
+  getAllGuides,
+  getBundleBySlug,
+  getFrameworkBySlug,
+  getFrameworkOutputs,
+  getGuideBySlug,
+  getProductBySlug,
+} from "@/server/queries";
 import { canonicalUrl } from "@/lib/seo/canonical";
 import { articleJsonLd, breadcrumbJsonLd } from "@/lib/seo/structured-data";
 import { JsonLd } from "@/components/content/json-ld";

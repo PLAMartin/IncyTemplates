@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getBundleBySlug } from "@/server/queries";
-import { getAllGuides } from "@/lib/mdx/guides";
+import { getAllGuides, getBundleBySlug } from "@/server/queries";
 import { calculateBundleSaving, formatMinorUnits } from "@/lib/money/bundle-savings";
 import { canonicalUrl } from "@/lib/seo/canonical";
 import { productJsonLd, breadcrumbJsonLd } from "@/lib/seo/structured-data";

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BookOpen, FileStack, Wrench } from "lucide-react";
-import { getFeaturedBundle, getFeaturedFreeProducts, getFrameworkTeasers, getStages } from "@/server/queries";
-import { getAllGuides } from "@/lib/mdx/guides";
+import { getAllGuides, getFeaturedBundle, getFeaturedFreeProducts, getFrameworkTeasers, getStages } from "@/server/queries";
 import { formatMinorUnits } from "@/lib/money/bundle-savings";
 import { canonicalUrl } from "@/lib/seo/canonical";
 import { ButtonLink } from "@/components/ui/button";

@@ -4,10 +4,10 @@ These are standard Supabase pgTAP tests, written using `supabase test new -t pgt
 their `BEGIN; SELECT plan(n); ... SELECT * FROM finish(); ROLLBACK;` structure matches
 what `supabase test db` expects.
 
-**Execution status: not yet run.** This environment has no Docker daemon and no linked
-Supabase project (`supabase status` fails with "Cannot connect to the Docker daemon"), so
-these tests could only be authored, not executed. Run them once a local stack is
-available:
+**Execution status: not yet run.** This environment has no Docker daemon installed (both
+`supabase test db` and `supabase test db --linked` shell out to Docker regardless of link
+state), so these tests could only be authored, not executed, even against the linked
+`Incytemplates` project. Run them once Docker is available:
 
 ```sh
 supabase start
@@ -31,6 +31,21 @@ or against a linked project with `supabase test db --linked`.
   `it_frameworks` but not draft/candidate ones; anon can additionally read published and
   draft-*flagship* frameworks (narrow field set only) via the `it_frameworks_teasers` view,
   but not draft-non-flagship or candidate frameworks even through the view.
+- `it_visibility_rls_test.sql` (v4/Phase 6) -- `public_visibility` enforcement on
+  `it_products`/`it_frameworks`: `hidden` is unreadable by anon even when `status='published'`;
+  `unlisted` remains readable at the RLS/base-table layer (only excluded from discovery by
+  app-layer query filters, not RLS); `it_frameworks_teasers` requires `public_visibility =
+  'public'` specifically (unlisted is excluded from that discovery surface too, unlike the
+  base table); staff (tested via a faked `editor`-role profile) sees every row regardless of
+  status/visibility.
+- `it_content_revisions_test.sql` (v4/Phase 6) -- `it_upsert_content_draft`'s "one open draft
+  per product" behaviour (a second call updates the same row rather than inserting a new
+  one), `it_publish_content_revision` setting `it_products.current_content_revision_id`,
+  `it_rollback_content_revision` creating a new already-published revision rather than
+  mutating history, and RLS on both `it_product_content_revisions` and
+  `it_tool_copy_revisions`: draft revisions are never anon-readable, published revisions are
+  anon-readable only when their parent product/tool is itself published and not hidden, and
+  staff can read every revision (draft or published) regardless.
 
 ## Known environment-dependence
 

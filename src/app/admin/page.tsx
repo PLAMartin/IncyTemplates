@@ -1,32 +1,28 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ShieldAlert } from "lucide-react";
-import { MinimalLayout } from "@/components/layout/minimal-layout";
+import { CircleAlert } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Admin",
   robots: { index: false, follow: false },
 };
 
-/**
- * Static, unauthenticated stub. The admin dashboard and all CRUD UI are
- * Phase 4 (spec §40) — explicitly out of scope this build. No auth check
- * exists here because there's nothing behind this page to protect yet.
- */
-export default function AdminPage() {
+type Props = { searchParams: Promise<{ error?: string }> };
+
+export default async function AdminDashboardPage({ searchParams }: Props) {
+  const { error } = await searchParams;
+
   return (
-    <MinimalLayout>
-      <div className="mx-auto flex max-w-xl flex-col items-center gap-4 px-4 py-24 text-center sm:px-6">
-        <ShieldAlert aria-hidden className="size-10 text-ink-500" />
-        <h1 className="font-serif text-2xl font-semibold text-ink-900">Admin tools aren&apos;t available yet</h1>
-        <p className="text-ink-500">
-          Admin tools require sign-in and are available in a later release, alongside the checkout and account
-          features they depend on.
+    <div className="space-y-6">
+      {error === "insufficient-role" ? (
+        <p role="alert" className="flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
+          Your account doesn&apos;t have permission for that action.
         </p>
-        <Link href="/" className="text-sm font-medium text-brand-600 hover:text-brand-700">
-          Back to the homepage
-        </Link>
+      ) : null}
+      <div>
+        <h1 className="font-serif text-2xl font-semibold text-ink-900">Dashboard</h1>
+        <p className="mt-1 text-ink-500">Editorial and catalogue administration for Incy Templates.</p>
       </div>
-    </MinimalLayout>
+    </div>
   );
 }

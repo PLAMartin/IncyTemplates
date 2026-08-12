@@ -46,3 +46,5 @@ export const getFrameworkBySlug = catalogueSource.getFrameworkBySlug.bind(catalo
 export const getFrameworkById = catalogueSource.getFrameworkById.bind(catalogueSource);
 export const getFrameworkOutputs = catalogueSource.getFrameworkOutputs.bind(catalogueSource);
 export const getProductByToolKey = catalogueSource.getProductByToolKey.bind(catalogueSource);
+export const getAllGuides = catalogueSource.getAllGuides.bind(catalogueSource);
+export const getGuideBySlug = catalogueSource.getGuideBySlug.bind(catalogueSource);

@@ -67,3 +67,11 @@ export function getToolDefinition(toolKey: string): ToolDefinition<unknown, unkn
   if (!definition) throw new ToolNotAvailableError(toolKey);
   return definition;
 }
+
+/**
+ * Every registered `tool_key`, for admin listing screens (e.g. `/admin/tools`) — read-only
+ * enumeration, not a way to construct or select executable behaviour from outside this file.
+ */
+export function listRegisteredToolKeys(): string[] {
+  return Object.keys(TOOL_REGISTRY);
+}

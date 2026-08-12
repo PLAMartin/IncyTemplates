@@ -16,6 +16,7 @@
  * project and fix any flagged spots before relying on this path.
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
+import readingTime from "reading-time";
 import { getSupabaseAnonClient } from "@/lib/supabase/anon-client";
 import type {
   Bundle,
@@ -27,6 +28,7 @@ import type {
   Framework,
   FrameworkStatus,
   FrameworkTeaser,
+  Guide,
   Licence,
   Product,
   ProductFile,
@@ -318,6 +320,65 @@ function mapFramework(row: FrameworkRow): Framework {
   };
 }
 
+// v4: Guide content now lives in it_products (product_type='guide') joined to its published
+// it_product_content_revisions row via current_content_revision_id, rather than a repository
+// file (spec §14.7.1). content_data's shape for a Guide is { body_markdown, author } — see
+// scripts/import-guides.ts, which is the only writer of that shape today, and the admin Guide
+// editor (src/app/admin/guides) going forward.
+//
+// TODO(verify-against-live-schema): as with FRAMEWORK_SELECT's next_step embed above, the
+// `!current_content_revision_id` hint is this file's existing pattern for disambiguating an
+// FK-based embed; unconfirmed against a live response shape until a Guide has actually been
+// imported and read back.
+const GUIDE_SELECT = `
+  id, slug, name, short_description, status, published_at, updated_at, seo_title, seo_description,
+  framework:it_frameworks ( slug ),
+  content_revision:it_product_content_revisions!current_content_revision_id ( content_data )
+`;
+
+type GuideContentData = {
+  body_markdown: string;
+  author: string;
+};
+
+type GuideRow = {
+  id: string;
+  slug: string;
+  name: string;
+  short_description: string;
+  status: string;
+  published_at: string | null;
+  updated_at: string;
+  seo_title: string | null;
+  seo_description: string | null;
+  framework: { slug: string } | null;
+  content_revision: { content_data: GuideContentData } | null;
+};
+
+function toDateOnly(value: string | null): string {
+  return (value ?? new Date().toISOString()).slice(0, 10);
+}
+
+function mapGuide(row: GuideRow, relatedProductSlugs: string[]): Guide {
+  const bodyMarkdown = row.content_revision?.content_data?.body_markdown ?? "";
+  const stats = readingTime(bodyMarkdown);
+  return {
+    title: row.name,
+    slug: row.slug,
+    summary: row.short_description,
+    author: row.content_revision?.content_data?.author ?? "Incy Templates",
+    publishedAt: toDateOnly(row.published_at),
+    updatedAt: toDateOnly(row.updated_at),
+    status: row.status === "published" ? "published" : "draft",
+    seoTitle: row.seo_title ?? undefined,
+    seoDescription: row.seo_description ?? undefined,
+    relatedProducts: relatedProductSlugs.length > 0 ? relatedProductSlugs : undefined,
+    frameworkSlug: row.framework?.slug ?? undefined,
+    readingTimeMinutes: Math.max(1, Math.ceil(stats.minutes)),
+    content: bodyMarkdown.trim(),
+  };
+}
+
 export class SupabaseCatalogueSource implements CatalogueSource {
   private client: SupabaseClient;
 
@@ -353,6 +414,7 @@ export class SupabaseCatalogueSource implements CatalogueSource {
       .from("it_products")
       .select(PRODUCT_SELECT)
       .eq("status", "published")
+      .eq("public_visibility", "public")
       .eq("access_type", "free")
       .eq("product_type", "template")
       .order("featured", { ascending: false })
@@ -367,6 +429,7 @@ export class SupabaseCatalogueSource implements CatalogueSource {
       .from("it_products")
       .select(PRODUCT_SELECT)
       .eq("status", "published")
+      .eq("public_visibility", "public")
       .eq("product_type", "bundle")
       .order("featured", { ascending: false })
       .order("published_at", { ascending: false })
@@ -415,7 +478,8 @@ export class SupabaseCatalogueSource implements CatalogueSource {
     let query = this.client
       .from("it_products")
       .select(PRODUCT_SELECT, { count: "exact" })
-      .eq("status", "published");
+      .eq("status", "published")
+      .eq("public_visibility", "public");
 
     if (filters.access) query = query.eq("access_type", filters.access);
     if (filters.type) {
@@ -502,6 +566,7 @@ export class SupabaseCatalogueSource implements CatalogueSource {
       .select(PRODUCT_SELECT)
       .eq("slug", slug)
       .eq("status", "published")
+      .in("public_visibility", ["public", "unlisted"])
       .eq("product_type", "template")
       .maybeSingle();
     if (error) throw error;
@@ -515,6 +580,7 @@ export class SupabaseCatalogueSource implements CatalogueSource {
       .select(PRODUCT_SELECT)
       .eq("slug", slug)
       .eq("status", "published")
+      .in("public_visibility", ["public", "unlisted"])
       .eq("product_type", "bundle")
       .maybeSingle();
     if (error) throw error;
@@ -575,6 +641,8 @@ export class SupabaseCatalogueSource implements CatalogueSource {
       .select(PRODUCT_SELECT)
       .in("id", Array.from(relatedIds))
       .eq("status", "published")
+      // Recommendations exclude unlisted, same as catalogue/search (spec §14.7.2).
+      .eq("public_visibility", "public")
       .limit(limit);
     if (error) throw error;
     return (data as unknown as ProductRow[]).map(mapProduct);
@@ -587,6 +655,7 @@ export class SupabaseCatalogueSource implements CatalogueSource {
       .from("it_frameworks")
       .select(FRAMEWORK_SELECT)
       .eq("status", "published")
+      .eq("public_visibility", "public")
       .order("display_order", { ascending: true });
     if (opts?.journeyStage) {
       // TODO(verify-against-live-schema): filtering on an embedded relationship's column
@@ -638,6 +707,7 @@ export class SupabaseCatalogueSource implements CatalogueSource {
       .select(FRAMEWORK_SELECT)
       .eq("slug", slug)
       .eq("status", "published")
+      .in("public_visibility", ["public", "unlisted"])
       .maybeSingle();
     if (error) throw error;
     if (!data) return null;
@@ -650,6 +720,7 @@ export class SupabaseCatalogueSource implements CatalogueSource {
       .select(FRAMEWORK_SELECT)
       .eq("id", id)
       .eq("status", "published")
+      .in("public_visibility", ["public", "unlisted"])
       .maybeSingle();
     if (error) throw error;
     if (!data) return null;
@@ -661,7 +732,9 @@ export class SupabaseCatalogueSource implements CatalogueSource {
       .from("it_products")
       .select(PRODUCT_SELECT)
       .eq("framework_id", frameworkId)
-      .eq("status", "published");
+      .eq("status", "published")
+      // Spec §14.7.2: hidden is excluded from family output lists, unlisted is not.
+      .in("public_visibility", ["public", "unlisted"]);
     if (error) throw error;
     const outputs = (data as unknown as ProductRow[]).map((row) => toSummary(mapProduct(row)));
     return outputs.sort((a, b) => OUTPUT_TYPE_ORDER[a.product_type] - OUTPUT_TYPE_ORDER[b.product_type]);
@@ -673,10 +746,58 @@ export class SupabaseCatalogueSource implements CatalogueSource {
       .select(PRODUCT_SELECT)
       .eq("tool_key", toolKey)
       .eq("status", "published")
+      .in("public_visibility", ["public", "unlisted"])
       .eq("product_type", "tool")
       .maybeSingle();
     if (error) throw error;
     if (!data) return null;
     return mapProduct(data as unknown as ProductRow);
+  }
+
+  // --- v4: Guides ---------------------------------------------------------
+
+  private async getRelatedProductSlugs(productId: string): Promise<string[]> {
+    const { data, error } = await this.client
+      .from("it_product_relationships")
+      .select("target:it_products!target_product_id ( slug, status, public_visibility )")
+      .eq("source_product_id", productId)
+      .eq("relationship_type", "related");
+    if (error) throw error;
+    // Recommendations exclude unlisted/hidden targets, same rule as getRelatedProducts.
+    return ((data ?? []) as unknown as { target: { slug: string; status: string; public_visibility: string } | null }[])
+      .filter((row) => row.target?.status === "published" && row.target?.public_visibility === "public")
+      .map((row) => row.target!.slug);
+  }
+
+  async getAllGuides(): Promise<Guide[]> {
+    const { data, error } = await this.client
+      .from("it_products")
+      .select(GUIDE_SELECT)
+      .eq("product_type", "guide")
+      .eq("status", "published")
+      .eq("public_visibility", "public")
+      .order("published_at", { ascending: false });
+    if (error) throw error;
+
+    const rows = data as unknown as GuideRow[];
+    return Promise.all(
+      rows.map(async (row) => mapGuide(row, await this.getRelatedProductSlugs(row.id))),
+    );
+  }
+
+  async getGuideBySlug(slug: string): Promise<Guide | null> {
+    const { data, error } = await this.client
+      .from("it_products")
+      .select(GUIDE_SELECT)
+      .eq("slug", slug)
+      .eq("status", "published")
+      .in("public_visibility", ["public", "unlisted"])
+      .eq("product_type", "guide")
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) return null;
+
+    const row = data as unknown as GuideRow;
+    return mapGuide(row, await this.getRelatedProductSlugs(row.id));
   }
 }
