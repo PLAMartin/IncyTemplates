@@ -46,6 +46,13 @@ or against a linked project with `supabase test db --linked`.
   `it_tool_copy_revisions`: draft revisions are never anon-readable, published revisions are
   anon-readable only when their parent product/tool is itself published and not hidden, and
   staff can read every revision (draft or published) regardless.
+- `it_visual_assets_rls_test.sql` (v5) -- `it_visual_assets` has no anon/authenticated policy
+  on the base table at all (unlike content revisions, no status makes every column public-safe,
+  since prompt_snapshot/provider_*/generation_metadata are always present); anon reads go
+  exclusively through `it_visual_assets_public`, which excludes non-published assets and
+  assets whose parent framework/product isn't itself publicly visible (no leak through a
+  published asset on a hidden framework); `it_visual_asset_variants` mirrors the same
+  published-only boundary; staff sees every asset and variant, any status, via the base table.
 
 ## Known environment-dependence
 
