@@ -13,6 +13,7 @@
     "e2e": "playwright test",
     "seed": "tsx scripts/seed.ts",
     "seed:storage": "tsx scripts/seed-storage.ts",
+    "seed:visual-recipe": "tsx scripts/seed-visual-recipe.ts",
     "import:guides": "tsx scripts/import-guides.ts"
   },
   "dependencies": {

@@ -4073,7 +4073,7 @@ Before production publication of A Bit Gamey-derived products:
 These decisions do not prevent foundation work but affect launch:
 
 1. Confirm canonical domain `incytemplates.com` and singular redirect if owned.
-2. Confirm/finalise the design tokens used by **Visual Recipe v1**. Working direction: white/pale backgrounds, navy primary, purple structural accent, restrained green/amber supporting accents, matching the approved flagship sample direction.
+2. ~~Confirm/finalise the design tokens used by **Visual Recipe v1**. Working direction: white/pale backgrounds, navy primary, purple structural accent, restrained green/amber supporting accents, matching the approved flagship sample direction.~~ Resolved: uses the site's actual shipped pine/teal + paper + amber identity instead (`--color-brand-*`/`--color-paper`/`--color-accent-amber-*`), not the navy/purple working direction above — see docs/decisions/0046-visual-recipe-v1-palette.md.
 3. Confirm primary positioning line: **Practical tools for turning ideas into products** or alternative.
 4. Confirm public journey labels: Idea, Validate, Decide, Design, Build, Launch, Improve.
 5. Confirm the six flagship families and launch order.

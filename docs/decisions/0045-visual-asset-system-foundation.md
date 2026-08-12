@@ -95,12 +95,11 @@ been inserted — seeding one with a guessed palette risks it later being treate
 once a real staff account exists, which is a harder mistake to unwind than just asking first.
 
 ## Follow-up
-Two things block this from being a usable end-to-end system, both deliberately deferred rather
-than guessed at:
+One thing blocked this from being a usable end-to-end system; it's now resolved, one remains:
 
-- **Confirm the Visual Recipe v1 palette** (spec §44 item 2) — reconcile against
-  `0002-visual-identity-direction.md`'s pine/teal direction, or confirm the spec's navy/purple
-  direction supersedes it. Blocks seeding an actual `it_visual_recipes` row.
+- ~~**Confirm the Visual Recipe v1 palette**~~ Resolved same day — see
+  `0046-visual-recipe-v1-palette.md`: uses the shipped pine/teal identity, not spec §11.6's
+  navy/purple description. `it_visual_recipes` row `incytemplates-v1` v1 is seeded and approved.
 - **The admin Visuals workspace UI** (Brief editor, bounded candidate generation, comparison grid,
   selection/approval/publish/rollback, Visual Recipe administration restricted to Admin/Owner per
   spec §16.3) — not started. This is Phase 6's remaining scope extension and is comparable in size
