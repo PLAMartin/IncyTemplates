@@ -193,6 +193,7 @@ export class FixtureCatalogueSource implements CatalogueSource {
         outcome_statement: f.outcome_statement,
         status: f.status,
         journey_stage: f.journey_stage,
+        cardImage: null,
       }));
   }
 

@@ -132,6 +132,18 @@ export type FrameworkVisual = {
  * render `problem_statement`/`method_summary`/`priority_rationale` for an unpublished
  * family on a public page.
  */
+/**
+ * Card-sized preview image for a listing-surface teaser. `family_card` is preferred when
+ * published; `family_hero` is an accepted fallback (spec §11.8: "A family does not need a
+ * unique generated asset for every type... one approved master family visual may supply both
+ * family_card and family_hero crops/variants when appropriate").
+ */
+export type FrameworkTeaserImage = {
+  url: string;
+  altText: string | null;
+  decorative: boolean;
+};
+
 export type FrameworkTeaser = {
   id: string;
   name: string;
@@ -140,6 +152,7 @@ export type FrameworkTeaser = {
   outcome_statement: string;
   status: FrameworkStatus;
   journey_stage: Pick<Stage, "slug" | "name"> | null;
+  cardImage: FrameworkTeaserImage | null;
 };
 
 export type Licence = {

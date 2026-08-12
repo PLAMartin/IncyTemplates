@@ -28,6 +28,7 @@ import type {
   Framework,
   FrameworkStatus,
   FrameworkTeaser,
+  FrameworkTeaserImage,
   FrameworkVisual,
   Guide,
   Licence,
@@ -691,7 +692,10 @@ export class SupabaseCatalogueSource implements CatalogueSource {
       journey_stage_slug: string | null;
       journey_stage_name: string | null;
     };
-    return (data as unknown as TeaserRow[]).map((row) => ({
+    const rows = data as unknown as TeaserRow[];
+    const cardImages = await this.getFrameworkCardImages(rows.map((r) => r.id));
+
+    return rows.map((row) => ({
       id: row.id,
       name: row.name,
       slug: row.slug,
@@ -699,7 +703,76 @@ export class SupabaseCatalogueSource implements CatalogueSource {
       outcome_statement: row.outcome_statement,
       status: row.status,
       journey_stage: row.journey_stage_slug ? { slug: row.journey_stage_slug, name: row.journey_stage_name! } : null,
+      cardImage: cardImages.get(row.id) ?? null,
     }));
+  }
+
+  /**
+   * Batched, not per-framework: a listing surface renders many teasers at once, so this is one
+   * pair of queries for every framework on the page rather than N+1 calls to
+   * getFrameworkVisual(). Prefers a published family_card per framework; falls back to
+   * family_hero if that's the only one published (spec §11.8 explicitly endorses one master
+   * visual supplying both crops). Two queries rather than an embedded select for the same
+   * PostgREST-relationship-through-a-view reason as getFrameworkVisual above.
+   */
+  private async getFrameworkCardImages(frameworkIds: string[]): Promise<Map<string, FrameworkTeaserImage>> {
+    const result = new Map<string, FrameworkTeaserImage>();
+    if (frameworkIds.length === 0) return result;
+
+    const { data: assets, error } = await this.client
+      .from("it_visual_assets_public")
+      .select("id, framework_id, asset_type, alt_text, decorative, published_at")
+      .in("framework_id", frameworkIds)
+      .in("asset_type", ["family_card", "family_hero"]);
+    if (error) throw error;
+    if (!assets || assets.length === 0) return result;
+
+    type AssetRow = {
+      id: string;
+      framework_id: string;
+      asset_type: "family_card" | "family_hero";
+      alt_text: string | null;
+      decorative: boolean;
+      published_at: string;
+    };
+    const byFramework = new Map<string, AssetRow>();
+    for (const asset of assets as unknown as AssetRow[]) {
+      const current = byFramework.get(asset.framework_id);
+      // family_card beats family_hero; otherwise the most recently published wins.
+      const currentRank = current ? (current.asset_type === "family_card" ? 1 : 0) : -1;
+      const assetRank = asset.asset_type === "family_card" ? 1 : 0;
+      if (!current || assetRank > currentRank || (assetRank === currentRank && asset.published_at > current.published_at)) {
+        byFramework.set(asset.framework_id, asset);
+      }
+    }
+
+    const assetIds = [...byFramework.values()].map((a) => a.id);
+    const { data: variants, error: variantsError } = await this.client
+      .from("it_visual_asset_variants")
+      .select("visual_asset_id, variant_key, storage_bucket, storage_path")
+      .in("visual_asset_id", assetIds);
+    if (variantsError) throw variantsError;
+
+    type VariantRow = { visual_asset_id: string; variant_key: string; storage_bucket: string; storage_path: string };
+    const variantsByAsset = new Map<string, VariantRow[]>();
+    for (const variant of (variants ?? []) as unknown as VariantRow[]) {
+      const list = variantsByAsset.get(variant.visual_asset_id) ?? [];
+      list.push(variant);
+      variantsByAsset.set(variant.visual_asset_id, list);
+    }
+
+    for (const [frameworkId, asset] of byFramework) {
+      const assetVariants = variantsByAsset.get(asset.id) ?? [];
+      const variant = assetVariants.find((v) => v.variant_key === "card_md") ?? assetVariants[0];
+      if (!variant) continue;
+      result.set(frameworkId, {
+        url: this.client.storage.from(variant.storage_bucket).getPublicUrl(variant.storage_path).data.publicUrl,
+        altText: asset.alt_text,
+        decorative: asset.decorative,
+      });
+    }
+
+    return result;
   }
 
   async getFrameworkBySlug(slug: string): Promise<Framework | null> {

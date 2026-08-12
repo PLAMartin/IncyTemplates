@@ -17,6 +17,16 @@ export function FrameworkCard({ framework }: { framework: FrameworkTeaser }) {
       href={`/products/${framework.slug}`}
       className="group flex flex-col gap-3 rounded-md border border-ink-200 bg-paper-raised p-4 transition-colors hover:border-brand-500 focus-visible:outline-2 focus-visible:outline-focus-ring"
     >
+      {framework.cardImage ? (
+        // Plain <img>, not next/image — see src/app/(marketing)/products/[slug]/page.tsx's
+        // hero image for the SVG/CSP reasoning.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={framework.cardImage.url}
+          alt={framework.cardImage.decorative ? "" : (framework.cardImage.altText ?? "")}
+          className="aspect-[4/3] w-full rounded-md border border-ink-100 object-cover"
+        />
+      ) : null}
       <div className="flex items-center justify-between gap-2">
         <AccessBadge state={isPublished ? "free" : "coming-soon"} />
         {framework.journey_stage ? (
