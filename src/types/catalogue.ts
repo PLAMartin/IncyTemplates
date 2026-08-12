@@ -102,6 +102,28 @@ export type Framework = {
 };
 
 /**
+ * A published visual asset's public-safe projection plus its responsive delivery variants
+ * (spec v5 §14.13's `it_visual_assets_public`/`it_visual_asset_variants`). Never carries
+ * `prompt_snapshot`/`provider_*`/`generation_metadata` — those stay admin-only regardless of
+ * publish status, see `docs/decisions/0045-visual-asset-system-foundation.md`.
+ */
+export type FrameworkVisualVariant = {
+  variantKey: string;
+  url: string;
+  width: number;
+  height: number;
+  format: string;
+};
+
+export type FrameworkVisual = {
+  id: string;
+  assetType: "family_card" | "family_hero" | "guide_diagram" | "template_preview" | "tool_preview" | "social_og";
+  altText: string | null;
+  decorative: boolean;
+  variants: FrameworkVisualVariant[];
+};
+
+/**
  * Narrow, editorially-safe projection of a framework used for public "Coming soon" cards
  * on listing surfaces (homepage, /products, /journey/*). Covers published frameworks and
  * draft-but-flagship frameworks only — see `it_frameworks_teasers` (Supabase view) and

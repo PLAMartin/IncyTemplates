@@ -14,6 +14,7 @@
     "seed": "tsx scripts/seed.ts",
     "seed:storage": "tsx scripts/seed-storage.ts",
     "seed:visual-recipe": "tsx scripts/seed-visual-recipe.ts",
+    "seed:product-idea-assessor-visual": "tsx scripts/seed-product-idea-assessor-visual.ts",
     "import:guides": "tsx scripts/import-guides.ts"
   },
   "dependencies": {

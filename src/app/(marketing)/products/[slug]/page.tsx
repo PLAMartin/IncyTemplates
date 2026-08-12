@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getFrameworkBySlug, getFrameworkOutputs, getFrameworks, getFrameworkTeasers } from "@/server/queries";
+import { getFrameworkBySlug, getFrameworkOutputs, getFrameworks, getFrameworkTeasers, getFrameworkVisual } from "@/server/queries";
 import { canonicalUrl } from "@/lib/seo/canonical";
 import { breadcrumbJsonLd } from "@/lib/seo/structured-data";
 import { JsonLd } from "@/components/content/json-ld";
@@ -74,10 +74,14 @@ export default async function FrameworkPage({ params }: Props) {
     );
   }
 
-  const [outputs, nextStepTeasers] = await Promise.all([
+  const [outputs, nextStepTeasers, heroVisual] = await Promise.all([
     getFrameworkOutputs(framework.id),
     framework.next_step_framework_slug ? getFrameworkTeasers() : Promise.resolve([]),
+    getFrameworkVisual(framework.id, "family_hero"),
   ]);
+  // Absence must never block the rest of the page (spec §44 item 29) — heroVisual/heroVariant
+  // are simply null until a visual is published for this family.
+  const heroVariant = heroVisual?.variants.find((v) => v.variantKey === "hero_lg") ?? heroVisual?.variants[0];
 
   const nextStep = nextStepTeasers.find((t) => t.slug === framework.next_step_framework_slug);
   const recommendedStart = outputs.find((o) => o.product_type !== "bundle") ?? outputs[0];
@@ -96,15 +100,32 @@ export default async function FrameworkPage({ params }: Props) {
       <JsonLd data={breadcrumbJsonLd(breadcrumbItems)} />
       <Breadcrumbs items={breadcrumbItems.map((b) => ({ name: b.name, href: b.path }))} />
 
-      <div className="mt-6 max-w-3xl">
-        {framework.journey_stage ? (
-          <span className="text-xs font-semibold uppercase tracking-wide text-brand-600">
-            {framework.journey_stage.name}
-          </span>
+      <div className={`mt-6 ${heroVariant ? "grid grid-cols-1 items-center gap-8 lg:grid-cols-[3fr_2fr]" : ""}`}>
+        <div className="max-w-3xl">
+          {framework.journey_stage ? (
+            <span className="text-xs font-semibold uppercase tracking-wide text-brand-600">
+              {framework.journey_stage.name}
+            </span>
+          ) : null}
+          <h1 className="mt-2 font-serif text-3xl font-semibold text-ink-900 sm:text-4xl">{framework.name}</h1>
+          <p className="mt-3 text-lg text-ink-700">{framework.outcome_statement}</p>
+          {framework.problem_statement ? <p className="mt-3 text-ink-500">{framework.problem_statement}</p> : null}
+        </div>
+        {heroVariant ? (
+          // Plain <img>, not next/image: the source is SVG from Supabase Storage, and
+          // enabling SVG through next/image's optimizer means opting into
+          // dangerouslyAllowSVG + a CSP tradeoff project-wide (relevant once uploaded, not
+          // just rendered, visuals exist) — a decision to make deliberately, not as a side
+          // effect of this proof pass. Explicit width/height still avoids layout shift.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={heroVariant.url}
+            alt={heroVisual?.decorative ? "" : (heroVisual?.altText ?? "")}
+            width={heroVariant.width}
+            height={heroVariant.height}
+            className="w-full max-w-md rounded-lg"
+          />
         ) : null}
-        <h1 className="mt-2 font-serif text-3xl font-semibold text-ink-900 sm:text-4xl">{framework.name}</h1>
-        <p className="mt-3 text-lg text-ink-700">{framework.outcome_statement}</p>
-        {framework.problem_statement ? <p className="mt-3 text-ink-500">{framework.problem_statement}</p> : null}
       </div>
 
       {(framework.when_to_use || framework.when_not_to_use) ? (

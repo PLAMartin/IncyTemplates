@@ -8,6 +8,7 @@ import type {
   Category,
   Framework,
   FrameworkTeaser,
+  FrameworkVisual,
   Guide,
   Product,
   ProductSummary,
@@ -228,6 +229,14 @@ export class FixtureCatalogueSource implements CatalogueSource {
 
   async getGuideBySlug(slug: string): Promise<Guide | null> {
     return getGuideFileBySlug(slug);
+  }
+
+  // No fixture visual-asset data exists yet — the Visual Asset System is Supabase-only this
+  // milestone (spec §44 item 29: absence must never block the rest of the page, and the
+  // fixture path already renders every page correctly without one).
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getFrameworkVisual(frameworkId: string, assetType: FrameworkVisual["assetType"]): Promise<FrameworkVisual | null> {
+    return null;
   }
 }
 

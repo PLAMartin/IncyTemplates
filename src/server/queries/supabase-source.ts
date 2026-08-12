@@ -28,6 +28,7 @@ import type {
   Framework,
   FrameworkStatus,
   FrameworkTeaser,
+  FrameworkVisual,
   Guide,
   Licence,
   Product,
@@ -799,5 +800,43 @@ export class SupabaseCatalogueSource implements CatalogueSource {
 
     const row = data as unknown as GuideRow;
     return mapGuide(row, await this.getRelatedProductSlugs(row.id));
+  }
+
+  async getFrameworkVisual(frameworkId: string, assetType: FrameworkVisual["assetType"]): Promise<FrameworkVisual | null> {
+    // Two separate queries rather than an embedded select: it_visual_asset_variants' FK
+    // points at the base it_visual_assets table, not the it_visual_assets_public view, so
+    // PostgREST relationship inference for an embedded `it_visual_asset_variants(*)` select
+    // through the view is unverified against a live schema — see this file's header comment
+    // on flagging rather than assuming embedded-select syntax.
+    const { data: asset, error } = await this.client
+      .from("it_visual_assets_public")
+      .select("id, asset_type, alt_text, decorative")
+      .eq("framework_id", frameworkId)
+      .eq("asset_type", assetType)
+      .order("published_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw error;
+    if (!asset) return null;
+
+    const { data: variants, error: variantsError } = await this.client
+      .from("it_visual_asset_variants")
+      .select("variant_key, storage_bucket, storage_path, width, height, format")
+      .eq("visual_asset_id", asset.id);
+    if (variantsError) throw variantsError;
+
+    return {
+      id: asset.id as string,
+      assetType: asset.asset_type as FrameworkVisual["assetType"],
+      altText: asset.alt_text as string | null,
+      decorative: asset.decorative as boolean,
+      variants: (variants ?? []).map((v) => ({
+        variantKey: v.variant_key as string,
+        url: this.client.storage.from(v.storage_bucket as string).getPublicUrl(v.storage_path as string).data.publicUrl,
+        width: v.width as number,
+        height: v.height as number,
+        format: v.format as string,
+      })),
+    };
   }
 }

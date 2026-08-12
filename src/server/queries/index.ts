@@ -48,3 +48,4 @@ export const getFrameworkOutputs = catalogueSource.getFrameworkOutputs.bind(cata
 export const getProductByToolKey = catalogueSource.getProductByToolKey.bind(catalogueSource);
 export const getAllGuides = catalogueSource.getAllGuides.bind(catalogueSource);
 export const getGuideBySlug = catalogueSource.getGuideBySlug.bind(catalogueSource);
+export const getFrameworkVisual = catalogueSource.getFrameworkVisual.bind(catalogueSource);

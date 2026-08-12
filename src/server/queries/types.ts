@@ -5,6 +5,7 @@ import type {
   Category,
   Framework,
   FrameworkTeaser,
+  FrameworkVisual,
   Guide,
   Product,
   ProductSummary,
@@ -57,4 +58,14 @@ export type CatalogueSource = {
   /** Published guides only, newest first. */
   getAllGuides(): Promise<Guide[]>;
   getGuideBySlug(slug: string): Promise<Guide | null>;
+
+  // --- v5: Visual Asset System (spec §14.13, §16.1) ----------------------
+
+  /**
+   * The current published visual of the given type for a framework, with its responsive
+   * variants, or null if none has been published yet — absence must never block rendering
+   * the rest of the page (spec §44 item 29: "absence of a visual must not block an
+   * otherwise useful output").
+   */
+  getFrameworkVisual(frameworkId: string, assetType: FrameworkVisual["assetType"]): Promise<FrameworkVisual | null>;
 };
