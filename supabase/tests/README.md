@@ -53,6 +53,13 @@ or against a linked project with `supabase test db --linked`.
   assets whose parent framework/product isn't itself publicly visible (no leak through a
   published asset on a hidden framework); `it_visual_asset_variants` mirrors the same
   published-only boundary; staff sees every asset and variant, any status, via the base table.
+- `it_visual_asset_lifecycle_test.sql` (v5) -- `it_select_visual_candidate` allows a
+  `selected` row with no `alt_text` yet (spec §9.12: alt text is added *after* selection, not
+  before); `it_publish_visual_asset` still refuses to publish without `alt_text`/`decorative`
+  (`visual_alt_rule`), publishing a second asset for the same framework+asset_type archives
+  whichever one was previously published, and "restore" is confirmed to be the exact same
+  function/action applied to a historical (archived) asset id -- publishing it again re-archives
+  the one that had taken its place, without deleting or rewriting either row's history.
 
 ## Known environment-dependence
 

@@ -4,11 +4,12 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/server/auth/dal";
 import { saveGuideDraft, publishGuideRevision, rollbackGuideRevision } from "@/server/admin/guides";
+import { zId } from "@/lib/utils/id";
 
 export type AdminActionResult = { status: "success" } | { status: "invalid" | "error"; message: string };
 
 const saveDraftSchema = z.object({
-  productId: z.uuid(),
+  productId: zId,
   bodyMarkdown: z.string().min(1, "Body can't be empty."),
   author: z.string().min(1, "Author is required."),
   changeNote: z.string().max(500).optional(),
@@ -76,7 +77,7 @@ export async function publishGuideRevisionAction(input: z.infer<typeof publishSc
   return { status: "success" };
 }
 
-const rollbackSchema = z.object({ productId: z.uuid(), sourceRevisionId: z.uuid(), reason: z.string().max(500).optional() });
+const rollbackSchema = z.object({ productId: zId, sourceRevisionId: z.uuid(), reason: z.string().max(500).optional() });
 
 export async function rollbackGuideRevisionAction(input: z.infer<typeof rollbackSchema>): Promise<AdminActionResult> {
   const parsed = rollbackSchema.safeParse(input);

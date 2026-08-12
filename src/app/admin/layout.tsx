@@ -9,6 +9,8 @@ const NAV_ITEMS = [
   { href: "/admin/guides", label: "Guides" },
   { href: "/admin/templates", label: "Templates" },
   { href: "/admin/tools", label: "Tools" },
+  { href: "/admin/visuals", label: "Visuals" },
+  { href: "/admin/visual-recipes", label: "Visual recipes" },
   { href: "/admin/orders", label: "Orders" },
   { href: "/admin/webhook-events", label: "Webhook queue" },
   { href: "/admin/audit-log", label: "Audit log" },

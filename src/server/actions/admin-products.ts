@@ -4,9 +4,10 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/server/auth/dal";
 import { setProductVisibility } from "@/server/admin/products";
+import { zId } from "@/lib/utils/id";
 
 const changeVisibilitySchema = z.object({
-  productId: z.uuid(),
+  productId: zId,
   visibility: z.enum(["public", "unlisted", "hidden"]),
   reason: z.string().max(500).optional(),
 });

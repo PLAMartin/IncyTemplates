@@ -4,6 +4,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/server/auth/dal";
 import { replaceTemplateFile } from "@/server/admin/templates";
+import { zId } from "@/lib/utils/id";
 
 export type AdminActionResult = { status: "success" } | { status: "invalid" | "error"; message: string };
 
@@ -26,7 +27,7 @@ const FILE_FORMATS = [
 ] as const;
 
 const metadataSchema = z.object({
-  productId: z.uuid(),
+  productId: zId,
   version: z.string().min(1, "Version is required."),
   releaseNotes: z.string().max(1000).optional(),
   fileRole: z.enum(FILE_ROLES),
