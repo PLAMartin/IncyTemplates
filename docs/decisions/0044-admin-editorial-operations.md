@@ -125,10 +125,19 @@ append-only and a rollback is itself auditable and itself rollback-able. All thr
 migration has zero staff write policies by design (every privileged write goes through a
 server-side service-role route that has already run `requireRole()`), and this table follows that
 convention rather than inventing new staff RLS write policies. `it_write_audit_log` itself was
-extended with a defaulted trailing `p_actor_profile_id` parameter (a compatible
-`CREATE OR REPLACE`) because the pre-existing version always recorded `auth.uid()`, which is null
-under a service-role call with no request-bound session — the admin write path needs to record
-who actually clicked, not "no one."
+extended with a defaulted trailing `p_actor_profile_id` parameter because the pre-existing version
+always recorded `auth.uid()`, which is null under a service-role call with no request-bound
+session — the admin write path needs to record who actually clicked, not "no one." **This was
+originally believed to be a compatible in-place `CREATE OR REPLACE`; it was not.** PostgreSQL
+identifies a function by name plus parameter count/types, so appending a 7th parameter created a
+second, distinct overload alongside the original 6-parameter function rather than replacing it —
+any 6-arg call (the pre-existing product status/price-change and role-change audit triggers in
+`20260728155522_functions_and_triggers.sql`) became ambiguous between the two. Caught live,
+provisioning the first staff account, when the role-change trigger fired and errored with
+"function ... is not unique." Fixed by `20260812130000_it_write_audit_log_drop_overload.sql`,
+which drops the original 6-parameter overload — the 7-parameter version's trailing default keeps
+every existing call site working unchanged. Lesson: a defaulted trailing parameter only replaces
+cleanly if the *old* signature is dropped in the same migration, not left to coexist.
 
 **Tool copy: identical draft/publish/rollback shape, keyed by `tool_key` not `product_id`, gated
 by a Tool-declared field schema.** `20260812090015_it_tool_copy_revisions.sql` mirrors the content
