@@ -6,14 +6,26 @@ import { requestMagicLink } from "@/server/actions/auth";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 
+type MagicLinkResult =
+  | { status: "success" }
+  | { status: "invalid"; message: string }
+  | { status: "not-connected"; message: string }
+  | { status: "error"; message: string };
+
 type MagicLinkFormProps = {
   redirectTo?: string;
   className?: string;
+  /** Defaults to the staff `requestMagicLink` action — pass `requestCustomerMagicLink` for a customer-facing form. */
+  submitAction?: (input: { email: string; redirectTo?: string }) => Promise<MagicLinkResult>;
+  /** Defaults to the staff-only copy below — pass different copy for a customer-facing form. */
+  footnote?: string;
 };
 
 type FormState = { kind: "idle" } | { kind: "success" } | { kind: "error"; message: string };
 
-export function MagicLinkForm({ redirectTo, className }: MagicLinkFormProps) {
+const DEFAULT_FOOTNOTE = "Staff accounts only — sign-in links only work for emails already provisioned in Supabase.";
+
+export function MagicLinkForm({ redirectTo, className, submitAction = requestMagicLink, footnote = DEFAULT_FOOTNOTE }: MagicLinkFormProps) {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<FormState>({ kind: "idle" });
   const [fieldError, setFieldError] = useState<string | null>(null);
@@ -27,7 +39,7 @@ export function MagicLinkForm({ redirectTo, className }: MagicLinkFormProps) {
     setFieldError(null);
 
     startTransition(async () => {
-      const result = await requestMagicLink({ email, redirectTo });
+      const result = await submitAction({ email, redirectTo });
       switch (result.status) {
         case "success":
           setState({ kind: "success" });
@@ -97,9 +109,7 @@ export function MagicLinkForm({ redirectTo, className }: MagicLinkFormProps) {
           {state.message}
         </p>
       ) : null}
-      <p className="text-xs text-ink-500">
-        Staff accounts only — sign-in links only work for emails already provisioned in Supabase.
-      </p>
+      <p className="text-xs text-ink-500">{footnote}</p>
     </form>
   );
 }

@@ -58,7 +58,7 @@ export function MobileNav({ links }: { links: NavLink[] }) {
             </Link>
           ))}
           <Link
-            href="/sign-in"
+            href="/account"
             onClick={() => dialogRef.current?.close()}
             className="flex min-h-11 items-center rounded-md px-3 text-base font-medium hover:bg-ink-100"
           >

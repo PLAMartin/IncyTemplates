@@ -42,7 +42,7 @@ export function SiteHeader() {
             <Search aria-hidden className="size-5" />
           </Link>
           <Link
-            href="/sign-in"
+            href="/account"
             className="hidden text-sm font-medium text-ink-700 hover:text-ink-900 lg:block"
           >
             Sign in

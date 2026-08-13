@@ -65,6 +65,11 @@ or against a linked project with `supabase test db --linked`.
   anon has zero visibility, an authenticated non-staff customer also has zero visibility (the
   RLS gate is `is_staff()`, not just "logged in"), and staff can read the base table including
   provider provenance columns (`provider_key`, etc.).
+- `it_link_customer_to_profile_test.sql` -- account-linking function (spec §18.2): an
+  authenticated user's unlinked `it_customers`/`it_entitlements` rows matching their own email
+  get linked to their profile, a different-email customer row is left untouched, one audit log
+  entry is recorded, a second call is a safe no-op (no duplicate audit row), and `anon` cannot
+  call the function at all (no execute grant).
 
 ## Known environment-dependence
 
