@@ -13,6 +13,8 @@
     "e2e": "playwright test",
     "seed": "tsx scripts/seed.ts",
     "seed:storage": "tsx scripts/seed-storage.ts",
+    "seed:storage:paid": "tsx scripts/seed-storage-paid.ts",
+    "sync:stripe-product": "tsx scripts/sync-stripe-product.ts",
     "seed:visual-recipe": "tsx scripts/seed-visual-recipe.ts",
     "seed:product-idea-assessor-visual": "tsx scripts/seed-product-idea-assessor-visual.ts",
     "import:guides": "tsx scripts/import-guides.ts"
@@ -32,6 +34,7 @@
     "react-dom": "19.2.4",
     "reading-time": "^1.5.0",
     "rehype-slug": "^6.0.0",
+    "stripe": "^22.5.0",
     "tailwind-merge": "^3.6.0",
     "zod": "^4.4.3"
   },

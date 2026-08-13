@@ -14,6 +14,7 @@ import { QualityStandardList } from "@/components/product/quality-standard-list"
 import { FaqList } from "@/components/product/faq-list";
 import { WaitlistForm } from "@/components/product/waitlist-form";
 import { ViewForm } from "@/components/product/view-form";
+import { BuyButton } from "@/components/product/buy-button";
 import { ProductCard, productHref } from "@/components/catalogue/product-card";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -265,11 +266,18 @@ export default async function ProductPage({ params }: Props) {
                 ? templateFile
                   ? "View instantly online — no account needed."
                   : "Not available to view yet — join the waitlist and we'll email you the moment it is."
-                : "Checkout isn't live yet — join the waitlist and we'll email you the moment it is."}
+                : product.stripe_price_id
+                  ? "Instant access after checkout."
+                  : "Checkout isn't live yet — join the waitlist and we'll email you the moment it is."}
             </p>
           </div>
           {product.access_type === "free" && templateFile ? (
             <ViewForm productId={product.id} fileId={templateFile.id} slug={slug} source="product-page" />
+          ) : product.access_type === "paid" && product.stripe_price_id ? (
+            <BuyButton
+              productId={product.id}
+              label={`Buy for ${formatMinorUnits(product.price_minor ?? 0, product.currency_code)}`}
+            />
           ) : (
             <WaitlistForm productId={product.id} label={waitlistLabel} source="product-page" />
           )}

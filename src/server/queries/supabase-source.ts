@@ -101,6 +101,7 @@ type ProductRow = {
   price_minor: number | null;
   compare_at_price_minor: number | null;
   currency_code: string;
+  stripe_price_id: string | null;
   featured: boolean;
   published_at: string | null;
   scheduled_for: string | null;
@@ -198,6 +199,7 @@ function mapProduct(row: ProductRow): Product {
     price_minor: row.price_minor,
     compare_at_price_minor: row.compare_at_price_minor,
     currency_code: row.currency_code,
+    stripe_price_id: row.stripe_price_id,
     featured: row.featured,
     published_at: row.published_at,
     scheduled_for: row.scheduled_for,
@@ -244,7 +246,7 @@ const PRODUCT_SELECT = `
   id, product_type, access_type, status, name, slug, short_description, full_description,
   outcome_statement, target_audience, when_to_use, when_not_to_use,
   completion_minutes_min, completion_minutes_max, skill_level, current_version,
-  price_minor, compare_at_price_minor, currency_code, featured, published_at, scheduled_for,
+  price_minor, compare_at_price_minor, currency_code, stripe_price_id, featured, published_at, scheduled_for,
   seo_title, seo_description, schema_data, framework_id, tool_key,
   licence:it_licences ( id, name, slug, summary, commercial_use_allowed, client_work_allowed, redistribution_allowed ),
   it_product_categories ( category:it_categories ( id, name, slug, description, display_order ) ),

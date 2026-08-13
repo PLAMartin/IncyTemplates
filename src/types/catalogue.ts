@@ -216,6 +216,13 @@ export type Product = ProductSummary & {
   files: ProductFile[];
   seo_title: string | null;
   seo_description: string | null;
+  /**
+   * Stripe Price ID for a paid product, once synced (scripts/sync-stripe-product.ts).
+   * Optional/undefined in seed data — only real Stripe-linked products set this. Not on
+   * ProductSummary: checkout is the only consumer, and it always reads a single Product via
+   * getProductBySlug, never a catalogue-listing summary.
+   */
+  stripe_price_id?: string | null;
 };
 
 export type BundleItem = {
