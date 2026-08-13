@@ -60,6 +60,11 @@ or against a linked project with `supabase test db --linked`.
   whichever one was previously published, and "restore" is confirmed to be the exact same
   function/action applied to a historical (archived) asset id -- publishing it again re-archives
   the one that had taken its place, without deleting or rewriting either row's history.
+- `it_visual_generation_jobs_rls_test.sql` (v6) -- pure internal generation provenance, never
+  read by public pages (unlike `it_visual_assets`, there is no narrow public view here at all):
+  anon has zero visibility, an authenticated non-staff customer also has zero visibility (the
+  RLS gate is `is_staff()`, not just "logged in"), and staff can read the base table including
+  provider provenance columns (`provider_key`, etc.).
 
 ## Known environment-dependence
 

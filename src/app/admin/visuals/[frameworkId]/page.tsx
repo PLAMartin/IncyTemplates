@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getFrameworkVisualsForAdmin } from "@/server/admin/visuals";
+import { listVisualProviderStatuses } from "@/lib/visuals/providers";
 import { VisualCreateForm } from "@/components/admin/visual-create-form";
 import { VisualCandidateGrid } from "@/components/admin/visual-candidate-grid";
 import { VisualHistoryList } from "@/components/admin/visual-history-list";
@@ -64,6 +65,7 @@ export default async function AdminFrameworkVisualsPage({ params }: Props) {
         <VisualCreateForm
           frameworkId={detail.frameworkId}
           recipeLabel={detail.activeRecipe ? recipeLabel(detail.activeRecipe.name, detail.activeRecipe.version) : null}
+          providerStatuses={listVisualProviderStatuses()}
         />
       </section>
 

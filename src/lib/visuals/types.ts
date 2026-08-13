@@ -59,16 +59,20 @@ export type VisualRecipe = {
 };
 
 /**
- * Provider-neutral generation boundary (spec §12.6). Provider calls happen server-side only,
- * are never on the critical path for a public page request, and never see anything beyond
+ * Provider-neutral generation boundary (spec v6 §12.6/§12.7). Provider calls happen server-side
+ * only, are never on the critical path for a public page request, and never see anything beyond
  * what's in the request below — no product/framework database access, no secrets beyond
  * whatever the concrete provider implementation holds internally.
+ *
+ * `candidateCount` (and provider/quality/output-profile choice) lives on
+ * `VisualGenerationOptions` (`./providers/types.ts`), not here — this type is "what to draw",
+ * options is "how many, how, and with which provider". See that file for the full provider
+ * contract (`VisualGenerationProvider`, `VisualProviderCapabilities`, error categories).
  */
 export type VisualGenerationRequest = {
   assetType: VisualAssetType;
   brief: VisualBrief;
   recipe: VisualRecipe;
-  candidateCount: number;
 };
 
 export type GeneratedVisualCandidate = {
@@ -79,7 +83,3 @@ export type GeneratedVisualCandidate = {
   providerAssetId?: string;
   metadata?: Record<string, unknown>;
 };
-
-export interface VisualGenerationProvider {
-  generate(request: VisualGenerationRequest): Promise<GeneratedVisualCandidate[]>;
-}

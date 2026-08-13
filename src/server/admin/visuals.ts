@@ -2,12 +2,27 @@ import "server-only";
 import { createHash } from "node:crypto";
 import { getSupabaseServerClient } from "@/lib/supabase/server-client";
 import { getSupabaseServiceRoleClient } from "@/lib/supabase/service-role-client";
-import { MockVisualGenerationProvider } from "@/lib/visuals/provider";
+import { serverEnv } from "@/lib/env/server";
+import { buildVisualPrompt } from "@/lib/visuals/build-visual-prompt";
+import {
+  resolveDefaultVisualGenerationProvider,
+  resolveVisualGenerationProvider,
+  VisualGenerationError,
+  type VisualGenerationOptions,
+  type VisualProviderKey,
+} from "@/lib/visuals/providers";
 import type { VisualAssetStatus, VisualAssetType, VisualBrief, VisualSourceType } from "@/lib/visuals/types";
+import {
+  checkVisualGenerationBudgetAndRateLimits,
+  completeVisualGenerationJob,
+  createVisualGenerationJob,
+  failVisualGenerationJob,
+} from "@/server/admin/visual-generation-jobs";
 
 const CANDIDATE_BUCKET = "it-admin-staging";
 const PUBLIC_BUCKET = "it-public-assets";
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+/** Absolute ceiling (spec §14.13's DB check constraint mirrors this). VISUAL_GENERATION_MAX_CANDIDATES can only lower it further. */
 const MAX_CANDIDATE_COUNT = 4;
 
 export type AdminFrameworkVisualSummary = {
@@ -204,15 +219,21 @@ export type GenerateVisualCandidatesInput = {
   brief: VisualBrief;
   candidateCount: number;
   actorProfileId: string;
+  /** Defaults to VISUAL_GENERATION_PROVIDER (spec §34) when omitted. */
+  provider?: VisualProviderKey;
 };
 
 /**
- * Generation path (spec §9.12 point 4/6): server-side only, bounded candidate count, staged
- * privately. Runs against MockVisualGenerationProvider — no production image-generation
- * provider is selected yet (spec §44 item 25) — see src/lib/visuals/provider.ts.
+ * Generation path (spec v6 §9.12/§9.13 point 4/6): server-side only, bounded candidate count,
+ * staged privately. Provider is resolved through the registry (src/lib/visuals/providers) —
+ * defaults to VISUAL_GENERATION_PROVIDER ("test" in this repo's .env, since no live
+ * OPENAI_API_KEY exists yet — see docs/decisions/0050-openai-visual-provider.md). One
+ * it_visual_generation_jobs row is created per call and tracks the whole request independently
+ * of the candidate rows it produces, per spec §14.13.
  */
 export async function generateVisualCandidates(input: GenerateVisualCandidatesInput): Promise<number> {
-  const count = Math.min(Math.max(input.candidateCount, 1), MAX_CANDIDATE_COUNT);
+  const providerKey = input.provider ?? resolveDefaultVisualGenerationProvider();
+  const count = Math.min(Math.max(input.candidateCount, 1), Math.min(serverEnv.VISUAL_GENERATION_MAX_CANDIDATES, MAX_CANDIDATE_COUNT));
   const supabase = getSupabaseServiceRoleClient();
 
   const { data: recipeRow, error: recipeError } = await supabase
@@ -226,27 +247,60 @@ export async function generateVisualCandidates(input: GenerateVisualCandidatesIn
     throw new Error(`No approved Visual Recipe exists yet: ${recipeError?.message ?? "run npm run seed:visual-recipe"}`);
   }
 
-  const provider = new MockVisualGenerationProvider();
-  const candidates = await provider.generate({
-    assetType: input.assetType,
-    brief: input.brief,
-    recipe: {
-      id: recipeRow.id,
-      recipeKey: recipeRow.recipe_key,
-      version: recipeRow.version,
-      name: recipeRow.name,
-      status: recipeRow.status,
-      configData: recipeRow.config_data,
-      promptTemplate: recipeRow.prompt_template,
-    },
+  await checkVisualGenerationBudgetAndRateLimits(input.actorProfileId, providerKey);
+
+  const provider = resolveVisualGenerationProvider(providerKey);
+  const recipe = {
+    id: recipeRow.id,
+    recipeKey: recipeRow.recipe_key,
+    version: recipeRow.version,
+    name: recipeRow.name,
+    status: recipeRow.status,
+    configData: recipeRow.config_data,
+    promptTemplate: recipeRow.prompt_template,
+  };
+  const request = { assetType: input.assetType, brief: input.brief, recipe };
+  const options: VisualGenerationOptions = {
+    provider: providerKey,
     candidateCount: count,
+    qualityProfile: serverEnv.OPENAI_IMAGE_QUALITY_PROFILE,
+    outputProfile: serverEnv.OPENAI_IMAGE_OUTPUT_PROFILE,
+  };
+  const promptSnapshot = buildVisualPrompt(request, options);
+
+  const jobId = await createVisualGenerationJob({
+    frameworkId: input.frameworkId,
+    productId: null,
+    assetType: input.assetType,
+    providerKey,
+    providerModel: providerKey === "openai" ? serverEnv.OPENAI_IMAGE_MODEL_SNAPSHOT || serverEnv.OPENAI_IMAGE_MODEL : null,
+    providerModelSnapshot: providerKey === "openai" ? serverEnv.OPENAI_IMAGE_MODEL_SNAPSHOT || null : null,
+    visualRecipeId: recipeRow.id,
+    visualBrief: input.brief,
+    promptSnapshot,
+    requestConfig: { qualityProfile: options.qualityProfile, outputProfile: options.outputProfile },
+    requestedCandidates: count,
+    actorProfileId: input.actorProfileId,
   });
+
+  let candidates;
+  try {
+    candidates = await provider.generate(request, options);
+  } catch (error) {
+    const generationError =
+      error instanceof VisualGenerationError
+        ? error
+        : new VisualGenerationError("unknown", error instanceof Error ? error.message : "Generation failed.");
+    await failVisualGenerationJob(jobId, generationError);
+    throw new Error(generationError.message);
+  }
 
   let staged = 0;
   for (const candidate of candidates) {
     const bytes = Buffer.from(candidate.bytes);
     const checksum = createHash("sha256").update(bytes).digest("hex");
-    const path = `visuals/${input.frameworkId}/candidates/${Date.now()}-${staged}.svg`;
+    const extension = candidate.mimeType.includes("svg") ? "svg" : candidate.mimeType.split("/")[1] || "bin";
+    const path = `visuals/${input.frameworkId}/candidates/${Date.now()}-${staged}.${extension}`;
 
     const { error: uploadError } = await supabase.storage
       .from(CANDIDATE_BUCKET)
@@ -261,7 +315,9 @@ export async function generateVisualCandidates(input: GenerateVisualCandidatesIn
         source_type: "generated",
         status: "candidate",
         visual_recipe_id: recipeRow.id,
+        generation_job_id: jobId,
         visual_brief: input.brief,
+        prompt_snapshot: promptSnapshot,
         provider: candidate.provider,
         provider_model: candidate.model ?? null,
         generation_metadata: candidate.metadata ?? {},
@@ -279,6 +335,8 @@ export async function generateVisualCandidates(input: GenerateVisualCandidatesIn
     await writeAuditLog("visual_generate", inserted.id, input.actorProfileId, { asset_type: input.assetType });
     staged += 1;
   }
+
+  await completeVisualGenerationJob(jobId, staged, count);
 
   return staged;
 }

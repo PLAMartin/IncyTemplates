@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { MockVisualGenerationProvider } from "@/lib/visuals/provider";
+import { TestVisualGenerationProvider } from "@/lib/visuals/providers/test-provider";
+import type { VisualGenerationOptions } from "@/lib/visuals/providers/types";
 import type { VisualGenerationRequest } from "@/lib/visuals/types";
 
 const baseRequest: VisualGenerationRequest = {
@@ -26,20 +27,32 @@ const baseRequest: VisualGenerationRequest = {
     },
     promptTemplate: null,
   },
-  candidateCount: 3,
 };
 
-describe("MockVisualGenerationProvider", () => {
-  it("returns exactly candidateCount candidates", async () => {
-    const provider = new MockVisualGenerationProvider();
-    const candidates = await provider.generate(baseRequest);
+const baseOptions: VisualGenerationOptions = { provider: "test", candidateCount: 3 };
+
+describe("TestVisualGenerationProvider", () => {
+  it("reports its key and capabilities", () => {
+    const provider = new TestVisualGenerationProvider();
+    expect(provider.key).toBe("test");
+    expect(provider.capabilities()).toEqual({
+      textToImage: true,
+      imageEdit: false,
+      referenceImages: false,
+      transparentBackground: false,
+    });
+  });
+
+  it("returns exactly options.candidateCount candidates", async () => {
+    const provider = new TestVisualGenerationProvider();
+    const candidates = await provider.generate(baseRequest, baseOptions);
     expect(candidates).toHaveLength(3);
   });
 
-  it("returns decodable SVG bytes tagged with the mock provider", async () => {
-    const provider = new MockVisualGenerationProvider();
-    const candidate = (await provider.generate({ ...baseRequest, candidateCount: 1 })).at(0)!;
-    expect(candidate.provider).toBe("mock");
+  it("returns decodable SVG bytes tagged with the test provider", async () => {
+    const provider = new TestVisualGenerationProvider();
+    const candidate = (await provider.generate(baseRequest, { ...baseOptions, candidateCount: 1 })).at(0)!;
+    expect(candidate.provider).toBe("test");
     expect(candidate.mimeType).toBe("image/svg+xml");
     const text = new TextDecoder().decode(candidate.bytes);
     expect(text).toContain("<svg");
@@ -47,13 +60,12 @@ describe("MockVisualGenerationProvider", () => {
   });
 
   it("escapes XML-unsafe characters in the brief objective", async () => {
-    const provider = new MockVisualGenerationProvider();
+    const provider = new TestVisualGenerationProvider();
     const candidate = (
-      await provider.generate({
-        ...baseRequest,
-        candidateCount: 1,
-        brief: { ...baseRequest.brief, objective: "A <script> & \"quotes\" 'here'" },
-      })
+      await provider.generate(
+        { ...baseRequest, brief: { ...baseRequest.brief, objective: "A <script> & \"quotes\" 'here'" } },
+        { ...baseOptions, candidateCount: 1 },
+      )
     ).at(0)!;
     const text = new TextDecoder().decode(candidate.bytes);
     expect(text).not.toContain("<script>");
@@ -61,8 +73,8 @@ describe("MockVisualGenerationProvider", () => {
   });
 
   it("returns an empty array when candidateCount is 0", async () => {
-    const provider = new MockVisualGenerationProvider();
-    const candidates = await provider.generate({ ...baseRequest, candidateCount: 0 });
+    const provider = new TestVisualGenerationProvider();
+    const candidates = await provider.generate(baseRequest, { ...baseOptions, candidateCount: 0 });
     expect(candidates).toEqual([]);
   });
 });

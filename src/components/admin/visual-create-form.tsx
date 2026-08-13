@@ -2,6 +2,7 @@
 
 import { useId, useRef, useState, useTransition } from "react";
 import { generateVisualCandidatesAction, uploadVisualCandidateAction } from "@/server/actions/admin-visuals";
+import type { VisualProviderStatus } from "@/lib/visuals/providers";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
@@ -10,7 +11,7 @@ import { Button } from "@/components/ui/button";
 
 const ASSET_TYPES = ["family_card", "family_hero", "guide_diagram", "template_preview", "tool_preview", "social_og"] as const;
 
-type Props = { frameworkId: string; recipeLabel: string | null };
+type Props = { frameworkId: string; recipeLabel: string | null; providerStatuses: VisualProviderStatus[] };
 
 /**
  * Covers two of the three source paths spec §9.12 point 4 lists — "generate" (bounded, via the
@@ -20,9 +21,12 @@ type Props = { frameworkId: string; recipeLabel: string | null };
  * single family that has one so far) rather than a form anyone can drive — see
  * docs/decisions/0048-admin-visuals-workspace.md's Follow-up.
  */
-export function VisualCreateForm({ frameworkId, recipeLabel }: Props) {
+export function VisualCreateForm({ frameworkId, recipeLabel, providerStatuses }: Props) {
   const [source, setSource] = useState<"generate" | "upload">("generate");
   const [assetType, setAssetType] = useState<(typeof ASSET_TYPES)[number]>("family_hero");
+  const [provider, setProvider] = useState<string>(
+    () => providerStatuses.find((p) => p.enabled)?.key ?? providerStatuses[0]?.key ?? "test",
+  );
   const [objective, setObjective] = useState("");
   const [subject, setSubject] = useState("");
   const [inputConcepts, setInputConcepts] = useState("");
@@ -58,7 +62,13 @@ export function VisualCreateForm({ frameworkId, recipeLabel }: Props) {
 
     startTransition(async () => {
       if (source === "generate") {
-        const result = await generateVisualCandidatesAction({ frameworkId, assetType, brief, candidateCount });
+        const result = await generateVisualCandidatesAction({
+          frameworkId,
+          assetType,
+          brief,
+          candidateCount,
+          provider: provider as "test" | "openai",
+        });
         if (result.status === "success") {
           setMessage({ kind: "success", text: `${candidateCount} candidate(s) generated.` });
         } else {
@@ -116,6 +126,21 @@ export function VisualCreateForm({ frameworkId, recipeLabel }: Props) {
           Upload
         </label>
       </div>
+
+      {source === "generate" ? (
+        <FormField label="Provider">
+          {(fieldProps) => (
+            <Select {...fieldProps} value={provider} onChange={(e) => setProvider(e.target.value)}>
+              {providerStatuses.map((status) => (
+                <option key={status.key} value={status.key} disabled={!status.enabled}>
+                  {status.label}
+                  {status.enabled ? (status.modelLabel ? ` (${status.modelLabel})` : "") : ` — ${status.disabledReason}`}
+                </option>
+              ))}
+            </Select>
+          )}
+        </FormField>
+      ) : null}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="Asset type">

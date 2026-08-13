@@ -12,6 +12,7 @@ import {
   publishVisualAsset,
 } from "@/server/admin/visuals";
 import { zId } from "@/lib/utils/id";
+import { listVisualProviderStatuses } from "@/lib/visuals/providers";
 
 export type AdminActionResult = { status: "success" } | { status: "invalid" | "error"; message: string };
 
@@ -35,6 +36,7 @@ const generateSchema = z.object({
   assetType: z.enum(ASSET_TYPES),
   brief: briefSchema,
   candidateCount: z.number().int().min(1).max(4),
+  provider: z.enum(["test", "openai"]).optional(),
 });
 
 /**
@@ -49,6 +51,14 @@ export async function generateVisualCandidatesAction(input: z.infer<typeof gener
     return { status: "invalid", message: parsed.error.issues[0]?.message ?? "Invalid input." };
   }
   const session = await requireRole("editor");
+
+  if (parsed.data.provider) {
+    const status = listVisualProviderStatuses().find((p) => p.key === parsed.data.provider);
+    if (!status?.enabled) {
+      return { status: "error", message: status?.disabledReason ?? "Selected provider is not available." };
+    }
+  }
+
   try {
     await generateVisualCandidates({ ...parsed.data, actorProfileId: session.userId });
   } catch (error) {

@@ -37,6 +37,41 @@ describe("server env schema", () => {
     process.env.APP_ENV = "staging";
     await expect(import("@/lib/env/server")).rejects.toThrow();
   });
+
+  it("defaults visual-generation vars to the test provider with no config set", async () => {
+    vi.resetModules();
+    delete process.env.VISUAL_GENERATION_PROVIDER;
+    delete process.env.OPENAI_API_KEY;
+    const { serverEnv } = await import("@/lib/env/server");
+    expect(serverEnv.VISUAL_GENERATION_ENABLED).toBe(true);
+    expect(serverEnv.VISUAL_GENERATION_PROVIDER).toBe("test");
+    expect(serverEnv.VISUAL_GENERATION_MAX_CANDIDATES).toBe(4);
+    expect(serverEnv.OPENAI_IMAGE_MODEL).toBe("gpt-image-2");
+    expect(serverEnv.OPENAI_API_KEY).toBeUndefined();
+  });
+
+  it("accepts an explicit openai provider selection and coerces numeric vars", async () => {
+    vi.resetModules();
+    process.env.VISUAL_GENERATION_PROVIDER = "openai";
+    process.env.VISUAL_GENERATION_MAX_CANDIDATES = "2";
+    process.env.VISUAL_GENERATION_TIMEOUT_MS = "45000";
+    const { serverEnv } = await import("@/lib/env/server");
+    expect(serverEnv.VISUAL_GENERATION_PROVIDER).toBe("openai");
+    expect(serverEnv.VISUAL_GENERATION_MAX_CANDIDATES).toBe(2);
+    expect(serverEnv.VISUAL_GENERATION_TIMEOUT_MS).toBe(45000);
+  });
+
+  it("throws on an unknown OPENAI_IMAGE_MODEL value", async () => {
+    vi.resetModules();
+    process.env.OPENAI_IMAGE_MODEL = "some-future-model";
+    await expect(import("@/lib/env/server")).rejects.toThrow();
+  });
+
+  it("throws on an invalid VISUAL_GENERATION_PROVIDER value", async () => {
+    vi.resetModules();
+    process.env.VISUAL_GENERATION_PROVIDER = "stability";
+    await expect(import("@/lib/env/server")).rejects.toThrow();
+  });
 });
 
 describe("client env schema", () => {
