@@ -7,6 +7,7 @@ import { signOutCustomer } from "@/server/actions/customer-auth";
 const NAV_ITEMS = [
   { href: "/account/library", label: "Library" },
   { href: "/account/orders", label: "Orders" },
+  { href: "/account/work", label: "Work" },
 ];
 
 /**

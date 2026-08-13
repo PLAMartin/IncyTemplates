@@ -70,6 +70,12 @@ or against a linked project with `supabase test db --linked`.
   get linked to their profile, a different-email customer row is left untouched, one audit log
   entry is recorded, a second call is a safe no-op (no duplicate audit row), and `anon` cannot
   call the function at all (no execute grant).
+- `it_tool_runs_test.sql` (v6) -- saved Tool runs (spec §14.12): `anon` has zero visibility into
+  `it_tool_runs` (no SELECT policy at all -- writes go through the service-role client, not a
+  client-side INSERT policy) and cannot call `it_claim_anonymous_tool_runs` (no execute grant);
+  an owner sees only their own run, never another owner's; staff see every run regardless of
+  owner; `it_claim_anonymous_tool_runs` links a matching anonymous run to the caller, clears
+  `anonymous_session_id`, and a second call is a safe no-op.
 
 ## Known environment-dependence
 

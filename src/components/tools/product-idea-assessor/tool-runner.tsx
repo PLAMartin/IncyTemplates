@@ -12,6 +12,7 @@ import type {
   TargetSpecificity,
 } from "@/lib/tools/product-idea-assessor/schema";
 import { ToolResultSummary } from "@/components/tools/tool-result-summary";
+import { SaveRunButton } from "@/components/tools/save-run-button";
 
 type StepKey = "classification" | "problemEvidence" | "behaviourEvidence" | "differentiationClarity" | "targetSpecificity";
 
@@ -112,7 +113,7 @@ const STEPS: Step[] = [
 type State =
   | { phase: "start" }
   | { phase: "question"; stepIndex: number; answers: Partial<ProductIdeaAssessorInput>; error: string | null }
-  | { phase: "result"; result: ProductIdeaAssessorResult };
+  | { phase: "result"; result: ProductIdeaAssessorResult; input: ProductIdeaAssessorInput };
 
 type Action =
   | { type: "begin" }
@@ -151,7 +152,7 @@ function reducer(state: State, action: Action): State {
         return { ...state, error: "Something's missing — please check every question was answered." };
       }
       const result = definition.run(parsed.data) as ProductIdeaAssessorResult;
-      return { phase: "result", result };
+      return { phase: "result", result, input: parsed.data as ProductIdeaAssessorInput };
     }
     default:
       return state;
@@ -252,7 +253,12 @@ export function ProductIdeaAssessorRunner() {
   }
 
   if (state.phase === "result") {
-    return <ToolResultSummary result={state.result} onRestart={() => dispatch({ type: "restart" })} headingRef={resultHeadingRef} />;
+    return (
+      <div className="space-y-4">
+        <ToolResultSummary result={state.result} onRestart={() => dispatch({ type: "restart" })} headingRef={resultHeadingRef} />
+        <SaveRunButton toolKey="product-idea-assessor" input={state.input} result={state.result} />
+      </div>
+    );
   }
 
   return null;

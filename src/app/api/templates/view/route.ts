@@ -7,7 +7,7 @@ import { hashValue } from "@/server/downloads/hash";
 import { checkRateLimit } from "@/server/downloads/rate-limit";
 import { resolveFreeTemplateFile } from "@/server/downloads/resolve-free-template-file";
 import { downloadRequestSchema } from "@/server/downloads/schema";
-import { ANONYMOUS_SESSION_COOKIE, ANONYMOUS_SESSION_MAX_AGE_SECONDS, getAnonymousSessionId } from "@/server/downloads/session";
+import { ANONYMOUS_SESSION_COOKIE, ANONYMOUS_SESSION_MAX_AGE_SECONDS, getAnonymousSessionId } from "@/server/session/anonymous-session";
 import { mintViewGrant } from "@/server/downloads/view-grant";
 
 export const runtime = "nodejs";
