@@ -14,11 +14,11 @@ const imgSrc = ["'self'", "data:", supabaseHost ? `https://${supabaseHost}` : un
 
 const contentSecurityPolicy = [
   `default-src 'self'`,
-  `script-src 'self' 'unsafe-inline'`,
+  `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com`,
   `style-src 'self' 'unsafe-inline'`,
   `img-src ${imgSrc}`,
   `font-src 'self'`,
-  `connect-src ${connectSrc}`,
+  `connect-src ${connectSrc} https://www.google-analytics.com https://www.googletagmanager.com`,
   `frame-ancestors 'none'`,
   `base-uri 'self'`,
   `form-action 'self'`,
