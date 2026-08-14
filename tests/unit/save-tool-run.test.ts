@@ -88,6 +88,7 @@ describe("saveToolRun", () => {
       anonymous_session_id: null,
       status: "completed",
       tool_schema_version: 1,
+      expires_at: null,
     });
   });
 
@@ -110,6 +111,11 @@ describe("saveToolRun", () => {
       profile_id: null,
       anonymous_session_id: anonymousSessionId,
     });
+    const expiresAt = (insertCall?.args[0] as { expires_at: string }).expires_at;
+    expect(expiresAt).not.toBeNull();
+    const ttlDays = (new Date(expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+    expect(ttlDays).toBeGreaterThan(29.9);
+    expect(ttlDays).toBeLessThan(30.1);
   });
 
   it("returns insert_failed when the insert errors", async () => {

@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { findToolDefinition } from "@/lib/tools/registry";
+import { ANONYMOUS_SESSION_MAX_AGE_SECONDS } from "@/server/session/anonymous-session";
 
 export type SaveToolRunResult =
   | { ok: true; id: string }
@@ -60,19 +61,23 @@ export async function saveToolRun(
     return { ok: false, reason: "product_not_found" };
   }
 
-  const now = new Date().toISOString();
+  const now = new Date();
+  const isAnonymous = "anonymousSessionId" in owner;
   const { data: run, error: insertError } = await supabase
     .from("it_tool_runs")
     .insert({
       product_id: product.id,
       profile_id: "profileId" in owner ? owner.profileId : null,
-      anonymous_session_id: "anonymousSessionId" in owner ? owner.anonymousSessionId : null,
+      anonymous_session_id: isAnonymous ? owner.anonymousSessionId : null,
       status: "completed",
       tool_schema_version: definition.schemaVersion,
       input_data: parsedInput.data,
       result_data: parsedResult.data,
-      started_at: now,
-      completed_at: now,
+      started_at: now.toISOString(),
+      completed_at: now.toISOString(),
+      expires_at: isAnonymous
+        ? new Date(now.getTime() + ANONYMOUS_SESSION_MAX_AGE_SECONDS * 1000).toISOString()
+        : null,
     })
     .select("id")
     .single();
