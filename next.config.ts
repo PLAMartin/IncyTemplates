@@ -18,7 +18,7 @@ const contentSecurityPolicy = [
   `style-src 'self' 'unsafe-inline'`,
   `img-src ${imgSrc}`,
   `font-src 'self'`,
-  `connect-src ${connectSrc} https://www.google-analytics.com https://www.googletagmanager.com`,
+  `connect-src ${connectSrc} https://*.google-analytics.com https://www.googletagmanager.com`,
   `frame-ancestors 'none'`,
   `base-uri 'self'`,
   `form-action 'self'`,
