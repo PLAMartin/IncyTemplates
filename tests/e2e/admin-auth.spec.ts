@@ -23,6 +23,20 @@ test("visiting a nested admin route while signed out redirects to /sign-in", asy
   await expect(page).toHaveURL(/\/sign-in\?redirectTo=%2Fadmin%2Fframeworks/);
 });
 
+// Same infra gap as above applies to the source-post mapping workspace: the
+// accept/adjust/dismiss review flow (spec v7 acceptance items 10-12) needs a real staff
+// session in a test browser context, which isn't wired up yet. This covers what's testable
+// without one — the redirect gate — for both new routes.
+test("visiting /admin/source-posts while signed out redirects to /sign-in", async ({ page }) => {
+  await page.goto("/admin/source-posts");
+  await expect(page).toHaveURL(/\/sign-in\?redirectTo=%2Fadmin%2Fsource-posts/);
+});
+
+test("visiting an /admin/source-posts/review/[id] route while signed out redirects to /sign-in", async ({ page }) => {
+  await page.goto("/admin/source-posts/review/12345.example-post");
+  await expect(page).toHaveURL(/\/sign-in\?redirectTo=/);
+});
+
 test("sign-in form accepts an email and shows a status message on submit", async ({ page }) => {
   await page.goto("/sign-in");
   await page.getByLabel("Email address").fill("staff-e2e-test@example.com");

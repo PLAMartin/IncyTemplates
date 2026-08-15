@@ -5,6 +5,7 @@ import { requireStaffSession } from "@/server/auth/dal";
 const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/frameworks", label: "Frameworks" },
+  { href: "/admin/source-posts", label: "Source posts" },
   { href: "/admin/products", label: "Products & visibility" },
   { href: "/admin/guides", label: "Guides" },
   { href: "/admin/templates", label: "Templates" },

@@ -17,7 +17,8 @@
     "sync:stripe-product": "tsx scripts/sync-stripe-product.ts",
     "seed:visual-recipe": "tsx scripts/seed-visual-recipe.ts",
     "seed:product-idea-assessor-visual": "tsx scripts/seed-product-idea-assessor-visual.ts",
-    "import:guides": "tsx scripts/import-guides.ts"
+    "import:guides": "tsx scripts/import-guides.ts",
+    "import:abitgamey": "tsx scripts/import-abitgamey-assessments.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.3",
