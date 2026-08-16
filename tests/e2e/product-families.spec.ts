@@ -362,3 +362,17 @@ test("the published AI Agent Designer family page shows full detail, its outputs
   await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
   await expect(page.getByRole("link", { name: /MVP Scoper/ })).toBeVisible();
 });
+
+test("the published Negotiation Prep family page shows full detail and its outputs, with no next step", async ({ page }) => {
+  await page.goto("/products/negotiation-prep");
+  await expect(page.getByRole("heading", { name: "Negotiation Prep", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Negotiation Prep Sheet/ })).toBeVisible();
+  // Tenth Tier 3 family, built at explicit user request — deliberately no next-step family,
+  // negotiating is a skill applied to a new situation every time, not a one-time step
+  // (docs/decisions/0055).
+  await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
+});

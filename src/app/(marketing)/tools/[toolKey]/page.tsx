@@ -32,6 +32,7 @@ import { WritingEditorRunner } from "@/components/tools/writing-editor/tool-runn
 import { AppDesignReviewRunner } from "@/components/tools/app-design-review/tool-runner";
 import { AiPromptBuilderRunner } from "@/components/tools/ai-prompt-builder/tool-runner";
 import { AiAgentDesignerRunner } from "@/components/tools/ai-agent-designer/tool-runner";
+import { NegotiationPrepRunner } from "@/components/tools/negotiation-prep/tool-runner";
 
 type Props = { params: Promise<{ toolKey: string }> };
 
@@ -64,6 +65,7 @@ const TOOL_RUNNERS: Record<string, ComponentType<{ copy?: Record<string, string>
   "app-design-review": AppDesignReviewRunner,
   "ai-prompt-builder": AiPromptBuilderRunner,
   "ai-agent-designer": AiAgentDesignerRunner,
+  "negotiation-prep": NegotiationPrepRunner,
 };
 
 export async function generateStaticParams() {

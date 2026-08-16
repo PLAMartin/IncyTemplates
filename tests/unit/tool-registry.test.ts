@@ -24,6 +24,7 @@ import { WRITING_EDITOR_TOOL_KEY } from "@/lib/tools/writing-editor";
 import { APP_DESIGN_REVIEW_TOOL_KEY } from "@/lib/tools/app-design-review";
 import { AI_PROMPT_BUILDER_TOOL_KEY } from "@/lib/tools/ai-prompt-builder";
 import { AI_AGENT_DESIGNER_TOOL_KEY } from "@/lib/tools/ai-agent-designer";
+import { NEGOTIATION_PREP_TOOL_KEY } from "@/lib/tools/negotiation-prep";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -369,5 +370,14 @@ describe("tool registry", () => {
     const result = definition.run(parsedInput);
     const parsedResult = definition.resultSchema.parse(result) as { verdict: string };
     expect(parsedResult.verdict).toBe("workflow_not_agent");
+  });
+
+  it("resolves the twenty-fourth registered tool (Negotiation Prep) independently of the others", () => {
+    const definition = getToolDefinition(NEGOTIATION_PREP_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({ batna: "Walk away and keep the incumbent.", anchor: "", mesos: "" });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { tactics: { tactic: string; present: boolean }[] };
+    expect(parsedResult.tactics.find((t) => t.tactic === "batna")?.present).toBe(true);
+    expect(parsedResult.tactics.filter((t) => t.present)).toHaveLength(1);
   });
 });

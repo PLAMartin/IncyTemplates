@@ -241,12 +241,23 @@ terminal — it's the first family since Better Decision Maker to point
 forward into MVP Scoper, a second, independent branch. Wired into the Next
 Step Finder alongside the other twenty-two.
 
-**No Stripe checkout, no customer accounts/library, no saved Tool runs, and
-no admin CRUD UI yet** — those remain out of scope for this milestone per
-the spec's own phasing. Product/bundle pages still use a waitlist
-email-capture CTA. See [`docs/decisions/`](docs/decisions/) for every
-deviation and judgment call made along the way, particularly `0013`–`0020`
-for the v3 work specifically.
+A twenty-fourth family has since shipped: **Negotiation Prep** (see
+[`docs/decisions/0055`](docs/decisions/0055-negotiation-prep-family.md)),
+the tenth Tier 3 family, again started at the user's explicit request. Its
+Tool is a completeness checklist, the fourth use of that shape (Story
+Builder's original, App Design Review's same polarity, Writing Editor's
+inversion): three free-text fields — BATNA (fallback), Anchor, and MESOs
+(multiple equivalent offers) — checked for presence, not scored, with a
+tip for whichever tactic isn't prepared yet. Deliberately terminal, like
+Meeting Reset and Writing Editor — negotiating well is a recurring skill,
+not a one-time step. Wired into the Next Step Finder alongside the other
+twenty-three.
+
+See [`docs/decisions/`](docs/decisions/) for every deviation and judgment
+call made along the way, particularly `0013`–`0020` for the v3 work
+specifically, and `0044` onward for the admin/editorial, Visual Asset
+System, commerce/accounts and Reuse Taxonomy work that has since shipped
+on top of this milestone.
 
 ## Tech stack
 

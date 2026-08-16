@@ -53,6 +53,7 @@ const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
   framework("app-design-review", { nextStepFrameworkSlug: null }),
   framework("ai-prompt-builder", { nextStepFrameworkSlug: null }),
   framework("ai-agent-designer", { nextStepFrameworkSlug: "mvp-scoper" }),
+  framework("negotiation-prep", { nextStepFrameworkSlug: null }),
 ];
 
 const baseInput = (overrides: Partial<FinderInput> = {}): FinderInput => ({
@@ -87,6 +88,7 @@ describe("resolveNextStep — outcome maps to the right framework", () => {
     ["review_design", "app-design-review"],
     ["craft_a_prompt", "ai-prompt-builder"],
     ["design_an_agent", "ai-agent-designer"],
+    ["prepare_to_negotiate", "negotiation-prep"],
   ] as [Outcome, string][])("%s -> %s", (outcome, expectedSlug) => {
     const result = resolveNextStep(baseInput({ outcome }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe(expectedSlug);
@@ -283,6 +285,13 @@ describe("resolveNextStep — supporting recommendations", () => {
   it("Meeting Reset has no next-step supporting recommendation — a recurring practice, not a one-time step", () => {
     const result = resolveNextStep(baseInput({ outcome: "reset_meetings", outputPreference: "interactive_result" }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe("meeting-reset");
+    expect(result?.supporting).toHaveLength(1);
+    expect(result?.supporting[0]?.outputType).toBe("guide");
+  });
+
+  it("Negotiation Prep has no next-step supporting recommendation — a recurring practice, not a one-time step", () => {
+    const result = resolveNextStep(baseInput({ outcome: "prepare_to_negotiate", outputPreference: "interactive_result" }), ALL_FRAMEWORKS);
+    expect(result?.primary.frameworkSlug).toBe("negotiation-prep");
     expect(result?.supporting).toHaveLength(1);
     expect(result?.supporting[0]?.outputType).toBe("guide");
   });
