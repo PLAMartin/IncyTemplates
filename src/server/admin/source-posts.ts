@@ -278,9 +278,13 @@ export async function reviewSourcePostMapping(input: ReviewSourcePostMappingInpu
   const { error: auditError } = await supabase.rpc("it_write_audit_log", {
     p_action: "source_post_mapping_review",
     p_entity_type: "it_source_post_mapping_reviews",
-    p_entity_id: input.sourcePostId,
-    p_before_state: before ?? null,
-    p_after_state: { status: input.status, editorial_uses: input.editorialUses },
+    // it_source_post_mapping_reviews has no uuid primary key (source_post_id is text, the
+    // ABitGamey post id) -- it_write_audit_log.p_entity_id/it_audit_log.entity_id are uuid
+    // everywhere else in this schema, so there is no id to pass here. source_post_id is
+    // recorded in before/after state instead, same as every other field this call logs.
+    p_entity_id: null,
+    p_before_state: { source_post_id: input.sourcePostId, ...before },
+    p_after_state: { source_post_id: input.sourcePostId, status: input.status, editorial_uses: input.editorialUses },
     p_reason: input.editorialNote ?? null,
     p_actor_profile_id: input.actorProfileId,
   });
@@ -320,9 +324,17 @@ export async function addFrameworkMapping(input: AddFrameworkMappingInput): Prom
   const { error: auditError } = await supabase.rpc("it_write_audit_log", {
     p_action: "framework_source_post_link_add",
     p_entity_type: "it_framework_source_posts",
-    p_entity_id: input.sourcePostId,
+    // it_framework_source_posts' primary key is composite (framework_id, source_post_id);
+    // framework_id is the one real uuid in that pair, so it's the natural entity_id -- the
+    // post id goes in after_state instead, same reasoning as reviewSourcePostMapping above.
+    p_entity_id: input.frameworkId,
     p_before_state: null,
-    p_after_state: { framework_id: input.frameworkId, contribution_type: input.contributionType, output_uses: input.outputUses },
+    p_after_state: {
+      source_post_id: input.sourcePostId,
+      framework_id: input.frameworkId,
+      contribution_type: input.contributionType,
+      output_uses: input.outputUses,
+    },
     p_reason: input.editorialNote ?? null,
     p_actor_profile_id: input.actorProfileId,
   });
@@ -348,8 +360,8 @@ export async function removeFrameworkMapping(input: RemoveFrameworkMappingInput)
   const { error: auditError } = await supabase.rpc("it_write_audit_log", {
     p_action: "framework_source_post_link_remove",
     p_entity_type: "it_framework_source_posts",
-    p_entity_id: input.sourcePostId,
-    p_before_state: { framework_id: input.frameworkId },
+    p_entity_id: input.frameworkId,
+    p_before_state: { source_post_id: input.sourcePostId, framework_id: input.frameworkId },
     p_after_state: null,
     p_reason: null,
     p_actor_profile_id: input.actorProfileId,
