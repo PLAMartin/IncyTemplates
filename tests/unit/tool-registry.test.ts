@@ -26,6 +26,7 @@ import { AI_PROMPT_BUILDER_TOOL_KEY } from "@/lib/tools/ai-prompt-builder";
 import { AI_AGENT_DESIGNER_TOOL_KEY } from "@/lib/tools/ai-agent-designer";
 import { NEGOTIATION_PREP_TOOL_KEY } from "@/lib/tools/negotiation-prep";
 import { STICKY_PITCH_CHECKER_TOOL_KEY } from "@/lib/tools/sticky-pitch-checker";
+import { RAPID_LEARNING_PLANNER_TOOL_KEY } from "@/lib/tools/rapid-learning-planner";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -401,5 +402,14 @@ describe("tool registry", () => {
     expect(parsedResult.factorStates.find((f) => f.factor === "simple")?.present).toBe(true);
     expect(parsedResult.stickCount).toBe(1);
     expect(parsedResult.spreadCount).toBe(0);
+  });
+
+  it("resolves the twenty-sixth registered tool (Rapid Learning Planner) independently of the others", () => {
+    const definition = getToolDefinition(RAPID_LEARNING_PLANNER_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({ deconstruction: "Break the skill into its parts.", selection: "", sequencing: "", stakes: "" });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { steps: { step: string; present: boolean }[] };
+    expect(parsedResult.steps.find((s) => s.step === "deconstruction")?.present).toBe(true);
+    expect(parsedResult.steps.filter((s) => s.present)).toHaveLength(1);
   });
 });

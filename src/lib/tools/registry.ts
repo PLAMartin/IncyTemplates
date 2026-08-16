@@ -23,6 +23,7 @@ import { aiPromptBuilderTool } from "./ai-prompt-builder";
 import { aiAgentDesignerTool } from "./ai-agent-designer";
 import { negotiationPrepTool } from "./negotiation-prep";
 import { stickyPitchCheckerTool } from "./sticky-pitch-checker";
+import { rapidLearningPlannerTool } from "./rapid-learning-planner";
 import type { ToolDefinition } from "./types";
 import { ToolNotAvailableError } from "./types";
 
@@ -58,6 +59,7 @@ const TOOL_REGISTRY: Record<string, ToolDefinition<unknown, unknown>> = {
   [aiAgentDesignerTool.key]: aiAgentDesignerTool as ToolDefinition<unknown, unknown>,
   [negotiationPrepTool.key]: negotiationPrepTool as ToolDefinition<unknown, unknown>,
   [stickyPitchCheckerTool.key]: stickyPitchCheckerTool as ToolDefinition<unknown, unknown>,
+  [rapidLearningPlannerTool.key]: rapidLearningPlannerTool as ToolDefinition<unknown, unknown>,
 };
 
 /** Returns the Tool definition for `toolKey`, or null if none is registered. */

@@ -393,3 +393,20 @@ test("the published Sticky Pitch Checker family page shows full detail, its outp
   await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
   await expect(page.getByRole("link", { name: /First Customers Planner/ })).toBeVisible();
 });
+
+test("the published Rapid Learning Planner family page shows full detail and its outputs, with no next step", async ({ page }) => {
+  await page.goto("/products/rapid-learning-planner");
+  await expect(page.getByRole("heading", { name: "Rapid Learning Planner", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  // "Rapid Learning Plan" (Template) is a substring of both "Rapid Learning Planner" (Guide)
+  // and "Rapid Learning Plan Check" (Tool) -- the negative lookahead picks out the Template's
+  // card specifically.
+  await expect(page.getByRole("link", { name: /Rapid Learning Plan(?!ner| Check)/ })).toBeVisible();
+  // The second family sourced directly from the v7 Reuse Taxonomy admin workspace, alongside
+  // Sticky Pitch Checker — deliberately no next-step family, learning a new skill fast is a
+  // recurring practice, not a one-time step (docs/decisions/0060).
+  await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
+});

@@ -55,6 +55,7 @@ const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
   framework("ai-agent-designer", { nextStepFrameworkSlug: "mvp-scoper" }),
   framework("negotiation-prep", { nextStepFrameworkSlug: null }),
   framework("sticky-pitch-checker", { nextStepFrameworkSlug: "first-customers-planner" }),
+  framework("rapid-learning-planner", { nextStepFrameworkSlug: null }),
 ];
 
 const baseInput = (overrides: Partial<FinderInput> = {}): FinderInput => ({
@@ -91,6 +92,7 @@ describe("resolveNextStep — outcome maps to the right framework", () => {
     ["design_an_agent", "ai-agent-designer"],
     ["prepare_to_negotiate", "negotiation-prep"],
     ["make_it_stick", "sticky-pitch-checker"],
+    ["learn_a_skill_fast", "rapid-learning-planner"],
   ] as [Outcome, string][])("%s -> %s", (outcome, expectedSlug) => {
     const result = resolveNextStep(baseInput({ outcome }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe(expectedSlug);
@@ -329,6 +331,13 @@ describe("resolveNextStep — supporting recommendations", () => {
     const result = resolveNextStep(baseInput({ outcome: "make_it_stick", outputPreference: "interactive_result" }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe("sticky-pitch-checker");
     expect(result?.supporting.some((s) => s.frameworkSlug === "first-customers-planner")).toBe(true);
+  });
+
+  it("Rapid Learning Planner has no next-step supporting recommendation — a recurring practice, not a one-time step", () => {
+    const result = resolveNextStep(baseInput({ outcome: "learn_a_skill_fast", outputPreference: "interactive_result" }), ALL_FRAMEWORKS);
+    expect(result?.primary.frameworkSlug).toBe("rapid-learning-planner");
+    expect(result?.supporting).toHaveLength(1);
+    expect(result?.supporting[0]?.outputType).toBe("guide");
   });
 
   it("the last family in the chain has no next-step supporting recommendation", () => {

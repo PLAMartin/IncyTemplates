@@ -269,6 +269,18 @@ fourth branch alongside Product Naming System, Story Builder and Startup
 Launch Planner. Wired into the Next Step Finder alongside the other
 twenty-four.
 
+A twenty-sixth family has since shipped: **Rapid Learning Planner** (see
+[`docs/decisions/0060`](docs/decisions/0060-rapid-learning-planner-family.md)),
+the second family sourced directly from the v7 Reuse Taxonomy admin
+workspace, built from Tim Ferriss's DSSS framework (Deconstruction,
+Selection, Sequencing, Stakes). Its Tool is the sixth use of the
+completeness-checklist mechanic, and the third built from optional
+free-text fields rather than yes/no self-assessment (alongside Story
+Builder and Negotiation Prep) — DSSS is a plan for one specific skill,
+not properties of an existing artifact. Deliberately terminal, like
+Negotiation Prep, Writing Editor and AI Prompt Builder. Wired into the
+Next Step Finder alongside the other twenty-five.
+
 See [`docs/decisions/`](docs/decisions/) for every deviation and judgment
 call made along the way, particularly `0013`–`0020` for the v3 work
 specifically, and `0044` onward for the admin/editorial, Visual Asset

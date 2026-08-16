@@ -34,6 +34,7 @@ import { AiPromptBuilderRunner } from "@/components/tools/ai-prompt-builder/tool
 import { AiAgentDesignerRunner } from "@/components/tools/ai-agent-designer/tool-runner";
 import { NegotiationPrepRunner } from "@/components/tools/negotiation-prep/tool-runner";
 import { StickyPitchCheckerRunner } from "@/components/tools/sticky-pitch-checker/tool-runner";
+import { RapidLearningPlannerRunner } from "@/components/tools/rapid-learning-planner/tool-runner";
 
 type Props = { params: Promise<{ toolKey: string }> };
 
@@ -68,6 +69,7 @@ const TOOL_RUNNERS: Record<string, ComponentType<{ copy?: Record<string, string>
   "ai-agent-designer": AiAgentDesignerRunner,
   "negotiation-prep": NegotiationPrepRunner,
   "sticky-pitch-checker": StickyPitchCheckerRunner,
+  "rapid-learning-planner": RapidLearningPlannerRunner,
 };
 
 export async function generateStaticParams() {
