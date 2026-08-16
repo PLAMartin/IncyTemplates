@@ -240,15 +240,16 @@ otp_length = 8
 # Number of seconds before the email OTP expires (defaults to 1 hour).
 otp_expiry = 3600
 
-# Use a production-ready SMTP server
-# [auth.email.smtp]
-# enabled = true
-# host = "smtp.sendgrid.net"
-# port = 587
-# user = "apikey"
-# pass = "env(SENDGRID_API_KEY)"
-# admin_email = "admin@email.com"
-# sender_name = "Admin"
+# Production SMTP: Brevo (see docs/decisions/0059-brevo-smtp.md). SMTP login/key come from
+# Brevo's SMTP & API settings, SMTP tab -- not the general API key, which GoTrue can't use.
+[auth.email.smtp]
+enabled = true
+host = "smtp-relay.brevo.com"
+port = 587
+user = "env(BREVO_SMTP_LOGIN)"
+pass = "env(BREVO_SMTP_KEY)"
+admin_email = "phil@incytemplates.com"
+sender_name = "Incy Templates"
 
 # Uncomment to customize email template
 # [auth.email.template.invite]
