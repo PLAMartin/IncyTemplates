@@ -282,19 +282,25 @@ type FrameworkRow = {
   next_step: { slug: string } | null;
 };
 
-// TODO(verify-against-live-schema): the self-referencing FK embed alias below
-// (`next_step:it_frameworks!next_step_framework_id(...)`) follows the same
-// `!constraint_or_column_hint` pattern used for it_bundle_items' two-FK embed elsewhere in
-// this file — PostgREST needs the hint to disambiguate a self-join, and the exact accepted
-// hint syntax (`next_step_framework_id` vs a generated constraint name) hasn't been
-// confirmed against a live project.
+// Self-referencing FK embed: `next_step:next_step_framework_id(slug)` embeds via the FK
+// *column* itself, not `it_frameworks!next_step_framework_id`. Confirmed live (2026-08-16):
+// the `it_frameworks!next_step_framework_id` form PostgREST resolves as the *reverse*
+// one-to-many relationship (every other framework whose own next_step_framework_id points at
+// this row), returning an array — e.g. querying mvp-scoper returned
+// `[{slug:"better-decision-maker"},{slug:"ai-agent-designer"}]` (frameworks that point *at*
+// MVP Scoper) instead of `{slug:"product-naming-system"}` (what MVP Scoper's own
+// next_step_framework_id actually points *to*). `row.next_step?.slug` on an array is always
+// `undefined`, so every framework's Next Step section silently failed to render against live
+// data while working fine against fixtures (which hardcode the resolved slug, no join
+// involved) — this was mistaken for per-family data drift across several "what's next"
+// checks before being traced to this one query. See docs/decisions/0058.
 const FRAMEWORK_SELECT = `
   id, status, name, slug, short_description, problem_statement, outcome_statement,
   target_audience, when_to_use, when_not_to_use, method_summary,
   priority_score, priority_rationale, source_strength, source_note, flagship, display_order,
   seo_title, seo_description, published_at,
   journey_stage:it_stages ( id, name, slug, description, display_order ),
-  next_step:it_frameworks!next_step_framework_id ( slug )
+  next_step:next_step_framework_id ( slug )
 `;
 
 function mapFramework(row: FrameworkRow): Framework {
