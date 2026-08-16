@@ -253,6 +253,22 @@ Meeting Reset and Writing Editor — negotiating well is a recurring skill,
 not a one-time step. Wired into the Next Step Finder alongside the other
 twenty-three.
 
+A twenty-fifth family has since shipped: **Sticky Pitch Checker** (see
+[`docs/decisions/0057`](docs/decisions/0057-sticky-pitch-checker-family.md)),
+the first family sourced directly from the v7 Reuse Taxonomy admin
+workspace rather than spec §37's original portfolio — found by reading two
+companion source posts (Chip and Dan Heath's SUCCESs framework, Jonah
+Berger's STEPPS framework) that turned out to share two factors, merged
+into one ten-factor checklist rather than built as two overlapping
+families. Its Tool is the fifth use of the completeness-checklist
+mechanic, same polarity as App Design Review, with results grouped into
+"makes it stick" and "makes it spread" — the first checklist Tool to
+group its factors, since these ten come from two distinct named
+frameworks rather than one. Points forward to First Customers Planner, a
+fourth branch alongside Product Naming System, Story Builder and Startup
+Launch Planner. Wired into the Next Step Finder alongside the other
+twenty-four.
+
 See [`docs/decisions/`](docs/decisions/) for every deviation and judgment
 call made along the way, particularly `0013`–`0020` for the v3 work
 specifically, and `0044` onward for the admin/editorial, Visual Asset

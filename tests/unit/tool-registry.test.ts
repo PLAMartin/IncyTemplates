@@ -25,6 +25,7 @@ import { APP_DESIGN_REVIEW_TOOL_KEY } from "@/lib/tools/app-design-review";
 import { AI_PROMPT_BUILDER_TOOL_KEY } from "@/lib/tools/ai-prompt-builder";
 import { AI_AGENT_DESIGNER_TOOL_KEY } from "@/lib/tools/ai-agent-designer";
 import { NEGOTIATION_PREP_TOOL_KEY } from "@/lib/tools/negotiation-prep";
+import { STICKY_PITCH_CHECKER_TOOL_KEY } from "@/lib/tools/sticky-pitch-checker";
 
 describe("tool registry", () => {
   it("resolves a known tool_key to its definition", () => {
@@ -379,5 +380,26 @@ describe("tool registry", () => {
     const parsedResult = definition.resultSchema.parse(result) as { tactics: { tactic: string; present: boolean }[] };
     expect(parsedResult.tactics.find((t) => t.tactic === "batna")?.present).toBe(true);
     expect(parsedResult.tactics.filter((t) => t.present)).toHaveLength(1);
+  });
+
+  it("resolves the twenty-fifth registered tool (Sticky Pitch Checker) independently of the others", () => {
+    const definition = getToolDefinition(STICKY_PITCH_CHECKER_TOOL_KEY);
+    const parsedInput = definition.inputSchema.parse({
+      simple: "already_there",
+      unexpected: "not_yet",
+      concrete: "not_yet",
+      credible: "not_yet",
+      emotional: "not_yet",
+      story: "not_yet",
+      socialCurrency: "not_yet",
+      triggers: "not_yet",
+      public: "not_yet",
+      practicalValue: "not_yet",
+    });
+    const result = definition.run(parsedInput);
+    const parsedResult = definition.resultSchema.parse(result) as { factorStates: { factor: string; present: boolean }[]; stickCount: number; spreadCount: number };
+    expect(parsedResult.factorStates.find((f) => f.factor === "simple")?.present).toBe(true);
+    expect(parsedResult.stickCount).toBe(1);
+    expect(parsedResult.spreadCount).toBe(0);
   });
 });

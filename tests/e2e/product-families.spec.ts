@@ -376,3 +376,20 @@ test("the published Negotiation Prep family page shows full detail and its outpu
   // (docs/decisions/0055).
   await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
 });
+
+test("the published Sticky Pitch Checker family page shows full detail, its outputs, and links on to its next step", async ({
+  page,
+}) => {
+  await page.goto("/products/sticky-pitch-checker");
+  await expect(page.getByRole("heading", { name: "Sticky Pitch Checker", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ways to use this" })).toBeVisible();
+  await expect(page.getByText("Learn how")).toBeVisible();
+  await expect(page.getByText("Do it yourself")).toBeVisible();
+  await expect(page.getByText("Do it interactively")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Sticky Pitch Worksheet/ })).toBeVisible();
+  // The first family sourced directly from the v7 Reuse Taxonomy admin workspace rather than
+  // spec §37's original portfolio — a fourth branch into First Customers Planner alongside
+  // Product Naming System, Story Builder and Startup Launch Planner (docs/decisions/0057).
+  await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /First Customers Planner/ })).toBeVisible();
+});

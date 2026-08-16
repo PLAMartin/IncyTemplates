@@ -54,6 +54,7 @@ const ALL_FRAMEWORKS: FinderFrameworkOption[] = [
   framework("ai-prompt-builder", { nextStepFrameworkSlug: null }),
   framework("ai-agent-designer", { nextStepFrameworkSlug: "mvp-scoper" }),
   framework("negotiation-prep", { nextStepFrameworkSlug: null }),
+  framework("sticky-pitch-checker", { nextStepFrameworkSlug: "first-customers-planner" }),
 ];
 
 const baseInput = (overrides: Partial<FinderInput> = {}): FinderInput => ({
@@ -89,6 +90,7 @@ describe("resolveNextStep — outcome maps to the right framework", () => {
     ["craft_a_prompt", "ai-prompt-builder"],
     ["design_an_agent", "ai-agent-designer"],
     ["prepare_to_negotiate", "negotiation-prep"],
+    ["make_it_stick", "sticky-pitch-checker"],
   ] as [Outcome, string][])("%s -> %s", (outcome, expectedSlug) => {
     const result = resolveNextStep(baseInput({ outcome }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe(expectedSlug);
@@ -321,6 +323,12 @@ describe("resolveNextStep — supporting recommendations", () => {
     const result = resolveNextStep(baseInput({ outcome: "design_an_agent", outputPreference: "interactive_result" }), ALL_FRAMEWORKS);
     expect(result?.primary.frameworkSlug).toBe("ai-agent-designer");
     expect(result?.supporting.some((s) => s.frameworkSlug === "mvp-scoper")).toBe(true);
+  });
+
+  it("Sticky Pitch Checker includes First Customers Planner as a supporting recommendation, a fourth branch into that family", () => {
+    const result = resolveNextStep(baseInput({ outcome: "make_it_stick", outputPreference: "interactive_result" }), ALL_FRAMEWORKS);
+    expect(result?.primary.frameworkSlug).toBe("sticky-pitch-checker");
+    expect(result?.supporting.some((s) => s.frameworkSlug === "first-customers-planner")).toBe(true);
   });
 
   it("the last family in the chain has no next-step supporting recommendation", () => {

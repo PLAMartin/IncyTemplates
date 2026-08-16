@@ -47,6 +47,7 @@ export const OUTCOME_FRAMEWORK_SLUG: Record<Exclude<Outcome, "not_sure">, string
   craft_a_prompt: "ai-prompt-builder",
   design_an_agent: "ai-agent-designer",
   prepare_to_negotiate: "negotiation-prep",
+  make_it_stick: "sticky-pitch-checker",
 };
 
 const PROGRESS_OUTPUT_TYPE: Record<Progress, FinderOutputType> = {
