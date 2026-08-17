@@ -3,12 +3,12 @@
 import { useEffect, useState, type RefObject } from "react";
 import type { WritingEditorResult } from "@/lib/tools/writing-editor/schema";
 
-function resultToPlainText(result: WritingEditorResult): string {
+function resultToPlainText(result: WritingEditorResult, copy: Record<string, string>): string {
   const lines = ["Writing Editor — structured editing review", ""];
   for (const state of result.ruleStates) {
     lines.push(`${state.present ? "☐" : "✓"} ${state.label}${state.present ? " — still a problem" : " — already clean"}`);
   }
-  lines.push("", `Fix tip: ${result.firstFixTip}`, "", result.closingNote, "", `Next step: ${result.nextStep}`);
+  lines.push("", `${copy.fix_tip_label}: ${result.firstFixTip}`, "", result.closingNote, "", `${copy.next_step_label}: ${result.nextStep}`);
   return lines.join("\n");
 }
 
@@ -22,10 +22,12 @@ export function WritingEditorResultSummary({
   result,
   onRestart,
   headingRef,
+  copy,
 }: {
   result: WritingEditorResult;
   onRestart: () => void;
   headingRef: RefObject<HTMLHeadingElement | null>;
+  copy: Record<string, string>;
 }) {
   const [copied, setCopied] = useState(false);
   const flaggedCount = result.ruleStates.filter((state) => state.present).length;
@@ -38,7 +40,7 @@ export function WritingEditorResultSummary({
 
   async function handleCopy() {
     try {
-      await navigator.clipboard.writeText(resultToPlainText(result));
+      await navigator.clipboard.writeText(resultToPlainText(result, copy));
       setCopied(true);
       setTimeout(() => setCopied(false), 3000);
     } catch {
@@ -74,11 +76,11 @@ export function WritingEditorResultSummary({
 
       <dl className="mt-6 grid grid-cols-1 gap-4">
         <div>
-          <dt className="text-sm font-semibold text-ink-900">Fix tip</dt>
+          <dt className="text-sm font-semibold text-ink-900">{copy.fix_tip_label}</dt>
           <dd className="mt-1 text-sm text-ink-700">{result.firstFixTip}</dd>
         </div>
         <div>
-          <dt className="text-sm font-semibold text-ink-900">Next step</dt>
+          <dt className="text-sm font-semibold text-ink-900">{copy.next_step_label}</dt>
           <dd className="mt-1 text-sm text-ink-700">{result.nextStep}</dd>
         </div>
       </dl>
@@ -91,14 +93,14 @@ export function WritingEditorResultSummary({
           onClick={handleCopy}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          {copied ? "Copied" : "Copy result"}
+          {copied ? copy.copy_button_copied_label : copy.copy_button_label}
         </button>
         <button
           type="button"
           onClick={onRestart}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Review another draft
+          {copy.restart_button_label}
         </button>
       </div>
     </div>

@@ -2,6 +2,8 @@
 
 import { useId, useMemo, useReducer, useRef } from "react";
 import { getToolDefinition } from "@/lib/tools/registry";
+import { productPositioningBuilderCopySchema } from "@/lib/tools/product-positioning-builder/copy";
+import { resolveToolCopy } from "@/lib/tools/copy";
 import type { CutThroughApproach, ProductPositioningBuilderInput, ProductPositioningBuilderResult } from "@/lib/tools/product-positioning-builder/schema";
 import { ProductPositioningBuilderResultSummary } from "@/components/tools/product-positioning-builder/tool-result-summary";
 
@@ -19,43 +21,46 @@ type Step =
 // Three required free-text steps plus one optional one, assembled into a positioning
 // statement (spec v4 §37), plus one required select for the cut-through tactic — the second
 // Tool to mix step types after Product Idea Generator (docs/decisions/0029, 0032).
-const STEPS: Step[] = [
+// Legend/placeholder/hint text comes from `copy` (admin-editable, spec §14.7.1); select
+// option label/description stay hardcoded (see this file's copy.ts doc comment).
+function buildSteps(copy: Record<string, string>): Step[] {
+  return [
   {
     kind: "text",
     key: "idealCustomer",
     required: true,
-    legend: "Who's your ideal customer?",
-    placeholder: "e.g. solo founders validating a new product idea",
-    hint: "Be specific — a real kind of person, not \"everyone.\"",
+    legend: copy.q_ideal_customer_legend!,
+    placeholder: copy.q_ideal_customer_placeholder!,
+    hint: copy.q_ideal_customer_hint!,
   },
   {
     kind: "text",
     key: "desiredAction",
     required: true,
-    legend: "What action do you want them to take with your product?",
-    placeholder: "e.g. score their idea in under five minutes",
-    hint: "The specific thing they do, not the feature that lets them do it.",
+    legend: copy.q_desired_action_legend!,
+    placeholder: copy.q_desired_action_placeholder!,
+    hint: copy.q_desired_action_hint!,
   },
   {
     kind: "text",
     key: "desiredOutcome",
     required: true,
-    legend: "What outcome do they get from that action?",
-    placeholder: "e.g. know exactly how much evidence they still need before committing",
-    hint: "The result they walk away with.",
+    legend: copy.q_desired_outcome_legend!,
+    placeholder: copy.q_desired_outcome_placeholder!,
+    hint: copy.q_desired_outcome_hint!,
   },
   {
     kind: "text",
     key: "admiredIdentity",
     required: false,
-    legend: "What do your ideal customers admire or aspire to be?",
-    placeholder: "e.g. founders who ship fast and validate rigorously, not ones who guess",
-    hint: "Optional — skip if nothing comes to mind.",
+    legend: copy.q_admired_identity_legend!,
+    placeholder: copy.q_admired_identity_placeholder!,
+    hint: copy.q_admired_identity_hint!,
   },
   {
     kind: "select",
     key: "cutThroughApproach",
-    legend: "What's the most realistic way you'll cut through the noise?",
+    legend: copy.q_cut_through_legend!,
     options: [
       {
         value: "problem_people_actively_worry_about",
@@ -84,6 +89,16 @@ const STEPS: Step[] = [
       },
     ],
   },
+  ];
+}
+
+// Key/kind/required/order only — reducer validation logic doesn't need copy-driven legend/placeholder/hint text.
+const STEP_META: { key: TextKey | "cutThroughApproach"; kind: "text" | "select"; required: boolean }[] = [
+  { key: "idealCustomer", kind: "text", required: true },
+  { key: "desiredAction", kind: "text", required: true },
+  { key: "desiredOutcome", kind: "text", required: true },
+  { key: "admiredIdentity", kind: "text", required: false },
+  { key: "cutThroughApproach", kind: "select", required: true },
 ];
 
 type State =
@@ -119,7 +134,7 @@ function reducer(state: State, action: Action): State {
     }
     case "next": {
       if (state.phase !== "question") return state;
-      const step = STEPS[state.stepIndex]!;
+      const step = STEP_META[state.stepIndex]!;
       const isBlank = !state.answers[step.key]?.trim();
       if (step.kind === "select" && isBlank) {
         return { ...state, error: "Choose an option to continue." };
@@ -127,7 +142,7 @@ function reducer(state: State, action: Action): State {
       if (step.kind === "text" && step.required && isBlank) {
         return { ...state, error: "This answer is needed to build your statement." };
       }
-      if (state.stepIndex < STEPS.length - 1) {
+      if (state.stepIndex < STEP_META.length - 1) {
         return { ...state, stepIndex: state.stepIndex + 1, error: null };
       }
       // Last step answered — validate and run the deterministic assembly.
@@ -144,37 +159,39 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-export function ProductPositioningBuilderRunner() {
+export function ProductPositioningBuilderRunner({ copy: copyOverrides }: { copy?: Record<string, string> }) {
+  const copy = useMemo(() => resolveToolCopy(productPositioningBuilderCopySchema, copyOverrides), [copyOverrides]);
+  const steps = useMemo(() => buildSteps(copy), [copy]);
   const [state, dispatch] = useReducer(reducer, { phase: "start" });
   const errorRegionId = useId();
   const textInputId = useId();
   const resultHeadingRef = useRef<HTMLHeadingElement>(null);
 
-  const currentStep = state.phase === "question" ? STEPS[state.stepIndex] : undefined;
+  const currentStep = state.phase === "question" ? steps[state.stepIndex] : undefined;
   const textValue = currentStep && currentStep.kind === "text" && state.phase === "question" ? (state.answers[currentStep.key] ?? "") : "";
   const selectedValue =
     currentStep && currentStep.kind === "select" && state.phase === "question" ? state.answers[currentStep.key] : undefined;
 
   const progressLabel = useMemo(() => {
     if (state.phase !== "question") return null;
-    return `Question ${state.stepIndex + 1} of ${STEPS.length}`;
-  }, [state]);
+    return `Question ${state.stepIndex + 1} of ${steps.length}`;
+  }, [state, steps]);
 
   if (state.phase === "start") {
     return (
       <div className="rounded-md border border-ink-200 bg-paper-raised p-6">
-        <h2 className="text-lg font-semibold text-ink-900">Before you start</h2>
+        <h2 className="text-lg font-semibold text-ink-900">{copy.intro_heading}</h2>
         <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-700">
-          <li>Takes about 3 minutes — answer with a specific customer and outcome in mind, not &ldquo;everyone.&rdquo;</li>
-          <li>Nothing is saved or sent anywhere — this runs entirely in your browser.</li>
-          <li>You&apos;ll get a positioning statement and a recommended way to cut through the noise.</li>
+          <li>{copy.intro_bullet_1}</li>
+          <li>{copy.intro_bullet_2}</li>
+          <li>{copy.intro_bullet_3}</li>
         </ul>
         <button
           type="button"
           onClick={() => dispatch({ type: "begin" })}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Start building your positioning
+          {copy.intro_cta}
         </button>
       </div>
     );
@@ -250,7 +267,7 @@ export function ProductPositioningBuilderRunner() {
             aria-describedby={state.error ? errorRegionId : undefined}
             className="inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
           >
-            {state.stepIndex === STEPS.length - 1 ? "See my result" : "Continue"}
+            {state.stepIndex === steps.length - 1 ? "See my result" : "Continue"}
           </button>
         </div>
       </div>

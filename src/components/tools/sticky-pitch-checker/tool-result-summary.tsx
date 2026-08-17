@@ -49,10 +49,12 @@ export function StickyPitchCheckerResultSummary({
   result,
   onRestart,
   headingRef,
+  copy,
 }: {
   result: StickyPitchCheckerResult;
   onRestart: () => void;
   headingRef: RefObject<HTMLHeadingElement | null>;
+  copy: Record<string, string>;
 }) {
   const [copied, setCopied] = useState(false);
   const missingCount = result.factorStates.filter((state) => !state.present).length;
@@ -94,17 +96,17 @@ export function StickyPitchCheckerResultSummary({
       </dl>
 
       <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <FactorGroupList title="Makes it stick" states={stickStates} />
-        <FactorGroupList title="Makes it spread" states={spreadStates} />
+        <FactorGroupList title={copy.stick_group_title!} states={stickStates} />
+        <FactorGroupList title={copy.spread_group_title!} states={spreadStates} />
       </div>
 
       <dl className="mt-6 grid grid-cols-1 gap-4">
         <div>
-          <dt className="text-sm font-semibold text-ink-900">Tip</dt>
+          <dt className="text-sm font-semibold text-ink-900">{copy.tip_label}</dt>
           <dd className="mt-1 text-sm text-ink-700">{result.firstTip}</dd>
         </div>
         <div>
-          <dt className="text-sm font-semibold text-ink-900">Next step</dt>
+          <dt className="text-sm font-semibold text-ink-900">{copy.next_step_label}</dt>
           <dd className="mt-1 text-sm text-ink-700">{result.nextStep}</dd>
         </div>
       </dl>
@@ -117,14 +119,14 @@ export function StickyPitchCheckerResultSummary({
           onClick={handleCopy}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          {copied ? "Copied" : "Copy result"}
+          {copied ? copy.copy_button_copied_label : copy.copy_button_label}
         </button>
         <button
           type="button"
           onClick={onRestart}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Check another pitch
+          {copy.restart_button_label}
         </button>
       </div>
     </div>

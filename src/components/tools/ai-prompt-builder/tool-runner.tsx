@@ -2,6 +2,8 @@
 
 import { useId, useMemo, useReducer, useRef } from "react";
 import { getToolDefinition } from "@/lib/tools/registry";
+import { aiPromptBuilderCopySchema } from "@/lib/tools/ai-prompt-builder/copy";
+import { resolveToolCopy } from "@/lib/tools/copy";
 import type { AiPromptBuilderInput, AiPromptBuilderResult } from "@/lib/tools/ai-prompt-builder/schema";
 import { AiPromptBuilderResultSummary } from "@/components/tools/ai-prompt-builder/tool-result-summary";
 
@@ -20,43 +22,44 @@ type Step =
 // optional), plus one select step for whether to append the "ask me one question at a time"
 // flip instruction — the third Tool to mix step types, after Product Idea Generator and Product
 // Positioning Builder (docs/decisions/0029, 0032, 0042).
-const STEPS: Step[] = [
+function buildSteps(copy: Record<string, string>): Step[] {
+  return [
   {
     kind: "text",
     key: "contextText",
     required: true,
-    legend: "Context — who or what should the chatbot act as, and what's the situation?",
-    placeholder: "e.g. You're a nutritionist helping a busy parent plan meals.",
-    hint: "Set the scene — who's involved, and in what role.",
+    legend: copy.q_context_text_legend!,
+    placeholder: copy.q_context_text_placeholder!,
+    hint: copy.q_context_text_hint!,
   },
   {
     kind: "text",
     key: "actionText",
     required: true,
-    legend: "Action — what should the chatbot actually do?",
-    placeholder: "e.g. Create a 7-day vegetarian meal plan with calorie counts and recipes.",
-    hint: "The specific action, not just the topic.",
+    legend: copy.q_action_text_legend!,
+    placeholder: copy.q_action_text_placeholder!,
+    hint: copy.q_action_text_hint!,
   },
   {
     kind: "text",
     key: "resultText",
     required: true,
-    legend: "Result — what format or output do you want back?",
-    placeholder: "e.g. A table with one row per day, plus a shopping list at the end.",
-    hint: "Be specific about structure — table, list, word count, tone.",
+    legend: copy.q_result_text_legend!,
+    placeholder: copy.q_result_text_placeholder!,
+    hint: copy.q_result_text_hint!,
   },
   {
     kind: "text",
     key: "exampleText",
     required: false,
-    legend: "Example — have something to guide the style?",
-    placeholder: "e.g. Day 1 – Breakfast: overnight oats (320 cal)...",
-    hint: "Optional — skip if you don't have one.",
+    legend: copy.q_example_text_legend!,
+    placeholder: copy.q_example_text_placeholder!,
+    hint: copy.q_example_text_hint!,
   },
   {
     kind: "select",
     key: "includeQuestionFlip",
-    legend: "Should the chatbot ask you questions first, instead of answering straight away?",
+    legend: copy.q_include_question_flip_legend!,
     options: [
       {
         value: "yes_add_it",
@@ -70,7 +73,8 @@ const STEPS: Step[] = [
       },
     ],
   },
-];
+  ];
+}
 
 type State =
   | { phase: "start" }
@@ -85,7 +89,8 @@ type Action =
   | { type: "back" }
   | { type: "restart" };
 
-function reducer(state: State, action: Action): State {
+function createReducer(steps: Step[]) {
+  return function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "begin":
       return { phase: "question", stepIndex: 0, answers: {}, error: null };
@@ -105,7 +110,7 @@ function reducer(state: State, action: Action): State {
     }
     case "next": {
       if (state.phase !== "question") return state;
-      const step = STEPS[state.stepIndex]!;
+      const step = steps[state.stepIndex]!;
       const isBlank = !state.answers[step.key]?.trim();
       if (step.kind === "select" && isBlank) {
         return { ...state, error: "Choose an option to continue." };
@@ -113,7 +118,7 @@ function reducer(state: State, action: Action): State {
       if (step.kind === "text" && step.required && isBlank) {
         return { ...state, error: "This answer is needed to build your prompt." };
       }
-      if (state.stepIndex < STEPS.length - 1) {
+      if (state.stepIndex < steps.length - 1) {
         return { ...state, stepIndex: state.stepIndex + 1, error: null };
       }
       // Last step answered — validate and run the deterministic assembly.
@@ -128,39 +133,42 @@ function reducer(state: State, action: Action): State {
     default:
       return state;
   }
+  };
 }
 
-export function AiPromptBuilderRunner() {
-  const [state, dispatch] = useReducer(reducer, { phase: "start" });
+export function AiPromptBuilderRunner({ copy: copyOverrides }: { copy?: Record<string, string> }) {
+  const copy = useMemo(() => resolveToolCopy(aiPromptBuilderCopySchema, copyOverrides), [copyOverrides]);
+  const steps = useMemo(() => buildSteps(copy), [copy]);
+  const [state, dispatch] = useReducer(createReducer(steps), { phase: "start" });
   const errorRegionId = useId();
   const textInputId = useId();
   const resultHeadingRef = useRef<HTMLHeadingElement>(null);
 
-  const currentStep = state.phase === "question" ? STEPS[state.stepIndex] : undefined;
+  const currentStep = state.phase === "question" ? steps[state.stepIndex] : undefined;
   const textValue = currentStep && currentStep.kind === "text" && state.phase === "question" ? (state.answers[currentStep.key] ?? "") : "";
   const selectedValue =
     currentStep && currentStep.kind === "select" && state.phase === "question" ? state.answers[currentStep.key] : undefined;
 
   const progressLabel = useMemo(() => {
     if (state.phase !== "question") return null;
-    return `Question ${state.stepIndex + 1} of ${STEPS.length}`;
-  }, [state]);
+    return `Question ${state.stepIndex + 1} of ${steps.length}`;
+  }, [state, steps.length]);
 
   if (state.phase === "start") {
     return (
       <div className="rounded-md border border-ink-200 bg-paper-raised p-6">
-        <h2 className="text-lg font-semibold text-ink-900">Before you start</h2>
+        <h2 className="text-lg font-semibold text-ink-900">{copy.intro_heading}</h2>
         <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-700">
-          <li>Takes about 3 minutes — answer with a specific task in mind, the one you actually want a chatbot&apos;s help with.</li>
-          <li>Nothing is saved or sent anywhere — this runs entirely in your browser.</li>
-          <li>You&apos;ll get a ready-to-paste prompt, built from the CARE framework.</li>
+          <li>{copy.intro_bullet_1}</li>
+          <li>{copy.intro_bullet_2}</li>
+          <li>{copy.intro_bullet_3}</li>
         </ul>
         <button
           type="button"
           onClick={() => dispatch({ type: "begin" })}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Start building your prompt
+          {copy.intro_cta}
         </button>
       </div>
     );
@@ -236,7 +244,7 @@ export function AiPromptBuilderRunner() {
             aria-describedby={state.error ? errorRegionId : undefined}
             className="inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
           >
-            {state.stepIndex === STEPS.length - 1 ? "See my prompt" : "Continue"}
+            {state.stepIndex === steps.length - 1 ? "See my prompt" : "Continue"}
           </button>
         </div>
       </div>

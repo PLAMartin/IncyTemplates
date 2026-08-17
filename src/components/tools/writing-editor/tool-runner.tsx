@@ -2,6 +2,8 @@
 
 import { useId, useMemo, useReducer, useRef } from "react";
 import { getToolDefinition } from "@/lib/tools/registry";
+import { writingEditorCopySchema } from "@/lib/tools/writing-editor/copy";
+import { resolveToolCopy } from "@/lib/tools/copy";
 import type { WritingEditorInput, WritingEditorResult } from "@/lib/tools/writing-editor/schema";
 import { WritingEditorResultSummary } from "@/components/tools/writing-editor/tool-result-summary";
 
@@ -14,49 +16,51 @@ type Step = {
   options: { value: string; label: string; description: string }[];
 };
 
-const STEPS: Step[] = [
-  {
-    key: "clichedLanguage",
-    legend: "Does your draft lean on any metaphors, similes or phrases you've seen in print before?",
-    options: [
-      { value: "still_a_problem", label: "Yes, it still leans on some", description: "Overused phrases like \"tip of the iceberg\" made it in." },
-      { value: "already_clean", label: "No, the language is fresh", description: "You've said things directly instead of reaching for a stock phrase." },
-    ],
-  },
-  {
-    key: "inflatedVocabulary",
-    legend: "Does it use long or formal words where a short one would do?",
-    options: [
-      { value: "still_a_problem", label: "Yes, some words are more formal than needed", description: "Words like \"utilise\" or \"facilitate\" made it in." },
-      { value: "already_clean", label: "No, the words are already plain", description: "Short, everyday words throughout." },
-    ],
-  },
-  {
-    key: "unnecessaryWords",
-    legend: "Could you cut words out without losing meaning?",
-    options: [
-      { value: "still_a_problem", label: "Yes, there's room to trim", description: "Phrases like \"due to the fact that\" are still in there." },
-      { value: "already_clean", label: "No, it's already tight", description: "Every word is earning its place." },
-    ],
-  },
-  {
-    key: "passiveVoice",
-    legend: "Does it use the passive voice where the active would work?",
-    hint: "\"The meeting was led by Jane\" is passive. \"Jane led the meeting\" is active.",
-    options: [
-      { value: "still_a_problem", label: "Yes, some sentences are passive", description: "The subject doing the action isn't always clear or upfront." },
-      { value: "already_clean", label: "No, it's already active", description: "Sentences say who did what." },
-    ],
-  },
-  {
-    key: "jargon",
-    legend: "Does it use jargon, technical terms or foreign phrases an everyday reader wouldn't know?",
-    options: [
-      { value: "still_a_problem", label: "Yes, some jargon is still in there", description: "Terms only insiders would recognise." },
-      { value: "already_clean", label: "No, it's already plain English", description: "Anyone outside your field could follow it." },
-    ],
-  },
-];
+function buildSteps(copy: Record<string, string>): Step[] {
+  return [
+    {
+      key: "clichedLanguage",
+      legend: copy.q_cliched_legend!,
+      options: [
+        { value: "still_a_problem", label: "Yes, it still leans on some", description: "Overused phrases like \"tip of the iceberg\" made it in." },
+        { value: "already_clean", label: "No, the language is fresh", description: "You've said things directly instead of reaching for a stock phrase." },
+      ],
+    },
+    {
+      key: "inflatedVocabulary",
+      legend: copy.q_inflated_legend!,
+      options: [
+        { value: "still_a_problem", label: "Yes, some words are more formal than needed", description: "Words like \"utilise\" or \"facilitate\" made it in." },
+        { value: "already_clean", label: "No, the words are already plain", description: "Short, everyday words throughout." },
+      ],
+    },
+    {
+      key: "unnecessaryWords",
+      legend: copy.q_unnecessary_legend!,
+      options: [
+        { value: "still_a_problem", label: "Yes, there's room to trim", description: "Phrases like \"due to the fact that\" are still in there." },
+        { value: "already_clean", label: "No, it's already tight", description: "Every word is earning its place." },
+      ],
+    },
+    {
+      key: "passiveVoice",
+      legend: copy.q_passive_legend!,
+      hint: copy.q_passive_hint || undefined,
+      options: [
+        { value: "still_a_problem", label: "Yes, some sentences are passive", description: "The subject doing the action isn't always clear or upfront." },
+        { value: "already_clean", label: "No, it's already active", description: "Sentences say who did what." },
+      ],
+    },
+    {
+      key: "jargon",
+      legend: copy.q_jargon_legend!,
+      options: [
+        { value: "still_a_problem", label: "Yes, some jargon is still in there", description: "Terms only insiders would recognise." },
+        { value: "already_clean", label: "No, it's already plain English", description: "Anyone outside your field could follow it." },
+      ],
+    },
+  ];
+}
 
 type State =
   | { phase: "start" }
@@ -70,7 +74,7 @@ type Action =
   | { type: "back" }
   | { type: "restart" };
 
-function reducer(state: State, action: Action): State {
+function reducer(state: State, action: Action, steps: Step[], copy: Record<string, string>): State {
   switch (action.type) {
     case "begin":
       return { phase: "question", stepIndex: 0, answers: {}, error: null };
@@ -86,18 +90,18 @@ function reducer(state: State, action: Action): State {
     }
     case "next": {
       if (state.phase !== "question") return state;
-      const step = STEPS[state.stepIndex]!;
+      const step = steps[state.stepIndex]!;
       if (!state.answers[step.key]) {
-        return { ...state, error: "Choose an option to continue." };
+        return { ...state, error: copy.error_missing_answer! };
       }
-      if (state.stepIndex < STEPS.length - 1) {
+      if (state.stepIndex < steps.length - 1) {
         return { ...state, stepIndex: state.stepIndex + 1, error: null };
       }
       // Last step answered — validate and run the deterministic review.
       const definition = getToolDefinition("writing-editor");
       const parsed = definition.inputSchema.safeParse(state.answers);
       if (!parsed.success) {
-        return { ...state, error: "Something's missing — please check every question was answered." };
+        return { ...state, error: copy.error_invalid! };
       }
       const result = definition.run(parsed.data) as WritingEditorResult;
       return { phase: "result", result };
@@ -107,34 +111,36 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-export function WritingEditorRunner() {
-  const [state, dispatch] = useReducer(reducer, { phase: "start" });
+export function WritingEditorRunner({ copy: copyOverrides }: { copy?: Record<string, string> }) {
+  const copy = useMemo(() => resolveToolCopy(writingEditorCopySchema, copyOverrides), [copyOverrides]);
+  const steps = useMemo(() => buildSteps(copy), [copy]);
+  const [state, dispatch] = useReducer((state: State, action: Action) => reducer(state, action, steps, copy), { phase: "start" });
   const errorRegionId = useId();
   const resultHeadingRef = useRef<HTMLHeadingElement>(null);
 
-  const currentStep = state.phase === "question" ? STEPS[state.stepIndex] : undefined;
+  const currentStep = state.phase === "question" ? steps[state.stepIndex] : undefined;
   const selectedValue = currentStep && state.phase === "question" ? state.answers[currentStep.key] : undefined;
 
   const progressLabel = useMemo(() => {
     if (state.phase !== "question") return null;
-    return `Question ${state.stepIndex + 1} of ${STEPS.length}`;
-  }, [state]);
+    return `Question ${state.stepIndex + 1} of ${steps.length}`;
+  }, [state, steps]);
 
   if (state.phase === "start") {
     return (
       <div className="rounded-md border border-ink-200 bg-paper-raised p-6">
-        <h2 className="text-lg font-semibold text-ink-900">Before you start</h2>
+        <h2 className="text-lg font-semibold text-ink-900">{copy.intro_heading}</h2>
         <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-700">
-          <li>Takes about 2 minutes — answer with a specific piece of writing in mind, re-read fresh if you can.</li>
-          <li>Nothing is saved or sent anywhere — this runs entirely in your browser.</li>
-          <li>You&apos;ll get a rule-by-rule review against George Orwell&apos;s five writing rules, and a fix tip for the first one that still needs work.</li>
+          <li>{copy.intro_bullet_1}</li>
+          <li>{copy.intro_bullet_2}</li>
+          <li>{copy.intro_bullet_3}</li>
         </ul>
         <button
           type="button"
           onClick={() => dispatch({ type: "begin" })}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Start the review
+          {copy.intro_cta}
         </button>
       </div>
     );
@@ -185,7 +191,7 @@ export function WritingEditorRunner() {
             disabled={state.stepIndex === 0}
             className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Back
+            {copy.back_label}
           </button>
           <button
             type="button"
@@ -193,7 +199,7 @@ export function WritingEditorRunner() {
             aria-describedby={state.error ? errorRegionId : undefined}
             className="inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
           >
-            {state.stepIndex === STEPS.length - 1 ? "See my review" : "Continue"}
+            {state.stepIndex === steps.length - 1 ? copy.see_review_label : copy.continue_label}
           </button>
         </div>
       </div>
@@ -201,7 +207,7 @@ export function WritingEditorRunner() {
   }
 
   if (state.phase === "result") {
-    return <WritingEditorResultSummary result={state.result} onRestart={() => dispatch({ type: "restart" })} headingRef={resultHeadingRef} />;
+    return <WritingEditorResultSummary result={state.result} onRestart={() => dispatch({ type: "restart" })} headingRef={resultHeadingRef} copy={copy} />;
   }
 
   return null;

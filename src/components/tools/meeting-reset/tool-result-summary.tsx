@@ -24,10 +24,12 @@ export function MeetingResetResultSummary({
   result,
   onRestart,
   headingRef,
+  copy,
 }: {
   result: MeetingResetResult;
   onRestart: () => void;
   headingRef: RefObject<HTMLHeadingElement | null>;
+  copy: Record<string, string>;
 }) {
   const [copied, setCopied] = useState(false);
   const verdict = VERDICT_COPY[result.verdict];
@@ -68,13 +70,11 @@ export function MeetingResetResultSummary({
       <p className="mt-4 text-sm text-ink-700">{result.rationale}</p>
 
       <dl className="mt-6">
-        <dt className="text-sm font-semibold text-ink-900">Next step</dt>
+        <dt className="text-sm font-semibold text-ink-900">{copy.result_next_step_label}</dt>
         <dd className="mt-1 text-sm text-ink-700">{result.nextStep}</dd>
       </dl>
 
-      <p className="mt-6 text-xs text-ink-500">
-        Revisit this for recurring meetings whenever their purpose or attendee list changes — a verdict here isn&apos;t permanent.
-      </p>
+      <p className="mt-6 text-xs text-ink-500">{copy.result_footer_note}</p>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
         <button
@@ -82,14 +82,14 @@ export function MeetingResetResultSummary({
           onClick={handleCopy}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          {copied ? "Copied" : "Copy result"}
+          {copied ? copy.result_copied_label : copy.result_copy_button}
         </button>
         <button
           type="button"
           onClick={onRestart}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Check another
+          {copy.result_restart_button}
         </button>
       </div>
     </div>

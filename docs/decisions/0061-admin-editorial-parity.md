@@ -1,0 +1,88 @@
+# 0061 — Admin editorial parity across Guides, Templates and Tools (spec v8)
+
+## Status
+Accepted — code complete; `20260817150000_editorial_common_copy_publish.sql` has been applied
+to the live Supabase project via `supabase db push` (confirmed via `supabase migration list`).
+
+## Context
+Spec moved from v7 to v8 on 2026-08-17, closing the **admin editorial parity gap**: Guides had
+a working Markdown editor (`/admin/guides/[id]`), Templates had file-version upload only with
+no metadata/instruction text editor, and Tools had a generic revisioned copy editor but only
+`mvp-scoper` (1 of 26) had declared any editable fields. Separately, the visitor-facing
+descriptive fields already on `it_products` (`short_description`, `full_description`,
+`outcome_statement`, `target_audience`, `when_to_use`, `when_not_to_use`, `seo_title`,
+`seo_description`) were not editable from admin for any product type — admin only exposed a
+Public/Unlisted/Hidden visibility toggle.
+
+Two scope decisions were confirmed with the user before building:
+1. Build the full v8 scope in one pass, including declaring a `copySchema` for all 25 Tools
+   that lacked one.
+2. Keep `it_tool_copy_revisions` as its own table (do not migrate Tool copy into the unified
+   `it_product_content_revisions` store) — the Tool admin editor bundles a common-copy save
+   (new table) with the existing tool-specific-copy save (old table) behind one Save
+   draft/Publish UI action, coordinating two RPC calls rather than one. Spec v8 §12.3.1
+   explicitly allows a legacy adapter during migration; a full migration was judged a bigger,
+   riskier change for a mostly-cosmetic architectural win.
+
+## Decisions
+
+**`content_schema_version = 2`.** `it_product_content_revisions.content_data` gains a shape:
+`{ common: {...9 fields...}, guide?: {...}, template?: {...} }`. Schema v1 (every pre-v8 Guide
+revision — flat `{ body_markdown, author }`, no `common` key) remains valid and readable
+forever; `src/server/admin/editorial-content.ts`'s `resolveCommonCopy` is the one place that
+interprets both shapes so callers never branch on schema version themselves.
+
+**One shared editorial service** (`src/server/admin/editorial-content.ts`): `commonProductCopySchema`
+(Zod), `resolveCommonCopy`, `saveEditorialDraft`/`publishEditorialRevision`/`rollbackEditorialRevision`
+— thin wrappers around the existing `it_upsert_content_draft`/`it_publish_content_revision`/
+`it_rollback_content_revision` RPCs. Guide, Template, and the Tool editor's common-copy half all
+call into this instead of each duplicating the RPC-call plumbing. `src/components/admin/common-product-copy-fields.tsx`
+is the matching shared form section (9 fields), and `src/components/admin/content-revision-rollback-list.tsx`
+generalizes the old Guide-only rollback list to take its rollback action as a prop.
+
+**Atomic common-copy publish** (`supabase/migrations/20260817150000_editorial_common_copy_publish.sql`):
+`it_publish_content_revision` and `it_rollback_content_revision` were extended (`CREATE OR
+REPLACE`, same signatures) so that publishing/rolling back a `content_schema_version = 2`
+revision with a `common` key atomically writes those 9 values onto `it_products`' denormalised
+columns in the same statement that moves `current_content_revision_id` — the public site never
+sees a half-published state. A v1 revision's `common` resolves to `null`, so every column
+assignment is a no-op for legacy history. Covered by `supabase/tests/it_content_revisions_test.sql`
+(pgTAP — not run in this environment; see that file's own execution note) and
+`tests/unit/editorial-content.test.ts` (`resolveCommonCopy`, run via `npm run test`).
+
+**Template editor** (`src/server/admin/template-content.ts`, `src/server/actions/admin-template-content.ts`,
+`src/components/admin/template-content-editor-form.tsx`): new "Editorial content" section on
+`/admin/templates/[id]`, clearly separate from the existing "Create a new version"/"Version
+history" file sections (spec §10.11.4 — file upload alone is not v8-compliant). Fields: common
+copy + `instructions_markdown` (required) + `required_inputs`/`whats_included`/`example_markdown`/
+`interpretation_guidance`/`cta_copy` (optional).
+
+**Tool editor bundling** (`src/server/actions/admin-tool-copy.ts`'s `saveToolContentDraftAction`/
+`saveAndPublishToolContentAction`): one Save draft/Publish action writes (a) the common-copy
+revision via the shared editorial service when the tool_key has a backing `it_products` row,
+then (b) the existing tool-specific-copy revision. If (b) fails after (a) published, the error
+message says so explicitly (common copy is live, retry to finish tool copy) rather than pretending
+this is one atomic transaction — it isn't, by design (see Context). Rollback stays two independent
+actions/history lists (`rollbackToolCopyAction`, new `rollbackToolCommonCopyAction`) since the two
+tables are genuinely separate revision timelines with no correlated revision numbers.
+
+**Tool `copySchema` for all 26 Tools.** Every tool in `src/lib/tools/*/` now declares a
+`copySchema` (`src/lib/tools/*/copy.ts`) and its Runner component resolves it via
+`resolveToolCopy`, mirroring the `mvp-scoper` reference implementation (intro heading/bullets/CTA
++ each question's legend/hint at minimum; several tools also cover back/continue/validation-error/
+result-footer copy where an editor's judgement found it clearly safe and worth exposing). Excluded
+everywhere, matching `mvp-scoper/copy.ts`'s original reasoning: per-option labels/descriptions
+(tightly coupled to `scoring.ts`'s fixed enum values) and any dynamic result content that comes
+from `scoring.ts` itself (verdicts, rationale, next-step text) rather than being static UI copy.
+`src/app/(marketing)/tools/[toolKey]/page.tsx`'s `TOOL_RUNNERS` map and `getToolCopyForToolKey`
+query already called every Runner with a resolved `copy` prop before this work — no changes were
+needed there; each Tool only needed to start using the prop it was already being handed.
+
+## Not yet done
+- `supabase/tests/it_content_revisions_test.sql` has not been executed (no local Postgres/Docker
+  in this environment, consistent with every other pgTAP suite in this repo) — it was extended
+  with 4 new assertions for the schema-v2 common-copy publish/rollback behaviour, authored but
+  unrun, same status as the rest of that suite.
+- Playwright e2e coverage for the new Template/Tool editor sections was not added in this pass;
+  existing per-tool e2e specs (`tests/e2e/<tool>-tool.spec.ts`) were not re-run here since that
+  requires a dev server against real data.

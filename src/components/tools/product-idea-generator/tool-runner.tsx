@@ -2,6 +2,8 @@
 
 import { useId, useMemo, useReducer, useRef } from "react";
 import { getToolDefinition } from "@/lib/tools/registry";
+import { productIdeaGeneratorCopySchema } from "@/lib/tools/product-idea-generator/copy";
+import { resolveToolCopy } from "@/lib/tools/copy";
 import type { DailyPracticeCommitment, ProductIdeaGeneratorInput, ProductIdeaGeneratorResult } from "@/lib/tools/product-idea-generator/schema";
 import { ProductIdeaGeneratorResultSummary } from "@/components/tools/product-idea-generator/tool-result-summary";
 
@@ -19,39 +21,41 @@ type Step =
 // Three optional free-text steps (one per idea-sourcing method, spec v4 §37) plus one required
 // select — the first Tool to mix step types, since a personalised idea direction needs the
 // visitor's own words, not just a multiple-choice answer (docs/decisions/0029).
-const STEPS: Step[] = [
-  {
-    kind: "text",
-    key: "ownFrustration",
-    legend: "What's something in your daily life or work that quietly annoys you or wastes your time?",
-    placeholder: "e.g. Chasing up invoices that are just sitting unpaid",
-    hint: "Optional — skip if nothing comes to mind.",
-  },
-  {
-    kind: "text",
-    key: "nicheKnowledge",
-    legend: "What specific group of people or world do you understand well from the inside?",
-    placeholder: "e.g. Amateur triathlon coaches",
-    hint: "A hobby, a job, a community — anywhere you're already an insider. Optional.",
-  },
-  {
-    kind: "text",
-    key: "frequentlyUsedProduct",
-    legend: "Name a product or app you use often that you think could be better.",
-    placeholder: "e.g. My gym's booking app",
-    hint: "Optional — skip if nothing comes to mind.",
-  },
-  {
-    kind: "select",
-    key: "dailyPracticeCommitment",
-    legend: "How ready are you to commit to noting down ideas daily?",
-    options: [
-      { value: "not_yet", label: "Not yet", description: "I haven't tried anything like this before." },
-      { value: "willing_to_try", label: "Willing to try", description: "I'll give it a go for a week and see." },
-      { value: "already_do_it", label: "Already do it", description: "I already keep some kind of running idea list." },
-    ],
-  },
-];
+function buildSteps(copy: Record<string, string>): Step[] {
+  return [
+    {
+      kind: "text",
+      key: "ownFrustration",
+      legend: copy.q_own_frustration_legend!,
+      placeholder: copy.q_own_frustration_placeholder!,
+      hint: copy.q_own_frustration_hint!,
+    },
+    {
+      kind: "text",
+      key: "nicheKnowledge",
+      legend: copy.q_niche_knowledge_legend!,
+      placeholder: copy.q_niche_knowledge_placeholder!,
+      hint: copy.q_niche_knowledge_hint!,
+    },
+    {
+      kind: "text",
+      key: "frequentlyUsedProduct",
+      legend: copy.q_frequently_used_product_legend!,
+      placeholder: copy.q_frequently_used_product_placeholder!,
+      hint: copy.q_frequently_used_product_hint!,
+    },
+    {
+      kind: "select",
+      key: "dailyPracticeCommitment",
+      legend: copy.q_daily_practice_legend!,
+      options: [
+        { value: "not_yet", label: "Not yet", description: "I haven't tried anything like this before." },
+        { value: "willing_to_try", label: "Willing to try", description: "I'll give it a go for a week and see." },
+        { value: "already_do_it", label: "Already do it", description: "I already keep some kind of running idea list." },
+      ],
+    },
+  ];
+}
 
 type State =
   | { phase: "start" }
@@ -66,79 +70,86 @@ type Action =
   | { type: "back" }
   | { type: "restart" };
 
-function reducer(state: State, action: Action): State {
-  switch (action.type) {
-    case "begin":
-      return { phase: "question", stepIndex: 0, answers: {}, error: null };
-    case "restart":
-      return { phase: "start" };
-    case "setText": {
-      if (state.phase !== "question") return state;
-      return { ...state, answers: { ...state.answers, [action.key]: action.value }, error: null };
-    }
-    case "select": {
-      if (state.phase !== "question") return state;
-      return { ...state, answers: { ...state.answers, dailyPracticeCommitment: action.value }, error: null };
-    }
-    case "back": {
-      if (state.phase !== "question" || state.stepIndex === 0) return state;
-      return { ...state, stepIndex: state.stepIndex - 1, error: null };
-    }
-    case "next": {
-      if (state.phase !== "question") return state;
-      const step = STEPS[state.stepIndex]!;
-      // Text steps are optional — only the select step blocks progress when unanswered.
-      if (step.kind === "select" && !state.answers[step.key]) {
-        return { ...state, error: "Choose an option to continue." };
+function createReducer(steps: Step[], errors: { chooseOption: string; incomplete: string }) {
+  return function reducer(state: State, action: Action): State {
+    switch (action.type) {
+      case "begin":
+        return { phase: "question", stepIndex: 0, answers: {}, error: null };
+      case "restart":
+        return { phase: "start" };
+      case "setText": {
+        if (state.phase !== "question") return state;
+        return { ...state, answers: { ...state.answers, [action.key]: action.value }, error: null };
       }
-      if (state.stepIndex < STEPS.length - 1) {
-        return { ...state, stepIndex: state.stepIndex + 1, error: null };
+      case "select": {
+        if (state.phase !== "question") return state;
+        return { ...state, answers: { ...state.answers, dailyPracticeCommitment: action.value }, error: null };
       }
-      // Last step answered — validate and run the deterministic generator.
-      const definition = getToolDefinition("product-idea-generator");
-      const parsed = definition.inputSchema.safeParse(state.answers);
-      if (!parsed.success) {
-        return { ...state, error: "Enter at least one answer above to generate an idea direction — use Back to add one." };
+      case "back": {
+        if (state.phase !== "question" || state.stepIndex === 0) return state;
+        return { ...state, stepIndex: state.stepIndex - 1, error: null };
       }
-      const result = definition.run(parsed.data) as ProductIdeaGeneratorResult;
-      return { phase: "result", result };
+      case "next": {
+        if (state.phase !== "question") return state;
+        const step = steps[state.stepIndex]!;
+        // Text steps are optional — only the select step blocks progress when unanswered.
+        if (step.kind === "select" && !state.answers[step.key]) {
+          return { ...state, error: errors.chooseOption };
+        }
+        if (state.stepIndex < steps.length - 1) {
+          return { ...state, stepIndex: state.stepIndex + 1, error: null };
+        }
+        // Last step answered — validate and run the deterministic generator.
+        const definition = getToolDefinition("product-idea-generator");
+        const parsed = definition.inputSchema.safeParse(state.answers);
+        if (!parsed.success) {
+          return { ...state, error: errors.incomplete };
+        }
+        const result = definition.run(parsed.data) as ProductIdeaGeneratorResult;
+        return { phase: "result", result };
+      }
+      default:
+        return state;
     }
-    default:
-      return state;
-  }
+  };
 }
 
-export function ProductIdeaGeneratorRunner() {
-  const [state, dispatch] = useReducer(reducer, { phase: "start" });
+export function ProductIdeaGeneratorRunner({ copy: copyOverrides }: { copy?: Record<string, string> }) {
+  const copy = useMemo(() => resolveToolCopy(productIdeaGeneratorCopySchema, copyOverrides), [copyOverrides]);
+  const steps = useMemo(() => buildSteps(copy), [copy]);
+  const [state, dispatch] = useReducer(
+    createReducer(steps, { chooseOption: copy.error_choose_option!, incomplete: copy.error_incomplete! }),
+    { phase: "start" },
+  );
   const errorRegionId = useId();
   const textInputId = useId();
   const resultHeadingRef = useRef<HTMLHeadingElement>(null);
 
-  const currentStep = state.phase === "question" ? STEPS[state.stepIndex] : undefined;
+  const currentStep = state.phase === "question" ? steps[state.stepIndex] : undefined;
   const textValue = currentStep && currentStep.kind === "text" && state.phase === "question" ? (state.answers[currentStep.key] ?? "") : "";
   const selectedValue =
     currentStep && currentStep.kind === "select" && state.phase === "question" ? state.answers[currentStep.key] : undefined;
 
   const progressLabel = useMemo(() => {
     if (state.phase !== "question") return null;
-    return `Question ${state.stepIndex + 1} of ${STEPS.length}`;
-  }, [state]);
+    return `Question ${state.stepIndex + 1} of ${steps.length}`;
+  }, [state, steps.length]);
 
   if (state.phase === "start") {
     return (
       <div className="rounded-md border border-ink-200 bg-paper-raised p-6">
-        <h2 className="text-lg font-semibold text-ink-900">Before you start</h2>
+        <h2 className="text-lg font-semibold text-ink-900">{copy.intro_heading}</h2>
         <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-700">
-          <li>Takes about 3 minutes — answer whichever questions apply to you, and skip the rest.</li>
-          <li>Nothing is saved or sent anywhere — this runs entirely in your browser.</li>
-          <li>You&apos;ll get a personalised idea direction and a first test step.</li>
+          <li>{copy.intro_bullet_1}</li>
+          <li>{copy.intro_bullet_2}</li>
+          <li>{copy.intro_bullet_3}</li>
         </ul>
         <button
           type="button"
           onClick={() => dispatch({ type: "begin" })}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Start generating ideas
+          {copy.intro_cta}
         </button>
       </div>
     );
@@ -206,7 +217,7 @@ export function ProductIdeaGeneratorRunner() {
             disabled={state.stepIndex === 0}
             className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Back
+            {copy.back_button}
           </button>
           <button
             type="button"
@@ -214,7 +225,7 @@ export function ProductIdeaGeneratorRunner() {
             aria-describedby={state.error ? errorRegionId : undefined}
             className="inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
           >
-            {state.stepIndex === STEPS.length - 1 ? "See my result" : "Continue"}
+            {state.stepIndex === steps.length - 1 ? copy.final_step_button : copy.continue_button}
           </button>
         </div>
       </div>
@@ -222,7 +233,14 @@ export function ProductIdeaGeneratorRunner() {
   }
 
   if (state.phase === "result") {
-    return <ProductIdeaGeneratorResultSummary result={state.result} onRestart={() => dispatch({ type: "restart" })} headingRef={resultHeadingRef} />;
+    return (
+      <ProductIdeaGeneratorResultSummary
+        result={state.result}
+        onRestart={() => dispatch({ type: "restart" })}
+        headingRef={resultHeadingRef}
+        copy={copy}
+      />
+    );
   }
 
   return null;

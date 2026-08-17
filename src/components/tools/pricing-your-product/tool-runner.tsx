@@ -2,6 +2,8 @@
 
 import { useId, useMemo, useReducer, useRef } from "react";
 import { getToolDefinition } from "@/lib/tools/registry";
+import { pricingYourProductCopySchema } from "@/lib/tools/pricing-your-product/copy";
+import { resolveToolCopy } from "@/lib/tools/copy";
 import type { PricingYourProductInput, PricingYourProductResult } from "@/lib/tools/pricing-your-product/schema";
 import { PricingYourProductResultSummary } from "@/components/tools/pricing-your-product/tool-result-summary";
 
@@ -14,43 +16,48 @@ type Step = {
   options: { value: string; label: string; description: string }[];
 };
 
-const STEPS: Step[] = [
-  {
-    key: "purchasePattern",
-    legend: "Do customers get value from this once, or does it keep delivering value over time?",
-    options: [
-      { value: "ongoing", label: "Ongoing", description: "They'll keep getting value from it over weeks or months." },
-      { value: "one_off", label: "One-off", description: "It solves one job and then they're done." },
-    ],
-  },
-  {
-    key: "valueMetric",
-    legend: "Does the value scale with something you could count — seats, usage, projects?",
-    options: [
-      { value: "clear", label: "Clear", description: "There's an obvious unit — seats, calls, projects — that tracks how much value someone gets." },
-      { value: "somewhat", label: "Somewhat", description: "There's a rough unit, but it's not a clean, obvious one." },
-      { value: "none", label: "None", description: "Value doesn't scale with any countable unit — it's roughly the same for everyone." },
-    ],
-  },
-  {
-    key: "customerType",
-    legend: "Who's the primary buyer?",
-    options: [
-      { value: "individual", label: "Individual", description: "A single person buying for themselves." },
-      { value: "small_business", label: "Small business", description: "A small team or business making the call." },
-      { value: "enterprise", label: "Enterprise", description: "A larger organisation with a formal buying process." },
-    ],
-  },
-  {
-    key: "priceVisibility",
-    legend: "How easily can your customers compare your price to competitors'?",
-    hint: "Think about whether a prospective customer could put your price next to a competitor's in the same tab.",
-    options: [
-      { value: "highly_visible", label: "Highly visible", description: "Competitor prices are public and easy to compare directly." },
-      { value: "not_visible", label: "Not visible", description: "There's no direct, easy comparison — pricing isn't transparent or competitors aren't obvious." },
-    ],
-  },
-];
+function buildSteps(copy: Record<string, string>): Step[] {
+  return [
+    {
+      key: "purchasePattern",
+      legend: copy.q_purchase_pattern_legend!,
+      hint: copy.q_purchase_pattern_hint || undefined,
+      options: [
+        { value: "ongoing", label: "Ongoing", description: "They'll keep getting value from it over weeks or months." },
+        { value: "one_off", label: "One-off", description: "It solves one job and then they're done." },
+      ],
+    },
+    {
+      key: "valueMetric",
+      legend: copy.q_value_metric_legend!,
+      hint: copy.q_value_metric_hint || undefined,
+      options: [
+        { value: "clear", label: "Clear", description: "There's an obvious unit — seats, calls, projects — that tracks how much value someone gets." },
+        { value: "somewhat", label: "Somewhat", description: "There's a rough unit, but it's not a clean, obvious one." },
+        { value: "none", label: "None", description: "Value doesn't scale with any countable unit — it's roughly the same for everyone." },
+      ],
+    },
+    {
+      key: "customerType",
+      legend: copy.q_customer_type_legend!,
+      hint: copy.q_customer_type_hint || undefined,
+      options: [
+        { value: "individual", label: "Individual", description: "A single person buying for themselves." },
+        { value: "small_business", label: "Small business", description: "A small team or business making the call." },
+        { value: "enterprise", label: "Enterprise", description: "A larger organisation with a formal buying process." },
+      ],
+    },
+    {
+      key: "priceVisibility",
+      legend: copy.q_price_visibility_legend!,
+      hint: copy.q_price_visibility_hint || undefined,
+      options: [
+        { value: "highly_visible", label: "Highly visible", description: "Competitor prices are public and easy to compare directly." },
+        { value: "not_visible", label: "Not visible", description: "There's no direct, easy comparison — pricing isn't transparent or competitors aren't obvious." },
+      ],
+    },
+  ];
+}
 
 type State =
   | { phase: "start" }
@@ -64,71 +71,78 @@ type Action =
   | { type: "back" }
   | { type: "restart" };
 
-function reducer(state: State, action: Action): State {
-  switch (action.type) {
-    case "begin":
-      return { phase: "question", stepIndex: 0, answers: {}, error: null };
-    case "restart":
-      return { phase: "start" };
-    case "select": {
-      if (state.phase !== "question") return state;
-      return { ...state, answers: { ...state.answers, [action.key]: action.value }, error: null };
-    }
-    case "back": {
-      if (state.phase !== "question" || state.stepIndex === 0) return state;
-      return { ...state, stepIndex: state.stepIndex - 1, error: null };
-    }
-    case "next": {
-      if (state.phase !== "question") return state;
-      const step = STEPS[state.stepIndex]!;
-      if (!state.answers[step.key]) {
-        return { ...state, error: "Choose an option to continue." };
+function createReducer(steps: Step[], errors: { chooseOption: string; missing: string }) {
+  return function reducer(state: State, action: Action): State {
+    switch (action.type) {
+      case "begin":
+        return { phase: "question", stepIndex: 0, answers: {}, error: null };
+      case "restart":
+        return { phase: "start" };
+      case "select": {
+        if (state.phase !== "question") return state;
+        return { ...state, answers: { ...state.answers, [action.key]: action.value }, error: null };
       }
-      if (state.stepIndex < STEPS.length - 1) {
-        return { ...state, stepIndex: state.stepIndex + 1, error: null };
+      case "back": {
+        if (state.phase !== "question" || state.stepIndex === 0) return state;
+        return { ...state, stepIndex: state.stepIndex - 1, error: null };
       }
-      // Last step answered — validate and run the deterministic scoring.
-      const definition = getToolDefinition("pricing-your-product");
-      const parsed = definition.inputSchema.safeParse(state.answers);
-      if (!parsed.success) {
-        return { ...state, error: "Something's missing — please check every question was answered." };
+      case "next": {
+        if (state.phase !== "question") return state;
+        const step = steps[state.stepIndex]!;
+        if (!state.answers[step.key]) {
+          return { ...state, error: errors.chooseOption };
+        }
+        if (state.stepIndex < steps.length - 1) {
+          return { ...state, stepIndex: state.stepIndex + 1, error: null };
+        }
+        // Last step answered — validate and run the deterministic scoring.
+        const definition = getToolDefinition("pricing-your-product");
+        const parsed = definition.inputSchema.safeParse(state.answers);
+        if (!parsed.success) {
+          return { ...state, error: errors.missing };
+        }
+        const result = definition.run(parsed.data) as PricingYourProductResult;
+        return { phase: "result", result };
       }
-      const result = definition.run(parsed.data) as PricingYourProductResult;
-      return { phase: "result", result };
+      default:
+        return state;
     }
-    default:
-      return state;
-  }
+  };
 }
 
-export function PricingYourProductRunner() {
-  const [state, dispatch] = useReducer(reducer, { phase: "start" });
+export function PricingYourProductRunner({ copy: copyOverrides }: { copy?: Record<string, string> }) {
+  const copy = useMemo(() => resolveToolCopy(pricingYourProductCopySchema, copyOverrides), [copyOverrides]);
+  const steps = useMemo(() => buildSteps(copy), [copy]);
+  const [state, dispatch] = useReducer(
+    createReducer(steps, { chooseOption: copy.error_choose_option!, missing: copy.error_missing! }),
+    { phase: "start" },
+  );
   const errorRegionId = useId();
   const resultHeadingRef = useRef<HTMLHeadingElement>(null);
 
-  const currentStep = state.phase === "question" ? STEPS[state.stepIndex] : undefined;
+  const currentStep = state.phase === "question" ? steps[state.stepIndex] : undefined;
   const selectedValue = currentStep && state.phase === "question" ? state.answers[currentStep.key] : undefined;
 
   const progressLabel = useMemo(() => {
     if (state.phase !== "question") return null;
-    return `Question ${state.stepIndex + 1} of ${STEPS.length}`;
-  }, [state]);
+    return `Question ${state.stepIndex + 1} of ${steps.length}`;
+  }, [state, steps.length]);
 
   if (state.phase === "start") {
     return (
       <div className="rounded-md border border-ink-200 bg-paper-raised p-6">
-        <h2 className="text-lg font-semibold text-ink-900">Before you start</h2>
+        <h2 className="text-lg font-semibold text-ink-900">{copy.intro_heading}</h2>
         <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-700">
-          <li>Takes about 3 minutes — answer based on how you actually plan to sell, not what sounds impressive.</li>
-          <li>Nothing is saved or sent anywhere — this runs entirely in your browser.</li>
-          <li>You&apos;ll get a recommended pricing model, a runner-up, and one concrete next step.</li>
+          <li>{copy.intro_bullet_1}</li>
+          <li>{copy.intro_bullet_2}</li>
+          <li>{copy.intro_bullet_3}</li>
         </ul>
         <button
           type="button"
           onClick={() => dispatch({ type: "begin" })}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Start choosing a pricing model
+          {copy.intro_cta}
         </button>
       </div>
     );
@@ -179,7 +193,7 @@ export function PricingYourProductRunner() {
             disabled={state.stepIndex === 0}
             className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Back
+            {copy.back_button}
           </button>
           <button
             type="button"
@@ -187,7 +201,7 @@ export function PricingYourProductRunner() {
             aria-describedby={state.error ? errorRegionId : undefined}
             className="inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
           >
-            {state.stepIndex === STEPS.length - 1 ? "See my result" : "Continue"}
+            {state.stepIndex === steps.length - 1 ? copy.final_step_button : copy.continue_button}
           </button>
         </div>
       </div>
@@ -195,7 +209,14 @@ export function PricingYourProductRunner() {
   }
 
   if (state.phase === "result") {
-    return <PricingYourProductResultSummary result={state.result} onRestart={() => dispatch({ type: "restart" })} headingRef={resultHeadingRef} />;
+    return (
+      <PricingYourProductResultSummary
+        result={state.result}
+        onRestart={() => dispatch({ type: "restart" })}
+        headingRef={resultHeadingRef}
+        copy={copy}
+      />
+    );
   }
 
   return null;

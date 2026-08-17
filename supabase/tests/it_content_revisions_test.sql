@@ -6,11 +6,17 @@
 -- product/tool_key, publishing moves it_products.current_content_revision_id, and rollback
 -- creates a new already-published revision rather than mutating history.
 --
+-- Also covers spec v8 §10.11.2/12.3.1's schema-v2 common-copy publish behaviour, added by
+-- 20260817150000_editorial_common_copy_publish.sql: publishing/rolling back a
+-- content_schema_version = 2 revision whose content_data has a `common` key atomically
+-- writes those values onto it_products' denormalised columns, while a v1 revision (legacy
+-- Guide shape, no `common` key -- covered above) leaves them untouched.
+--
 -- NOTE ON EXECUTION: see supabase/tests/README.md -- this suite has not been run in this
 -- environment (no Docker / no `supabase start`), only authored.
 
 BEGIN;
-SELECT plan(13);
+SELECT plan(17);
 
 -- ---------------------------------------------------------------------------------------
 -- Fixtures.
@@ -30,7 +36,9 @@ update public.it_profiles set role = 'editor' where id = 'c1111111-1111-1111-111
 insert into public.it_products (id, product_type, access_type, status, public_visibility, name, slug, short_description, tool_key) values
   ('d1111111-1111-1111-1111-111111111111', 'guide', 'free', 'published', 'public', 'Published Guide', 'published-guide-rev-test', 'desc', null),
   ('d2222222-2222-2222-2222-222222222222', 'guide', 'free', 'draft', 'public', 'Draft Guide', 'draft-guide-rev-test', 'desc', null),
-  ('d3333333-3333-3333-3333-333333333333', 'tool', 'free', 'published', 'public', 'Published Tool', 'published-tool-rev-test', 'desc', 'rev-test-tool-key');
+  ('d3333333-3333-3333-3333-333333333333', 'tool', 'free', 'published', 'public', 'Published Tool', 'published-tool-rev-test', 'desc', 'rev-test-tool-key'),
+  ('d4444444-4444-4444-4444-444444444444', 'guide', 'free', 'published', 'public', 'Original Name', 'common-copy-rev-test', 'Original description', null),
+  ('d5555555-5555-5555-5555-555555555555', 'guide', 'free', 'published', 'public', 'Legacy Name', 'legacy-schema-rev-test', 'Legacy description', null);
 
 -- ---------------------------------------------------------------------------------------
 -- it_upsert_content_draft: creates a draft, then a second call on the same product UPDATES
@@ -97,6 +105,71 @@ select is(
   (select count(*)::int from public.it_product_content_revisions where product_id = 'd1111111-1111-1111-1111-111111111111'),
   2,
   'two revision rows exist after rollback (original + rollback copy) -- history preserved'
+);
+
+-- ---------------------------------------------------------------------------------------
+-- Spec v8 schema-v2 common-copy publish/rollback (20260817150000_editorial_common_copy_publish.sql).
+-- ---------------------------------------------------------------------------------------
+
+select public.it_upsert_content_draft(
+  'd4444444-4444-4444-4444-444444444444',
+  '{"common":{"name":"New Name","short_description":"New description"},"guide":{"body_markdown":"x","author":"A"}}'::jsonb,
+  'c1111111-1111-1111-1111-111111111111', 'v2 first save', 2
+);
+select public.it_publish_content_revision(
+  (select id from public.it_product_content_revisions where product_id = 'd4444444-4444-4444-4444-444444444444'),
+  'c1111111-1111-1111-1111-111111111111'
+);
+
+select is(
+  (select short_description from public.it_products where id = 'd4444444-4444-4444-4444-444444444444'),
+  'New description',
+  'publishing a schema-v2 revision with a common.short_description writes it onto it_products.short_description'
+);
+select is(
+  (select name from public.it_products where id = 'd4444444-4444-4444-4444-444444444444'),
+  'New Name',
+  'publishing a schema-v2 revision with a common.name writes it onto it_products.name'
+);
+
+-- Legacy (schema v1, no "common" key -- the shape every pre-v8 Guide revision has) must NOT
+-- touch it_products' common columns, even though it_products_current_content_revision_id
+-- still gets updated as before.
+select public.it_upsert_content_draft(
+  'd5555555-5555-5555-5555-555555555555', '{"body_markdown":"x","author":"A"}'::jsonb,
+  'c1111111-1111-1111-1111-111111111111', null
+);
+select public.it_publish_content_revision(
+  (select id from public.it_product_content_revisions where product_id = 'd5555555-5555-5555-5555-555555555555'),
+  'c1111111-1111-1111-1111-111111111111'
+);
+
+select is(
+  (select short_description from public.it_products where id = 'd5555555-5555-5555-5555-555555555555'),
+  'Legacy description',
+  'publishing a schema-v1 (legacy) revision leaves it_products.short_description untouched'
+);
+
+-- Rollback restores the common columns too, not just current_content_revision_id.
+select public.it_upsert_content_draft(
+  'd4444444-4444-4444-4444-444444444444',
+  '{"common":{"name":"New Name","short_description":"Changed again"},"guide":{"body_markdown":"x","author":"A"}}'::jsonb,
+  'c1111111-1111-1111-1111-111111111111', 'v2 second save', 2
+);
+select public.it_publish_content_revision(
+  (select id from public.it_product_content_revisions where product_id = 'd4444444-4444-4444-4444-444444444444' and revision_number = 2),
+  'c1111111-1111-1111-1111-111111111111'
+);
+select public.it_rollback_content_revision(
+  'd4444444-4444-4444-4444-444444444444',
+  (select id from public.it_product_content_revisions where product_id = 'd4444444-4444-4444-4444-444444444444' and revision_number = 1),
+  'c1111111-1111-1111-1111-111111111111', 'test common-copy rollback'
+);
+
+select is(
+  (select short_description from public.it_products where id = 'd4444444-4444-4444-4444-444444444444'),
+  'New description',
+  'rolling back to revision 1 restores it_products.short_description to that revision''s common.short_description'
 );
 
 -- ---------------------------------------------------------------------------------------

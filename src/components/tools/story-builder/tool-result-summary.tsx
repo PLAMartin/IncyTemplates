@@ -3,18 +3,21 @@
 import { useEffect, useState, type RefObject } from "react";
 import type { PatedElement, StoryBuilderResult } from "@/lib/tools/story-builder/schema";
 
-const ELEMENT_LABEL: Record<PatedElement, string> = {
-  place: "Place",
-  action: "Action",
-  thought: "Thought",
-  emotion: "Emotion (shown)",
-  dialogue: "Dialogue",
-};
+function elementLabel(element: PatedElement, copy: Record<string, string>): string {
+  const key = ({
+    place: "element_place_label",
+    action: "element_action_label",
+    thought: "element_thought_label",
+    emotion: "element_emotion_label",
+    dialogue: "element_dialogue_label",
+  } satisfies Record<PatedElement, string>)[element];
+  return copy[key]!;
+}
 
-function resultToPlainText(result: StoryBuilderResult): string {
+function resultToPlainText(result: StoryBuilderResult, copy: Record<string, string>): string {
   const lines = ["Story Builder — structure check", ""];
   for (const el of result.elements) {
-    lines.push(`${el.present ? "✓" : "☐"} ${ELEMENT_LABEL[el.element]}${el.present ? `: ${el.text}` : " — missing"}`);
+    lines.push(`${el.present ? "✓" : "☐"} ${elementLabel(el.element, copy)}${el.present ? `: ${el.text}` : " — missing"}`);
   }
   lines.push("", `Tip: ${result.nextTip}`, `Next step: ${result.nextStep}`);
   return lines.join("\n");
@@ -29,10 +32,12 @@ export function StoryBuilderResultSummary({
   result,
   onRestart,
   headingRef,
+  copy,
 }: {
   result: StoryBuilderResult;
   onRestart: () => void;
   headingRef: RefObject<HTMLHeadingElement | null>;
+  copy: Record<string, string>;
 }) {
   const [copied, setCopied] = useState(false);
   const missingCount = result.elements.filter((e) => !e.present).length;
@@ -45,7 +50,7 @@ export function StoryBuilderResultSummary({
 
   async function handleCopy() {
     try {
-      await navigator.clipboard.writeText(resultToPlainText(result));
+      await navigator.clipboard.writeText(resultToPlainText(result, copy));
       setCopied(true);
       setTimeout(() => setCopied(false), 3000);
     } catch {
@@ -72,28 +77,28 @@ export function StoryBuilderResultSummary({
               >
                 {el.present ? "✓" : "–"}
               </span>
-              <span className="text-sm font-medium text-ink-900">{ELEMENT_LABEL[el.element]}</span>
+              <span className="text-sm font-medium text-ink-900">{elementLabel(el.element, copy)}</span>
               <span className="sr-only">{el.present ? "present" : "missing"}</span>
             </div>
-            {el.present ? <p className="mt-2 text-sm text-ink-700">{el.text}</p> : <p className="mt-2 text-sm text-ink-500">Not written yet.</p>}
+            {el.present ? <p className="mt-2 text-sm text-ink-700">{el.text}</p> : <p className="mt-2 text-sm text-ink-500">{copy.not_written_yet_label}</p>}
           </li>
         ))}
       </ul>
 
       {result.storySpine ? (
         <div className="mt-6">
-          <h3 className="text-sm font-semibold text-ink-900">Your story spine so far</h3>
+          <h3 className="text-sm font-semibold text-ink-900">{copy.story_spine_heading}</h3>
           <p className="mt-2 whitespace-pre-line rounded-md border border-ink-200 bg-paper p-4 text-sm text-ink-700">{result.storySpine}</p>
         </div>
       ) : null}
 
       <dl className="mt-6 grid grid-cols-1 gap-4">
         <div>
-          <dt className="text-sm font-semibold text-ink-900">Tip</dt>
+          <dt className="text-sm font-semibold text-ink-900">{copy.tip_label}</dt>
           <dd className="mt-1 text-sm text-ink-700">{result.nextTip}</dd>
         </div>
         <div>
-          <dt className="text-sm font-semibold text-ink-900">Next step</dt>
+          <dt className="text-sm font-semibold text-ink-900">{copy.next_step_label}</dt>
           <dd className="mt-1 text-sm text-ink-700">{result.nextStep}</dd>
         </div>
       </dl>
@@ -104,14 +109,14 @@ export function StoryBuilderResultSummary({
           onClick={handleCopy}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          {copied ? "Copied" : "Copy result"}
+          {copied ? copy.copy_button_copied_label : copy.copy_button_label}
         </button>
         <button
           type="button"
           onClick={onRestart}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Start again
+          {copy.restart_button_label}
         </button>
       </div>
     </div>

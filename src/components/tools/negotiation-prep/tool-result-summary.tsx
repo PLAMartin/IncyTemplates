@@ -28,10 +28,12 @@ export function NegotiationPrepResultSummary({
   result,
   onRestart,
   headingRef,
+  copy,
 }: {
   result: NegotiationPrepResult;
   onRestart: () => void;
   headingRef: RefObject<HTMLHeadingElement | null>;
+  copy: Record<string, string>;
 }) {
   const [copied, setCopied] = useState(false);
   const missingCount = result.tactics.filter((t) => !t.present).length;
@@ -74,25 +76,29 @@ export function NegotiationPrepResultSummary({
               <span className="text-sm font-medium text-ink-900">{TACTIC_LABEL[t.tactic]}</span>
               <span className="sr-only">{t.present ? "prepared" : "not prepared yet"}</span>
             </div>
-            {t.present ? <p className="mt-2 text-sm text-ink-700">{t.text}</p> : <p className="mt-2 text-sm text-ink-500">Not prepared yet.</p>}
+            {t.present ? (
+              <p className="mt-2 text-sm text-ink-700">{t.text}</p>
+            ) : (
+              <p className="mt-2 text-sm text-ink-500">{copy.result_not_prepared}</p>
+            )}
           </li>
         ))}
       </ul>
 
       {result.prepSummary ? (
         <div className="mt-6">
-          <h3 className="text-sm font-semibold text-ink-900">Your prep so far</h3>
+          <h3 className="text-sm font-semibold text-ink-900">{copy.result_prep_summary_heading}</h3>
           <p className="mt-2 whitespace-pre-line rounded-md border border-ink-200 bg-paper p-4 text-sm text-ink-700">{result.prepSummary}</p>
         </div>
       ) : null}
 
       <dl className="mt-6 grid grid-cols-1 gap-4">
         <div>
-          <dt className="text-sm font-semibold text-ink-900">Tip</dt>
+          <dt className="text-sm font-semibold text-ink-900">{copy.result_tip_label}</dt>
           <dd className="mt-1 text-sm text-ink-700">{result.nextTip}</dd>
         </div>
         <div>
-          <dt className="text-sm font-semibold text-ink-900">Next step</dt>
+          <dt className="text-sm font-semibold text-ink-900">{copy.result_next_step_label}</dt>
           <dd className="mt-1 text-sm text-ink-700">{result.nextStep}</dd>
         </div>
       </dl>
@@ -103,14 +109,14 @@ export function NegotiationPrepResultSummary({
           onClick={handleCopy}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          {copied ? "Copied" : "Copy result"}
+          {copied ? copy.result_copied_label : copy.result_copy_button}
         </button>
         <button
           type="button"
           onClick={onRestart}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Start again
+          {copy.result_restart_button}
         </button>
       </div>
     </div>

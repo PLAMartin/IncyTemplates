@@ -1,27 +1,32 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { saveToolCopyDraftAction, saveAndPublishToolCopyAction } from "@/server/actions/admin-tool-copy";
+import { saveToolContentDraftAction, saveAndPublishToolContentAction } from "@/server/actions/admin-tool-copy";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FormField } from "@/components/ui/form-field";
 import { Button } from "@/components/ui/button";
+import { CommonProductCopyFields } from "@/components/admin/common-product-copy-fields";
 import type { ToolCopySchema } from "@/lib/tools/types";
+import type { CommonProductCopy } from "@/server/admin/editorial-content";
 
 type Props = {
   toolKey: string;
+  productId: string | null;
   schema: ToolCopySchema;
+  initialCommon: CommonProductCopy;
   initialValues: Record<string, string>;
 };
 
 /**
- * Generic form driven entirely by the Tool's declared `copySchema` — one
- * Input/Textarea per field, no per-tool UI code needed. This is what makes
- * "no arbitrary code editor" (spec line 998) hold structurally: the form
- * can only ever render/save the keys the Tool itself declared, nothing a
- * database row could add.
+ * Bundles common product copy (spec v8 §10.11.2) with the Tool's declared `copySchema`
+ * fields into one Save draft/Publish action, backed by two coordinated server-side writes
+ * (`saveToolContentDraftAction`/`saveAndPublishToolContentAction` — see their doc comment in
+ * admin-tool-copy.ts for why). The per-tool fields stay entirely schema-driven, same as
+ * before: one Input/Textarea per declared key, nothing a database row could add.
  */
-export function ToolCopyEditorForm({ toolKey, schema, initialValues }: Props) {
+export function ToolCopyEditorForm({ toolKey, productId, schema, initialCommon, initialValues }: Props) {
+  const [common, setCommon] = useState<CommonProductCopy>(initialCommon);
   const [values, setValues] = useState<Record<string, string>>(initialValues);
   const [changeNote, setChangeNote] = useState("");
   const [message, setMessage] = useState<{ kind: "success" | "error"; text: string } | null>(null);
@@ -30,8 +35,14 @@ export function ToolCopyEditorForm({ toolKey, schema, initialValues }: Props) {
   function handleSave(publish: boolean) {
     setMessage(null);
     startTransition(async () => {
-      const action = publish ? saveAndPublishToolCopyAction : saveToolCopyDraftAction;
-      const result = await action({ toolKey, contentData: values, changeNote: changeNote || undefined });
+      const action = publish ? saveAndPublishToolContentAction : saveToolContentDraftAction;
+      const result = await action({
+        toolKey,
+        productId,
+        common,
+        toolContentData: values,
+        changeNote: changeNote || undefined,
+      });
       if (result.status === "success") {
         setMessage({ kind: "success", text: publish ? "Published." : "Draft saved." });
         setChangeNote("");
@@ -43,6 +54,7 @@ export function ToolCopyEditorForm({ toolKey, schema, initialValues }: Props) {
 
   return (
     <div className="space-y-4">
+      <CommonProductCopyFields values={common} onChange={(patch) => setCommon((prev) => ({ ...prev, ...patch }))} />
       {Object.entries(schema).map(([key, spec]) => (
         <FormField key={key} label={spec.label}>
           {(fieldProps) =>

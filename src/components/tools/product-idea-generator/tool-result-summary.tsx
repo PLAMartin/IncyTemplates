@@ -34,10 +34,12 @@ export function ProductIdeaGeneratorResultSummary({
   result,
   onRestart,
   headingRef,
+  copy,
 }: {
   result: ProductIdeaGeneratorResult;
   onRestart: () => void;
   headingRef: RefObject<HTMLHeadingElement | null>;
+  copy: Record<string, string>;
 }) {
   const [copied, setCopied] = useState(false);
   const recommended = result.candidates.find((c) => c.method === result.recommendedMethod)!;
@@ -63,7 +65,7 @@ export function ProductIdeaGeneratorResultSummary({
   return (
     <div className="rounded-md border border-ink-200 bg-paper-raised p-6" role="region" aria-label="Your result">
       <h2 ref={headingRef} tabIndex={-1} className="font-serif text-2xl font-semibold text-ink-900 outline-none">
-        Your idea direction
+        {copy.result_heading}
       </h2>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -76,22 +78,22 @@ export function ProductIdeaGeneratorResultSummary({
 
       <dl className="mt-6 grid grid-cols-1 gap-4">
         <div>
-          <dt className="text-sm font-semibold text-ink-900">First test step</dt>
+          <dt className="text-sm font-semibold text-ink-900">{copy.result_test_step_label}</dt>
           <dd className="mt-1 text-sm text-ink-700">{recommended.testStep}</dd>
         </div>
         <div>
-          <dt className="text-sm font-semibold text-ink-900">Daily practice</dt>
+          <dt className="text-sm font-semibold text-ink-900">{copy.result_daily_practice_label}</dt>
           <dd className="mt-1 text-sm text-ink-700">{result.dailyPracticeNudge}</dd>
         </div>
         <div>
-          <dt className="text-sm font-semibold text-ink-900">Next step</dt>
+          <dt className="text-sm font-semibold text-ink-900">{copy.result_next_step_label}</dt>
           <dd className="mt-1 text-sm text-ink-700">{result.nextStep}</dd>
         </div>
       </dl>
 
       {others.length > 0 ? (
         <div className="mt-6 border-t border-ink-200 pt-6">
-          <h3 className="text-sm font-semibold text-ink-900">Also worth exploring</h3>
+          <h3 className="text-sm font-semibold text-ink-900">{copy.result_others_heading}</h3>
           <ul className="mt-3 space-y-3">
             {others.map((candidate) => (
               <li key={candidate.method}>
@@ -105,10 +107,7 @@ export function ProductIdeaGeneratorResultSummary({
         </div>
       ) : null}
 
-      <p className="mt-6 text-xs text-ink-500">
-        These are starting directions based on today&apos;s answers, not finished ideas — the point is to give you something
-        concrete to test, not a guaranteed winner.
-      </p>
+      <p className="mt-6 text-xs text-ink-500">{copy.result_disclaimer}</p>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
         <button
@@ -116,14 +115,14 @@ export function ProductIdeaGeneratorResultSummary({
           onClick={handleCopy}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          {copied ? "Copied" : "Copy result"}
+          {copied ? copy.result_copied_label : copy.result_copy_button}
         </button>
         <button
           type="button"
           onClick={onRestart}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Start again
+          {copy.result_restart_button}
         </button>
       </div>
     </div>

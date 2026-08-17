@@ -2,6 +2,7 @@ import type { ToolDefinition } from "../types";
 import { firstCustomersPlannerInputSchema, firstCustomersPlannerResultSchema } from "./schema";
 import type { FirstCustomersPlannerInput, FirstCustomersPlannerResult } from "./schema";
 import { scoreFirstCustomersPlanner } from "./scoring";
+import { firstCustomersPlannerCopySchema } from "./copy";
 
 export const FIRST_CUSTOMERS_PLANNER_TOOL_KEY = "first-customers-planner";
 
@@ -11,7 +12,9 @@ export const firstCustomersPlannerTool: ToolDefinition<FirstCustomersPlannerInpu
   inputSchema: firstCustomersPlannerInputSchema,
   resultSchema: firstCustomersPlannerResultSchema,
   run: scoreFirstCustomersPlanner,
+  copySchema: firstCustomersPlannerCopySchema,
 };
 
 export * from "./schema";
 export { scoreFirstCustomersPlanner } from "./scoring";
+export { firstCustomersPlannerCopySchema } from "./copy";

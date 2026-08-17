@@ -28,10 +28,12 @@ export function DecisionFrameworkPickerResultSummary({
   result,
   onRestart,
   headingRef,
+  copy,
 }: {
   result: DecisionFrameworkPickerResult;
   onRestart: () => void;
   headingRef: RefObject<HTMLHeadingElement | null>;
+  copy: Record<string, string>;
 }) {
   const [copied, setCopied] = useState(false);
   const framework = FRAMEWORK_COPY[result.recommendedFramework];
@@ -56,7 +58,8 @@ export function DecisionFrameworkPickerResultSummary({
   return (
     <div className="rounded-md border border-ink-200 bg-paper-raised p-6" role="region" aria-label="Your result">
       <h2 ref={headingRef} tabIndex={-1} className="font-serif text-2xl font-semibold text-ink-900 outline-none">
-        Your result: {framework.label}
+        {copy.result_heading_prefix}
+        {framework.label}
       </h2>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -69,25 +72,22 @@ export function DecisionFrameworkPickerResultSummary({
         {result.runnerUpFramework ? (
           <>
             <div>
-              <dt className="text-sm font-semibold text-ink-900">Runner-up</dt>
+              <dt className="text-sm font-semibold text-ink-900">{copy.runner_up_label}</dt>
               <dd className="mt-1 text-sm text-ink-700">{FRAMEWORK_COPY[result.runnerUpFramework].label}</dd>
             </div>
             <div>
-              <dt className="text-sm font-semibold text-ink-900">Deciding factor</dt>
+              <dt className="text-sm font-semibold text-ink-900">{copy.deciding_factor_label}</dt>
               <dd className="mt-1 text-sm text-ink-700">{result.decidingFactor}</dd>
             </div>
           </>
         ) : null}
         <div className="sm:col-span-2">
-          <dt className="text-sm font-semibold text-ink-900">Next step</dt>
+          <dt className="text-sm font-semibold text-ink-900">{copy.next_step_label}</dt>
           <dd className="mt-1 text-sm text-ink-700">{result.nextStep}</dd>
         </div>
       </dl>
 
-      <p className="mt-6 text-xs text-ink-500">
-        This points you at a technique worth trying today, not a permanent rule — different decisions call for different
-        frameworks, so expect to come back and answer differently next time.
-      </p>
+      <p className="mt-6 text-xs text-ink-500">{copy.disclaimer}</p>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
         <button
@@ -95,14 +95,14 @@ export function DecisionFrameworkPickerResultSummary({
           onClick={handleCopy}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          {copied ? "Copied" : "Copy result"}
+          {copied ? copy.copied_label : copy.copy_result_label}
         </button>
         <button
           type="button"
           onClick={onRestart}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Choose again
+          {copy.restart_label}
         </button>
       </div>
     </div>

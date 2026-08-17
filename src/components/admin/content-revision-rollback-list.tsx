@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { rollbackGuideRevisionAction } from "@/server/actions/admin-guides";
 import { Button } from "@/components/ui/button";
+import type { AdminActionResult } from "@/server/actions/admin-guides";
 
 type HistoryEntry = {
   id: string;
@@ -12,12 +12,19 @@ type HistoryEntry = {
 };
 
 type Props = {
-  productId: string;
   currentRevisionId: string | null;
   history: HistoryEntry[];
+  onRollback: (sourceRevisionId: string) => Promise<AdminActionResult>;
 };
 
-export function GuideRollbackList({ productId, currentRevisionId, history }: Props) {
+/**
+ * Type-agnostic revision history/rollback list — same shape as the old `GuideRollbackList`,
+ * generalized (spec v8 §12.3.1's "one editorial contract") to take the rollback action as a
+ * prop instead of importing `rollbackGuideRevisionAction` directly, so Guide, Template and
+ * Tool editors can each pass their own (Tool's bundles a common-copy + tool-copy rollback
+ * behind the one callback).
+ */
+export function ContentRevisionRollbackList({ currentRevisionId, history, onRollback }: Props) {
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -26,7 +33,7 @@ export function GuideRollbackList({ productId, currentRevisionId, history }: Pro
     setPendingId(sourceRevisionId);
     setMessage(null);
     startTransition(async () => {
-      const result = await rollbackGuideRevisionAction({ productId, sourceRevisionId });
+      const result = await onRollback(sourceRevisionId);
       setMessage(result.status === "success" ? "Rolled back — now live." : result.message);
     });
   }

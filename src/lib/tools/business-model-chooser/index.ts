@@ -2,6 +2,7 @@ import type { ToolDefinition } from "../types";
 import { businessModelChooserInputSchema, businessModelChooserResultSchema } from "./schema";
 import type { BusinessModelChooserInput, BusinessModelChooserResult } from "./schema";
 import { scoreBusinessModelChooser } from "./scoring";
+import { businessModelChooserCopySchema } from "./copy";
 
 export const BUSINESS_MODEL_CHOOSER_TOOL_KEY = "business-model-chooser";
 
@@ -11,7 +12,9 @@ export const businessModelChooserTool: ToolDefinition<BusinessModelChooserInput,
   inputSchema: businessModelChooserInputSchema,
   resultSchema: businessModelChooserResultSchema,
   run: scoreBusinessModelChooser,
+  copySchema: businessModelChooserCopySchema,
 };
 
 export * from "./schema";
 export { scoreBusinessModelChooser } from "./scoring";
+export { businessModelChooserCopySchema } from "./copy";

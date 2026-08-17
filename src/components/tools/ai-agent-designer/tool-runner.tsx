@@ -2,6 +2,8 @@
 
 import { useId, useMemo, useReducer, useRef } from "react";
 import { getToolDefinition } from "@/lib/tools/registry";
+import { aiAgentDesignerCopySchema } from "@/lib/tools/ai-agent-designer/copy";
+import { resolveToolCopy } from "@/lib/tools/copy";
 import type { AiAgentDesignerInput, AiAgentDesignerResult } from "@/lib/tools/ai-agent-designer/schema";
 import { AiAgentDesignerResultSummary } from "@/components/tools/ai-agent-designer/tool-result-summary";
 
@@ -16,11 +18,15 @@ type Step = {
 
 // Six steps, in the same order scoring.ts checks its gates — the predictability gate first
 // (wins outright regardless of every other answer), then the five pattern-matching questions
-// from most specific/demanding need to most general fallback.
-const STEPS: Step[] = [
+// from most specific/demanding need to most general fallback. Legend/hint come from `copy`
+// (admin-editable, spec §14.7.1) with the schema's own defaults as fallback — same pattern as
+// mvp-scoper/tool-runner.tsx.
+function buildSteps(copy: Record<string, string>): Step[] {
+  return [
   {
     key: "taskPredictability",
-    legend: "Does this task follow a predictable, fixed path?",
+    legend: copy.q_task_predictability_legend!,
+    hint: copy.q_task_predictability_hint || undefined,
     options: [
       { value: "needs_flexibility_and_judgement", label: "No, it needs flexibility and judgement", description: "The right approach depends on the specific situation." },
       { value: "fixed_predictable_path", label: "Yes, it's predictable and fixed", description: "The same steps work every time, in the same order." },
@@ -28,7 +34,8 @@ const STEPS: Step[] = [
   },
   {
     key: "needsSelfCritique",
-    legend: "Does quality improve by critiquing and refining the output?",
+    legend: copy.q_needs_self_critique_legend!,
+    hint: copy.q_needs_self_critique_hint || undefined,
     options: [
       { value: "no_a_single_pass_is_enough", label: "No, a single pass is enough", description: "One good attempt is enough — no need to critique and refine." },
       {
@@ -40,7 +47,8 @@ const STEPS: Step[] = [
   },
   {
     key: "needsSubtaskDecomposition",
-    legend: "Does the task split into subtasks that specialised workers could each handle?",
+    legend: copy.q_needs_subtask_decomposition_legend!,
+    hint: copy.q_needs_subtask_decomposition_hint || undefined,
     options: [
       { value: "no_its_one_cohesive_task", label: "No, it's one cohesive task", description: "Splitting it up wouldn't make sense — it's a single piece of work." },
       {
@@ -52,7 +60,8 @@ const STEPS: Step[] = [
   },
   {
     key: "needsDifferentHandling",
-    legend: "Do different kinds of requests need genuinely different handling?",
+    legend: copy.q_needs_different_handling_legend!,
+    hint: copy.q_needs_different_handling_hint || undefined,
     options: [
       { value: "no_one_handling_path_is_enough", label: "No, one handling path is enough", description: "Every request coming in can be handled the same way." },
       {
@@ -64,7 +73,8 @@ const STEPS: Step[] = [
   },
   {
     key: "needsMultiStepReasoning",
-    legend: "Does it need multi-step reasoning, where each step builds on the last?",
+    legend: copy.q_needs_multi_step_reasoning_legend!,
+    hint: copy.q_needs_multi_step_reasoning_hint || undefined,
     options: [
       { value: "no_a_single_step_is_enough", label: "No, a single step is enough", description: "One prompt or call can handle this in one go." },
       {
@@ -76,7 +86,8 @@ const STEPS: Step[] = [
   },
   {
     key: "needsExternalData",
-    legend: "Does it need current or external information the base model doesn't already have?",
+    legend: copy.q_needs_external_data_legend!,
+    hint: copy.q_needs_external_data_hint || undefined,
     options: [
       { value: "no_training_data_is_enough", label: "No, training data is enough", description: "The model already knows enough to handle this well." },
       {
@@ -86,7 +97,8 @@ const STEPS: Step[] = [
       },
     ],
   },
-];
+  ];
+}
 
 type State =
   | { phase: "start" }
@@ -100,7 +112,8 @@ type Action =
   | { type: "back" }
   | { type: "restart" };
 
-function reducer(state: State, action: Action): State {
+function createReducer(steps: Step[]) {
+  return function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "begin":
       return { phase: "question", stepIndex: 0, answers: {}, error: null };
@@ -116,11 +129,11 @@ function reducer(state: State, action: Action): State {
     }
     case "next": {
       if (state.phase !== "question") return state;
-      const step = STEPS[state.stepIndex]!;
+      const step = steps[state.stepIndex]!;
       if (!state.answers[step.key]) {
         return { ...state, error: "Choose an option to continue." };
       }
-      if (state.stepIndex < STEPS.length - 1) {
+      if (state.stepIndex < steps.length - 1) {
         return { ...state, stepIndex: state.stepIndex + 1, error: null };
       }
       // Last step answered — validate and run the deterministic recommendation.
@@ -135,36 +148,39 @@ function reducer(state: State, action: Action): State {
     default:
       return state;
   }
+  };
 }
 
-export function AiAgentDesignerRunner() {
-  const [state, dispatch] = useReducer(reducer, { phase: "start" });
+export function AiAgentDesignerRunner({ copy: copyOverrides }: { copy?: Record<string, string> }) {
+  const copy = useMemo(() => resolveToolCopy(aiAgentDesignerCopySchema, copyOverrides), [copyOverrides]);
+  const steps = useMemo(() => buildSteps(copy), [copy]);
+  const [state, dispatch] = useReducer(createReducer(steps), { phase: "start" });
   const errorRegionId = useId();
   const resultHeadingRef = useRef<HTMLHeadingElement>(null);
 
-  const currentStep = state.phase === "question" ? STEPS[state.stepIndex] : undefined;
+  const currentStep = state.phase === "question" ? steps[state.stepIndex] : undefined;
   const selectedValue = currentStep && state.phase === "question" ? state.answers[currentStep.key] : undefined;
 
   const progressLabel = useMemo(() => {
     if (state.phase !== "question") return null;
-    return `Question ${state.stepIndex + 1} of ${STEPS.length}`;
-  }, [state]);
+    return `Question ${state.stepIndex + 1} of ${steps.length}`;
+  }, [state, steps.length]);
 
   if (state.phase === "start") {
     return (
       <div className="rounded-md border border-ink-200 bg-paper-raised p-6">
-        <h2 className="text-lg font-semibold text-ink-900">Before you start</h2>
+        <h2 className="text-lg font-semibold text-ink-900">{copy.intro_heading}</h2>
         <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-700">
-          <li>Takes about 3 minutes — answer with a specific AI feature or task in mind.</li>
-          <li>Nothing is saved or sent anywhere — this runs entirely in your browser.</li>
-          <li>You&apos;ll get a recommended architecture — or told you don&apos;t need an agent at all.</li>
+          <li>{copy.intro_bullet_1}</li>
+          <li>{copy.intro_bullet_2}</li>
+          <li>{copy.intro_bullet_3}</li>
         </ul>
         <button
           type="button"
           onClick={() => dispatch({ type: "begin" })}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Start the questionnaire
+          {copy.intro_cta}
         </button>
       </div>
     );
@@ -223,7 +239,7 @@ export function AiAgentDesignerRunner() {
             aria-describedby={state.error ? errorRegionId : undefined}
             className="inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
           >
-            {state.stepIndex === STEPS.length - 1 ? "See my recommendation" : "Continue"}
+            {state.stepIndex === steps.length - 1 ? "See my recommendation" : "Continue"}
           </button>
         </div>
       </div>

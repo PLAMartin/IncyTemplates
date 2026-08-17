@@ -1,7 +1,9 @@
 "use client";
 
-import { useId, useReducer, useRef } from "react";
+import { useId, useMemo, useReducer, useRef } from "react";
 import { getToolDefinition } from "@/lib/tools/registry";
+import { lateralThinkingToolkitCopySchema } from "@/lib/tools/lateral-thinking-toolkit/copy";
+import { resolveToolCopy } from "@/lib/tools/copy";
 import type { LateralThinkingToolkitResult } from "@/lib/tools/lateral-thinking-toolkit/schema";
 import { LateralThinkingToolkitResultSummary } from "@/components/tools/lateral-thinking-toolkit/tool-result-summary";
 
@@ -12,33 +14,36 @@ type State =
 
 type Action = { type: "begin" } | { type: "setText"; value: string } | { type: "generate" } | { type: "restart" };
 
-function reducer(state: State, action: Action): State {
-  switch (action.type) {
-    case "begin":
-      return { phase: "question", problemOrIdea: "", error: null };
-    case "restart":
-      return { phase: "start" };
-    case "setText": {
-      if (state.phase !== "question") return state;
-      return { ...state, problemOrIdea: action.value, error: null };
-    }
-    case "generate": {
-      if (state.phase !== "question") return state;
-      const definition = getToolDefinition("lateral-thinking-toolkit");
-      const parsed = definition.inputSchema.safeParse({ problemOrIdea: state.problemOrIdea });
-      if (!parsed.success) {
-        return { ...state, error: "Describe the problem or idea you're stuck on to generate prompts." };
+function createReducer(emptyInputError: string) {
+  return function reducer(state: State, action: Action): State {
+    switch (action.type) {
+      case "begin":
+        return { phase: "question", problemOrIdea: "", error: null };
+      case "restart":
+        return { phase: "start" };
+      case "setText": {
+        if (state.phase !== "question") return state;
+        return { ...state, problemOrIdea: action.value, error: null };
       }
-      const result = definition.run(parsed.data) as LateralThinkingToolkitResult;
-      return { phase: "result", result };
+      case "generate": {
+        if (state.phase !== "question") return state;
+        const definition = getToolDefinition("lateral-thinking-toolkit");
+        const parsed = definition.inputSchema.safeParse({ problemOrIdea: state.problemOrIdea });
+        if (!parsed.success) {
+          return { ...state, error: emptyInputError };
+        }
+        const result = definition.run(parsed.data) as LateralThinkingToolkitResult;
+        return { phase: "result", result };
+      }
+      default:
+        return state;
     }
-    default:
-      return state;
-  }
+  };
 }
 
-export function LateralThinkingToolkitRunner() {
-  const [state, dispatch] = useReducer(reducer, { phase: "start" });
+export function LateralThinkingToolkitRunner({ copy: copyOverrides }: { copy?: Record<string, string> }) {
+  const copy = useMemo(() => resolveToolCopy(lateralThinkingToolkitCopySchema, copyOverrides), [copyOverrides]);
+  const [state, dispatch] = useReducer(createReducer(copy.empty_input_error!), { phase: "start" });
   const errorRegionId = useId();
   const textInputId = useId();
   const resultHeadingRef = useRef<HTMLHeadingElement>(null);
@@ -46,18 +51,18 @@ export function LateralThinkingToolkitRunner() {
   if (state.phase === "start") {
     return (
       <div className="rounded-md border border-ink-200 bg-paper-raised p-6">
-        <h2 className="text-lg font-semibold text-ink-900">Before you start</h2>
+        <h2 className="text-lg font-semibold text-ink-900">{copy.intro_heading}</h2>
         <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-700">
-          <li>Takes about 2 minutes — describe whatever you&apos;re stuck on in a sentence or two.</li>
-          <li>Nothing is saved or sent anywhere — this runs entirely in your browser.</li>
-          <li>You&apos;ll get five prompts, one per technique, to jog your thinking from different angles.</li>
+          <li>{copy.intro_bullet_1}</li>
+          <li>{copy.intro_bullet_2}</li>
+          <li>{copy.intro_bullet_3}</li>
         </ul>
         <button
           type="button"
           onClick={() => dispatch({ type: "begin" })}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Start generating prompts
+          {copy.intro_cta}
         </button>
       </div>
     );
@@ -67,14 +72,14 @@ export function LateralThinkingToolkitRunner() {
     return (
       <div className="rounded-md border border-ink-200 bg-paper-raised p-6">
         <label htmlFor={textInputId} className="block text-lg font-semibold text-ink-900">
-          What problem or idea are you stuck on?
+          {copy.question_label}
         </label>
-        <p className="mt-1 text-sm text-ink-500">A sentence or two is plenty — you don&apos;t need to have it fully worked out.</p>
+        <p className="mt-1 text-sm text-ink-500">{copy.question_hint}</p>
         <textarea
           id={textInputId}
           rows={3}
           value={state.problemOrIdea}
-          placeholder="e.g. I can't work out how to make our onboarding feel less generic"
+          placeholder={copy.question_placeholder}
           onChange={(event) => dispatch({ type: "setText", value: event.target.value })}
           className="mt-4 w-full rounded-md border border-ink-200 p-3 text-sm text-ink-900 focus-visible:outline-2 focus-visible:outline-focus-ring"
         />
@@ -92,7 +97,7 @@ export function LateralThinkingToolkitRunner() {
             aria-describedby={state.error ? errorRegionId : undefined}
             className="inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
           >
-            Generate prompts
+            {copy.generate_label}
           </button>
         </div>
       </div>
@@ -101,7 +106,12 @@ export function LateralThinkingToolkitRunner() {
 
   if (state.phase === "result") {
     return (
-      <LateralThinkingToolkitResultSummary result={state.result} onRestart={() => dispatch({ type: "restart" })} headingRef={resultHeadingRef} />
+      <LateralThinkingToolkitResultSummary
+        result={state.result}
+        onRestart={() => dispatch({ type: "restart" })}
+        headingRef={resultHeadingRef}
+        copy={copy}
+      />
     );
   }
 

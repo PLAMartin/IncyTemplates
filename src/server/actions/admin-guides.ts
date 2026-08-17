@@ -4,12 +4,14 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/server/auth/dal";
 import { saveGuideDraft, publishGuideRevision, rollbackGuideRevision } from "@/server/admin/guides";
+import { commonProductCopySchema } from "@/server/admin/editorial-content";
 import { zId } from "@/lib/utils/id";
 
 export type AdminActionResult = { status: "success" } | { status: "invalid" | "error"; message: string };
 
 const saveDraftSchema = z.object({
   productId: zId,
+  common: commonProductCopySchema,
   bodyMarkdown: z.string().min(1, "Body can't be empty."),
   author: z.string().min(1, "Author is required."),
   changeNote: z.string().max(500).optional(),
@@ -25,7 +27,8 @@ export async function saveGuideDraftAction(input: z.infer<typeof saveDraftSchema
   try {
     await saveGuideDraft({
       productId: parsed.data.productId,
-      contentData: { body_markdown: parsed.data.bodyMarkdown, author: parsed.data.author },
+      commonCopy: parsed.data.common,
+      guideCopy: { body_markdown: parsed.data.bodyMarkdown, author: parsed.data.author },
       changeNote: parsed.data.changeNote,
       actorProfileId: session.userId,
     });
@@ -46,7 +49,8 @@ export async function saveAndPublishGuideAction(input: z.infer<typeof saveDraftS
   try {
     const revisionId = await saveGuideDraft({
       productId: parsed.data.productId,
-      contentData: { body_markdown: parsed.data.bodyMarkdown, author: parsed.data.author },
+      commonCopy: parsed.data.common,
+      guideCopy: { body_markdown: parsed.data.bodyMarkdown, author: parsed.data.author },
       changeNote: parsed.data.changeNote,
       actorProfileId: session.userId,
     });

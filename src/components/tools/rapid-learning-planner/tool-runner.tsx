@@ -2,6 +2,8 @@
 
 import { useId, useMemo, useReducer, useRef } from "react";
 import { getToolDefinition } from "@/lib/tools/registry";
+import { rapidLearningPlannerCopySchema } from "@/lib/tools/rapid-learning-planner/copy";
+import { resolveToolCopy } from "@/lib/tools/copy";
 import type { RapidLearningPlannerInput, RapidLearningPlannerResult } from "@/lib/tools/rapid-learning-planner/schema";
 import { RapidLearningPlannerResultSummary } from "@/components/tools/rapid-learning-planner/tool-result-summary";
 
@@ -16,33 +18,39 @@ type Step = {
 
 // Four optional free-text steps, one per DSSS step, in Tim Ferriss's own taught order. All
 // optional — the Tool's job is to check which are planned, not to require all four before it
-// will run (docs/decisions/0060).
-const STEPS: Step[] = [
-  {
-    key: "deconstruction",
-    legend: "Deconstruction — what are the smaller, independent parts of this skill?",
-    placeholder: "e.g. Prompting effectively, understanding project structure, debugging, iterating on outputs.",
-    hint: "Break the skill down before doing anything else. Leave blank if you haven't done this yet.",
-  },
-  {
-    key: "selection",
-    legend: "Selection — which few parts give you most of the value?",
-    placeholder: "e.g. Rapid prototyping, debugging, turning ideas into working demos.",
-    hint: "The 20% that gets you 80% of the way there. Leave blank if you haven't decided this yet.",
-  },
-  {
-    key: "sequencing",
-    legend: "Sequencing — what order will you learn those parts in?",
-    placeholder: "e.g. Prompting, then structured iteration, then debugging, then small projects.",
-    hint: "Not just what to learn — when. Leave blank if you haven't planned this yet.",
-  },
-  {
-    key: "stakes",
-    legend: "Stakes — what accountability will keep you going once the novelty wears off?",
-    placeholder: "e.g. Post weekly progress updates publicly.",
-    hint: "A commitment, deadline or consequence real enough to matter. Leave blank if you haven't set this yet.",
-  },
-];
+// will run (docs/decisions/0060). Legend/placeholder/hint text comes from `copy`
+// (admin-editable, spec §14.7.1).
+function buildSteps(copy: Record<string, string>): Step[] {
+  return [
+    {
+      key: "deconstruction",
+      legend: copy.q_deconstruction_legend!,
+      placeholder: copy.q_deconstruction_placeholder!,
+      hint: copy.q_deconstruction_hint!,
+    },
+    {
+      key: "selection",
+      legend: copy.q_selection_legend!,
+      placeholder: copy.q_selection_placeholder!,
+      hint: copy.q_selection_hint!,
+    },
+    {
+      key: "sequencing",
+      legend: copy.q_sequencing_legend!,
+      placeholder: copy.q_sequencing_placeholder!,
+      hint: copy.q_sequencing_hint!,
+    },
+    {
+      key: "stakes",
+      legend: copy.q_stakes_legend!,
+      placeholder: copy.q_stakes_placeholder!,
+      hint: copy.q_stakes_hint!,
+    },
+  ];
+}
+
+// Keys/order/length only — reducer logic doesn't need copy-driven legend/placeholder/hint text.
+const STEP_KEYS: StepKey[] = ["deconstruction", "selection", "sequencing", "stakes"];
 
 type State =
   | { phase: "start" }
@@ -67,7 +75,7 @@ function reducer(state: State, action: Action): State {
     }
     case "next": {
       if (state.phase !== "question") return state;
-      if (state.stepIndex < STEPS.length - 1) {
+      if (state.stepIndex < STEP_KEYS.length - 1) {
         return { ...state, stepIndex: state.stepIndex + 1, error: null };
       }
       // Last step reached — validate and run the deterministic plan check.
@@ -84,35 +92,37 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-export function RapidLearningPlannerRunner() {
+export function RapidLearningPlannerRunner({ copy: copyOverrides }: { copy?: Record<string, string> }) {
+  const copy = useMemo(() => resolveToolCopy(rapidLearningPlannerCopySchema, copyOverrides), [copyOverrides]);
+  const steps = useMemo(() => buildSteps(copy), [copy]);
   const [state, dispatch] = useReducer(reducer, { phase: "start" });
   const errorRegionId = useId();
   const textInputId = useId();
   const resultHeadingRef = useRef<HTMLHeadingElement>(null);
 
-  const currentStep = state.phase === "question" ? STEPS[state.stepIndex] : undefined;
+  const currentStep = state.phase === "question" ? steps[state.stepIndex] : undefined;
   const textValue = currentStep && state.phase === "question" ? (state.answers[currentStep.key] ?? "") : "";
 
   const progressLabel = useMemo(() => {
     if (state.phase !== "question") return null;
-    return `Question ${state.stepIndex + 1} of ${STEPS.length}`;
-  }, [state]);
+    return `Question ${state.stepIndex + 1} of ${steps.length}`;
+  }, [state, steps]);
 
   if (state.phase === "start") {
     return (
       <div className="rounded-md border border-ink-200 bg-paper-raised p-6">
-        <h2 className="text-lg font-semibold text-ink-900">Before you start</h2>
+        <h2 className="text-lg font-semibold text-ink-900">{copy.intro_heading}</h2>
         <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-700">
-          <li>Takes about 3 minutes — think of a specific skill you&apos;re learning and fill in what you&apos;ve already planned.</li>
-          <li>Nothing is saved or sent anywhere — this runs entirely in your browser.</li>
-          <li>You&apos;ll see which of the four DSSS steps are ready, and a tip for what to plan next.</li>
+          <li>{copy.intro_bullet_1}</li>
+          <li>{copy.intro_bullet_2}</li>
+          <li>{copy.intro_bullet_3}</li>
         </ul>
         <button
           type="button"
           onClick={() => dispatch({ type: "begin" })}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Start checking your plan
+          {copy.intro_cta}
         </button>
       </div>
     );
@@ -160,7 +170,7 @@ export function RapidLearningPlannerRunner() {
             aria-describedby={state.error ? errorRegionId : undefined}
             className="inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
           >
-            {state.stepIndex === STEPS.length - 1 ? "Check my plan" : "Continue"}
+            {state.stepIndex === steps.length - 1 ? "Check my plan" : "Continue"}
           </button>
         </div>
       </div>

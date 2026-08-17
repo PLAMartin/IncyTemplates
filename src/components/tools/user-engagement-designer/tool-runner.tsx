@@ -2,6 +2,8 @@
 
 import { useId, useMemo, useReducer, useRef } from "react";
 import { getToolDefinition } from "@/lib/tools/registry";
+import { userEngagementDesignerCopySchema } from "@/lib/tools/user-engagement-designer/copy";
+import { resolveToolCopy } from "@/lib/tools/copy";
 import type { UserEngagementDesignerInput, UserEngagementDesignerResult } from "@/lib/tools/user-engagement-designer/schema";
 import { UserEngagementDesignerResultSummary } from "@/components/tools/user-engagement-designer/tool-result-summary";
 
@@ -14,45 +16,47 @@ type Step = {
   options: { value: string; label: string; description: string }[];
 };
 
-const STEPS: Step[] = [
-  {
-    key: "triggerStrength",
-    legend: "Do users have a clear, reliable trigger prompting them back to your product?",
-    options: [
-      { value: "yes_clear_external_trigger", label: "Yes, a clear external trigger", description: "A notification, icon or email reliably prompts the next visit." },
-      { value: "sometimes_but_inconsistent", label: "Sometimes, but inconsistent", description: "There's something, but it doesn't fire reliably." },
-      { value: "no_users_have_to_remember_on_their_own", label: "No, users have to remember on their own", description: "There's no external prompt at all." },
-    ],
-  },
-  {
-    key: "actionEase",
-    legend: "Once triggered, how easy is the very next action?",
-    options: [
-      { value: "one_simple_step", label: "One simple step", description: "A single, obvious action — a tap, a scroll, a search." },
-      { value: "a_few_steps", label: "A few steps", description: "It takes a handful of steps to get going." },
-      { value: "several_steps_or_real_effort", label: "Several steps or real effort", description: "It takes real thought or effort before anything happens." },
-    ],
-  },
-  {
-    key: "rewardQuality",
-    legend: "Does the action reliably pay off with something rewarding?",
-    options: [
-      { value: "yes_varied_and_satisfying", label: "Yes, varied and satisfying", description: "The payoff varies enough to stay interesting." },
-      { value: "somewhat_but_predictable_or_flat", label: "Somewhat, but predictable or flat", description: "There's a payoff, but it's the same every time." },
-      { value: "rarely_or_inconsistently", label: "Rarely or inconsistently", description: "The action often doesn't feel rewarding at all." },
-    ],
-  },
-  {
-    key: "investmentDepth",
-    legend: "Do users put anything into the product that makes it more valuable to return to?",
-    hint: "Think about data, content, progress or reputation that carries forward between sessions.",
-    options: [
-      { value: "yes_they_build_something_that_compounds", label: "Yes, something that compounds", description: "Content, data or progress builds up the more they use it." },
-      { value: "a_little_but_not_much", label: "A little, but not much", description: "There's something, but it doesn't add up to much." },
-      { value: "no_nothing_carries_forward", label: "No, nothing carries forward", description: "Every session starts from zero." },
-    ],
-  },
-];
+function buildSteps(copy: Record<string, string>): Step[] {
+  return [
+    {
+      key: "triggerStrength",
+      legend: copy.q_trigger_legend!,
+      options: [
+        { value: "yes_clear_external_trigger", label: "Yes, a clear external trigger", description: "A notification, icon or email reliably prompts the next visit." },
+        { value: "sometimes_but_inconsistent", label: "Sometimes, but inconsistent", description: "There's something, but it doesn't fire reliably." },
+        { value: "no_users_have_to_remember_on_their_own", label: "No, users have to remember on their own", description: "There's no external prompt at all." },
+      ],
+    },
+    {
+      key: "actionEase",
+      legend: copy.q_action_legend!,
+      options: [
+        { value: "one_simple_step", label: "One simple step", description: "A single, obvious action — a tap, a scroll, a search." },
+        { value: "a_few_steps", label: "A few steps", description: "It takes a handful of steps to get going." },
+        { value: "several_steps_or_real_effort", label: "Several steps or real effort", description: "It takes real thought or effort before anything happens." },
+      ],
+    },
+    {
+      key: "rewardQuality",
+      legend: copy.q_reward_legend!,
+      options: [
+        { value: "yes_varied_and_satisfying", label: "Yes, varied and satisfying", description: "The payoff varies enough to stay interesting." },
+        { value: "somewhat_but_predictable_or_flat", label: "Somewhat, but predictable or flat", description: "There's a payoff, but it's the same every time." },
+        { value: "rarely_or_inconsistently", label: "Rarely or inconsistently", description: "The action often doesn't feel rewarding at all." },
+      ],
+    },
+    {
+      key: "investmentDepth",
+      legend: copy.q_investment_legend!,
+      hint: copy.q_investment_hint || undefined,
+      options: [
+        { value: "yes_they_build_something_that_compounds", label: "Yes, something that compounds", description: "Content, data or progress builds up the more they use it." },
+        { value: "a_little_but_not_much", label: "A little, but not much", description: "There's something, but it doesn't add up to much." },
+        { value: "no_nothing_carries_forward", label: "No, nothing carries forward", description: "Every session starts from zero." },
+      ],
+    },
+  ];
+}
 
 type State =
   | { phase: "start" }
@@ -66,7 +70,7 @@ type Action =
   | { type: "back" }
   | { type: "restart" };
 
-function reducer(state: State, action: Action): State {
+function reducer(state: State, action: Action, steps: Step[], copy: Record<string, string>): State {
   switch (action.type) {
     case "begin":
       return { phase: "question", stepIndex: 0, answers: {}, error: null };
@@ -82,18 +86,18 @@ function reducer(state: State, action: Action): State {
     }
     case "next": {
       if (state.phase !== "question") return state;
-      const step = STEPS[state.stepIndex]!;
+      const step = steps[state.stepIndex]!;
       if (!state.answers[step.key]) {
-        return { ...state, error: "Choose an option to continue." };
+        return { ...state, error: copy.error_missing_answer! };
       }
-      if (state.stepIndex < STEPS.length - 1) {
+      if (state.stepIndex < steps.length - 1) {
         return { ...state, stepIndex: state.stepIndex + 1, error: null };
       }
       // Last step answered — validate and run the deterministic diagnosis.
       const definition = getToolDefinition("user-engagement-designer");
       const parsed = definition.inputSchema.safeParse(state.answers);
       if (!parsed.success) {
-        return { ...state, error: "Something's missing — please check every question was answered." };
+        return { ...state, error: copy.error_invalid! };
       }
       const result = definition.run(parsed.data) as UserEngagementDesignerResult;
       return { phase: "result", result };
@@ -103,34 +107,36 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-export function UserEngagementDesignerRunner() {
-  const [state, dispatch] = useReducer(reducer, { phase: "start" });
+export function UserEngagementDesignerRunner({ copy: copyOverrides }: { copy?: Record<string, string> }) {
+  const copy = useMemo(() => resolveToolCopy(userEngagementDesignerCopySchema, copyOverrides), [copyOverrides]);
+  const steps = useMemo(() => buildSteps(copy), [copy]);
+  const [state, dispatch] = useReducer((state: State, action: Action) => reducer(state, action, steps, copy), { phase: "start" });
   const errorRegionId = useId();
   const resultHeadingRef = useRef<HTMLHeadingElement>(null);
 
-  const currentStep = state.phase === "question" ? STEPS[state.stepIndex] : undefined;
+  const currentStep = state.phase === "question" ? steps[state.stepIndex] : undefined;
   const selectedValue = currentStep && state.phase === "question" ? state.answers[currentStep.key] : undefined;
 
   const progressLabel = useMemo(() => {
     if (state.phase !== "question") return null;
-    return `Question ${state.stepIndex + 1} of ${STEPS.length}`;
-  }, [state]);
+    return `Question ${state.stepIndex + 1} of ${steps.length}`;
+  }, [state, steps]);
 
   if (state.phase === "start") {
     return (
       <div className="rounded-md border border-ink-200 bg-paper-raised p-6">
-        <h2 className="text-lg font-semibold text-ink-900">Before you start</h2>
+        <h2 className="text-lg font-semibold text-ink-900">{copy.intro_heading}</h2>
         <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-700">
-          <li>Takes about 3 minutes — answer based on your product as it actually works today.</li>
-          <li>Nothing is saved or sent anywhere — this runs entirely in your browser.</li>
-          <li>You&apos;ll get your weakest engagement-loop link and one concrete next step.</li>
+          <li>{copy.intro_bullet_1}</li>
+          <li>{copy.intro_bullet_2}</li>
+          <li>{copy.intro_bullet_3}</li>
         </ul>
         <button
           type="button"
           onClick={() => dispatch({ type: "begin" })}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Start mapping your loop
+          {copy.intro_cta}
         </button>
       </div>
     );
@@ -181,7 +187,7 @@ export function UserEngagementDesignerRunner() {
             disabled={state.stepIndex === 0}
             className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Back
+            {copy.back_label}
           </button>
           <button
             type="button"
@@ -189,7 +195,7 @@ export function UserEngagementDesignerRunner() {
             aria-describedby={state.error ? errorRegionId : undefined}
             className="inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
           >
-            {state.stepIndex === STEPS.length - 1 ? "See my result" : "Continue"}
+            {state.stepIndex === steps.length - 1 ? copy.see_result_label : copy.continue_label}
           </button>
         </div>
       </div>
@@ -198,7 +204,12 @@ export function UserEngagementDesignerRunner() {
 
   if (state.phase === "result") {
     return (
-      <UserEngagementDesignerResultSummary result={state.result} onRestart={() => dispatch({ type: "restart" })} headingRef={resultHeadingRef} />
+      <UserEngagementDesignerResultSummary
+        result={state.result}
+        onRestart={() => dispatch({ type: "restart" })}
+        headingRef={resultHeadingRef}
+        copy={copy}
+      />
     );
   }
 

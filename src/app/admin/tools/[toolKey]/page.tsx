@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getToolCopyForAdmin } from "@/server/admin/tool-copy";
 import { resolveToolCopy } from "@/lib/tools/copy";
+import { rollbackToolCopyAction, rollbackToolCommonCopyAction } from "@/server/actions/admin-tool-copy";
 import { ToolCopyEditorForm } from "@/components/admin/tool-copy-editor-form";
-import { ToolCopyRollbackList } from "@/components/admin/tool-copy-rollback-list";
+import { ContentRevisionRollbackList } from "@/components/admin/content-revision-rollback-list";
 
 export const metadata: Metadata = {
   title: "Edit tool copy — Admin",
@@ -28,14 +29,19 @@ export default async function AdminToolCopyEditPage({ params }: Props) {
       </div>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-ink-900">Copy</h2>
-        <ToolCopyEditorForm toolKey={toolKey} schema={detail.schema} initialValues={initialValues} />
+        <h2 className="mb-3 text-lg font-semibold text-ink-900">Editorial content</h2>
+        <ToolCopyEditorForm
+          toolKey={toolKey}
+          productId={detail.productId}
+          schema={detail.schema}
+          initialCommon={detail.commonCopy}
+          initialValues={initialValues}
+        />
       </section>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-ink-900">History</h2>
-        <ToolCopyRollbackList
-          toolKey={toolKey}
+        <h2 className="mb-3 text-lg font-semibold text-ink-900">Tool copy history</h2>
+        <ContentRevisionRollbackList
           currentRevisionId={detail.publishedRevision?.id ?? null}
           history={detail.history.map((r) => ({
             id: r.id,
@@ -43,8 +49,25 @@ export default async function AdminToolCopyEditPage({ params }: Props) {
             change_note: r.change_note,
             published_at: r.published_at,
           }))}
+          onRollback={(sourceRevisionId) => rollbackToolCopyAction({ toolKey, sourceRevisionId })}
         />
       </section>
+
+      {detail.productId ? (
+        <section>
+          <h2 className="mb-3 text-lg font-semibold text-ink-900">Common copy history</h2>
+          <ContentRevisionRollbackList
+            currentRevisionId={detail.commonPublishedRevisionId}
+            history={detail.commonHistory.map((r) => ({
+              id: r.id,
+              revision_number: r.revision_number,
+              change_note: r.change_note,
+              published_at: r.published_at,
+            }))}
+            onRollback={(sourceRevisionId) => rollbackToolCommonCopyAction({ productId: detail.productId!, sourceRevisionId })}
+          />
+        </section>
+      ) : null}
     </div>
   );
 }

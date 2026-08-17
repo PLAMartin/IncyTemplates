@@ -2,6 +2,7 @@ import type { ToolDefinition } from "../types";
 import { customerDemandTestInputSchema, customerDemandTestResultSchema } from "./schema";
 import type { CustomerDemandTestInput, CustomerDemandTestResult } from "./schema";
 import { scoreCustomerDemandTest } from "./scoring";
+import { customerDemandTestCopySchema } from "./copy";
 
 export const CUSTOMER_DEMAND_TEST_TOOL_KEY = "customer-demand-test";
 
@@ -11,7 +12,9 @@ export const customerDemandTestTool: ToolDefinition<CustomerDemandTestInput, Cus
   inputSchema: customerDemandTestInputSchema,
   resultSchema: customerDemandTestResultSchema,
   run: scoreCustomerDemandTest,
+  copySchema: customerDemandTestCopySchema,
 };
 
 export * from "./schema";
 export { scoreCustomerDemandTest } from "./scoring";
+export { customerDemandTestCopySchema } from "./copy";

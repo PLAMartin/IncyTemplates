@@ -3,17 +3,20 @@
 import { useEffect, useState, type RefObject } from "react";
 import type { LaunchOption, StartupLaunchPlannerResult } from "@/lib/tools/startup-launch-planner/schema";
 
-const OPTION_COPY: Record<LaunchOption, { label: string }> = {
-  soft_launch_page: { label: "Soft launch page" },
-  friends_and_family: { label: "Friends and family" },
-  community_or_social: { label: "Community or social" },
-  press: { label: "Press" },
-};
+function optionLabel(option: LaunchOption, copy: Record<string, string>): string {
+  const key = ({
+    soft_launch_page: "option_soft_launch_page_label",
+    friends_and_family: "option_friends_and_family_label",
+    community_or_social: "option_community_or_social_label",
+    press: "option_press_label",
+  } satisfies Record<LaunchOption, string>)[option];
+  return copy[key]!;
+}
 
-function resultToPlainText(result: StartupLaunchPlannerResult): string {
+function resultToPlainText(result: StartupLaunchPlannerResult, copy: Record<string, string>): string {
   const lines = ["Startup Launch Planner — your launch plan", ""];
   result.plan.forEach((step, index) => {
-    lines.push(`${index + 1}. ${OPTION_COPY[step.option].label}: ${step.tip}`);
+    lines.push(`${index + 1}. ${optionLabel(step.option, copy)}: ${step.tip}`);
   });
   lines.push("", `Why start there: ${result.rationale}`, `Next step: ${result.nextStep}`);
   return lines.join("\n");
@@ -28,10 +31,12 @@ export function StartupLaunchPlannerResultSummary({
   result,
   onRestart,
   headingRef,
+  copy,
 }: {
   result: StartupLaunchPlannerResult;
   onRestart: () => void;
   headingRef: RefObject<HTMLHeadingElement | null>;
+  copy: Record<string, string>;
 }) {
   const [copied, setCopied] = useState(false);
   const firstStep = result.plan[0]!;
@@ -44,7 +49,7 @@ export function StartupLaunchPlannerResultSummary({
 
   async function handleCopy() {
     try {
-      await navigator.clipboard.writeText(resultToPlainText(result));
+      await navigator.clipboard.writeText(resultToPlainText(result, copy));
       setCopied(true);
       setTimeout(() => setCopied(false), 3000);
     } catch {
@@ -56,7 +61,7 @@ export function StartupLaunchPlannerResultSummary({
   return (
     <div className="rounded-md border border-ink-200 bg-paper-raised p-6" role="region" aria-label="Your result">
       <h2 ref={headingRef} tabIndex={-1} className="font-serif text-2xl font-semibold text-ink-900 outline-none">
-        Your launch plan
+        {copy.result_heading}
       </h2>
 
       <p className="mt-4 text-sm text-ink-700">{result.rationale}</p>
@@ -68,9 +73,11 @@ export function StartupLaunchPlannerResultSummary({
               <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-brand-100 text-xs font-semibold text-brand-900">
                 {index + 1}
               </span>
-              <span className="text-sm font-medium text-ink-900">{OPTION_COPY[step.option].label}</span>
+              <span className="text-sm font-medium text-ink-900">{optionLabel(step.option, copy)}</span>
               {step.option === firstStep.option ? (
-                <span className="inline-flex items-center rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-900">Start here</span>
+                <span className="inline-flex items-center rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-900">
+                  {copy.start_here_badge}
+                </span>
               ) : null}
             </div>
             <p className="mt-2 text-sm text-ink-700">{step.tip}</p>
@@ -79,13 +86,11 @@ export function StartupLaunchPlannerResultSummary({
       </ol>
 
       <dl className="mt-6">
-        <dt className="text-sm font-semibold text-ink-900">Next step</dt>
+        <dt className="text-sm font-semibold text-ink-900">{copy.next_step_label}</dt>
         <dd className="mt-1 text-sm text-ink-700">{result.nextStep}</dd>
       </dl>
 
-      <p className="mt-6 text-xs text-ink-500">
-        Launching isn&apos;t one-and-done — most successful products launch early, often, and more than once.
-      </p>
+      <p className="mt-6 text-xs text-ink-500">{copy.footer_note}</p>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
         <button
@@ -93,14 +98,14 @@ export function StartupLaunchPlannerResultSummary({
           onClick={handleCopy}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          {copied ? "Copied" : "Copy result"}
+          {copied ? copy.copy_button_copied_label : copy.copy_button_label}
         </button>
         <button
           type="button"
           onClick={onRestart}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Choose again
+          {copy.restart_button_label}
         </button>
       </div>
     </div>

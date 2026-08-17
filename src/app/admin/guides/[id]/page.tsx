@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getGuideForAdmin } from "@/server/admin/guides";
+import { rollbackGuideRevisionAction } from "@/server/actions/admin-guides";
 import { GuideEditorForm } from "@/components/admin/guide-editor-form";
-import { GuideRollbackList } from "@/components/admin/guide-rollback-list";
+import { ContentRevisionRollbackList } from "@/components/admin/content-revision-rollback-list";
 
 export const metadata: Metadata = {
   title: "Edit guide — Admin",
@@ -15,8 +16,6 @@ export default async function AdminGuideEditPage({ params }: Props) {
   const { id } = await params;
   const guide = await getGuideForAdmin(id);
   if (!guide) notFound();
-
-  const editableContent = guide.draftRevision?.content_data ?? guide.publishedRevision?.content_data;
 
   return (
     <div className="max-w-3xl space-y-8">
@@ -32,15 +31,15 @@ export default async function AdminGuideEditPage({ params }: Props) {
         <h2 className="mb-3 text-lg font-semibold text-ink-900">Content</h2>
         <GuideEditorForm
           productId={guide.id}
-          initialBodyMarkdown={editableContent?.body_markdown ?? ""}
-          initialAuthor={editableContent?.author ?? ""}
+          initialCommon={guide.commonCopy}
+          initialBodyMarkdown={guide.guideCopy.body_markdown}
+          initialAuthor={guide.guideCopy.author}
         />
       </section>
 
       <section>
         <h2 className="mb-3 text-lg font-semibold text-ink-900">History</h2>
-        <GuideRollbackList
-          productId={guide.id}
+        <ContentRevisionRollbackList
           currentRevisionId={guide.publishedRevision?.id ?? null}
           history={guide.history.map((r) => ({
             id: r.id,
@@ -48,6 +47,7 @@ export default async function AdminGuideEditPage({ params }: Props) {
             change_note: r.change_note,
             published_at: r.published_at,
           }))}
+          onRollback={(sourceRevisionId) => rollbackGuideRevisionAction({ productId: guide.id, sourceRevisionId })}
         />
       </section>
     </div>

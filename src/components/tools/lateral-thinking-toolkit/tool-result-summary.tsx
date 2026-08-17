@@ -29,10 +29,12 @@ export function LateralThinkingToolkitResultSummary({
   result,
   onRestart,
   headingRef,
+  copy,
 }: {
   result: LateralThinkingToolkitResult;
   onRestart: () => void;
   headingRef: RefObject<HTMLHeadingElement | null>;
+  copy: Record<string, string>;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -56,7 +58,7 @@ export function LateralThinkingToolkitResultSummary({
   return (
     <div className="rounded-md border border-ink-200 bg-paper-raised p-6" role="region" aria-label="Your result">
       <h2 ref={headingRef} tabIndex={-1} className="font-serif text-2xl font-semibold text-ink-900 outline-none">
-        Your prompts
+        {copy.result_heading}
       </h2>
 
       <ul className="mt-4 space-y-4">
@@ -73,7 +75,7 @@ export function LateralThinkingToolkitResultSummary({
       <p className="mt-6 text-sm text-ink-700">{result.encouragement}</p>
 
       <dl className="mt-6">
-        <dt className="text-sm font-semibold text-ink-900">Next step</dt>
+        <dt className="text-sm font-semibold text-ink-900">{copy.next_step_label}</dt>
         <dd className="mt-1 text-sm text-ink-700">{result.nextStep}</dd>
       </dl>
 
@@ -83,14 +85,14 @@ export function LateralThinkingToolkitResultSummary({
           onClick={handleCopy}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          {copied ? "Copied" : "Copy result"}
+          {copied ? copy.copied_label : copy.copy_result_label}
         </button>
         <button
           type="button"
           onClick={onRestart}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Start again
+          {copy.restart_label}
         </button>
       </div>
     </div>

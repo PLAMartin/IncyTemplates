@@ -33,10 +33,12 @@ export function PricingYourProductResultSummary({
   result,
   onRestart,
   headingRef,
+  copy,
 }: {
   result: PricingYourProductResult;
   onRestart: () => void;
   headingRef: RefObject<HTMLHeadingElement | null>;
+  copy: Record<string, string>;
 }) {
   const [copied, setCopied] = useState(false);
   const model = MODEL_COPY[result.recommendedModel];
@@ -79,25 +81,22 @@ export function PricingYourProductResultSummary({
         {result.runnerUpModel ? (
           <>
             <div>
-              <dt className="text-sm font-semibold text-ink-900">Runner-up</dt>
+              <dt className="text-sm font-semibold text-ink-900">{copy.result_runner_up_label}</dt>
               <dd className="mt-1 text-sm text-ink-700">{MODEL_COPY[result.runnerUpModel].label}</dd>
             </div>
             <div>
-              <dt className="text-sm font-semibold text-ink-900">Deciding factor</dt>
+              <dt className="text-sm font-semibold text-ink-900">{copy.result_deciding_factor_label}</dt>
               <dd className="mt-1 text-sm text-ink-700">{result.decidingFactor}</dd>
             </div>
           </>
         ) : null}
         <div className="sm:col-span-2">
-          <dt className="text-sm font-semibold text-ink-900">Next step</dt>
+          <dt className="text-sm font-semibold text-ink-900">{copy.result_next_step_label}</dt>
           <dd className="mt-1 text-sm text-ink-700">{result.nextStep}</dd>
         </div>
       </dl>
 
-      <p className="mt-6 text-xs text-ink-500">
-        This is a starting recommendation based on today&apos;s answers, not a permanent choice — revisit it once you have
-        real customers and real pricing conversations to test it against.
-      </p>
+      <p className="mt-6 text-xs text-ink-500">{copy.result_disclaimer}</p>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
         <button
@@ -105,14 +104,14 @@ export function PricingYourProductResultSummary({
           onClick={handleCopy}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          {copied ? "Copied" : "Copy result"}
+          {copied ? copy.result_copied_label : copy.result_copy_button}
         </button>
         <button
           type="button"
           onClick={onRestart}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Choose again
+          {copy.result_restart_button}
         </button>
       </div>
     </div>

@@ -4,6 +4,8 @@ import { useId, useMemo, useReducer, useRef } from "react";
 import { getToolDefinition } from "@/lib/tools/registry";
 import type { DecisionFrameworkPickerInput, DecisionFrameworkPickerResult } from "@/lib/tools/decision-framework-picker/schema";
 import { DecisionFrameworkPickerResultSummary } from "@/components/tools/decision-framework-picker/tool-result-summary";
+import { decisionFrameworkPickerCopySchema } from "@/lib/tools/decision-framework-picker/copy";
+import { resolveToolCopy } from "@/lib/tools/copy";
 
 type StepKey = "involvement" | "decisionShape" | "precedent" | "timeWorthInvesting";
 
@@ -14,58 +16,60 @@ type Step = {
   options: { value: string; label: string; description: string }[];
 };
 
-const STEPS: Step[] = [
-  {
-    key: "involvement",
-    legend: "Are multiple people or perspectives involved, or is it just you?",
-    options: [
-      { value: "just_me", label: "Just me", description: "I'm the one making this call." },
-      {
-        value: "multiple_people_or_perspectives_needed",
-        label: "Multiple people or perspectives",
-        description: "Other people are involved, or the situation genuinely has several valid angles.",
-      },
-    ],
-  },
-  {
-    key: "decisionShape",
-    legend: "What shape is this choice?",
-    options: [
-      {
-        value: "sequence_of_options",
-        label: "A sequence of options",
-        description: "I'm reviewing candidates one at a time — e.g. hiring, house-hunting — and need to know when to stop.",
-      },
-      {
-        value: "one_decision_to_reason_through",
-        label: "One decision to reason through",
-        description: "There's a single specific choice I need to think through carefully.",
-      },
-      {
-        value: "small_frequent_choice",
-        label: "A small, frequent choice",
-        description: "This kind of low-stakes decision comes up often.",
-      },
-    ],
-  },
-  {
-    key: "precedent",
-    legend: "Is there a clear existing approach you could copy?",
-    options: [
-      { value: "clear_precedent_to_copy", label: "Yes, a clear precedent", description: "Others have solved something like this before, in a way I could adapt." },
-      { value: "no_clear_precedent", label: "No clear precedent", description: "This doesn't map cleanly onto anything I've seen done before." },
-    ],
-  },
-  {
-    key: "timeWorthInvesting",
-    legend: "How much time and thought is this decision actually worth?",
-    hint: "Be honest — most decisions deserve less deliberation than they get.",
-    options: [
-      { value: "worth_real_time_and_thought", label: "Worth real time", description: "The stakes justify sitting down and thinking it through properly." },
-      { value: "not_worth_much_time", label: "Not worth much time", description: "A quick call is genuinely fine here." },
-    ],
-  },
-];
+function buildSteps(copy: Record<string, string>): Step[] {
+  return [
+    {
+      key: "involvement",
+      legend: copy.q_involvement_legend!,
+      options: [
+        { value: "just_me", label: "Just me", description: "I'm the one making this call." },
+        {
+          value: "multiple_people_or_perspectives_needed",
+          label: "Multiple people or perspectives",
+          description: "Other people are involved, or the situation genuinely has several valid angles.",
+        },
+      ],
+    },
+    {
+      key: "decisionShape",
+      legend: copy.q_decision_shape_legend!,
+      options: [
+        {
+          value: "sequence_of_options",
+          label: "A sequence of options",
+          description: "I'm reviewing candidates one at a time — e.g. hiring, house-hunting — and need to know when to stop.",
+        },
+        {
+          value: "one_decision_to_reason_through",
+          label: "One decision to reason through",
+          description: "There's a single specific choice I need to think through carefully.",
+        },
+        {
+          value: "small_frequent_choice",
+          label: "A small, frequent choice",
+          description: "This kind of low-stakes decision comes up often.",
+        },
+      ],
+    },
+    {
+      key: "precedent",
+      legend: copy.q_precedent_legend!,
+      options: [
+        { value: "clear_precedent_to_copy", label: "Yes, a clear precedent", description: "Others have solved something like this before, in a way I could adapt." },
+        { value: "no_clear_precedent", label: "No clear precedent", description: "This doesn't map cleanly onto anything I've seen done before." },
+      ],
+    },
+    {
+      key: "timeWorthInvesting",
+      legend: copy.q_time_worth_investing_legend!,
+      hint: copy.q_time_worth_investing_hint || undefined,
+      options: [
+        { value: "worth_real_time_and_thought", label: "Worth real time", description: "The stakes justify sitting down and thinking it through properly." },
+        { value: "not_worth_much_time", label: "Not worth much time", description: "A quick call is genuinely fine here." },
+      ],
+    },
+  ];
+}
 
 type State =
   | { phase: "start" }
@@ -79,71 +83,75 @@ type Action =
   | { type: "back" }
   | { type: "restart" };
 
-function reducer(state: State, action: Action): State {
-  switch (action.type) {
-    case "begin":
-      return { phase: "question", stepIndex: 0, answers: {}, error: null };
-    case "restart":
-      return { phase: "start" };
-    case "select": {
-      if (state.phase !== "question") return state;
-      return { ...state, answers: { ...state.answers, [action.key]: action.value }, error: null };
-    }
-    case "back": {
-      if (state.phase !== "question" || state.stepIndex === 0) return state;
-      return { ...state, stepIndex: state.stepIndex - 1, error: null };
-    }
-    case "next": {
-      if (state.phase !== "question") return state;
-      const step = STEPS[state.stepIndex]!;
-      if (!state.answers[step.key]) {
-        return { ...state, error: "Choose an option to continue." };
+function createReducer(steps: Step[], chooseOptionError: string) {
+  return function reducer(state: State, action: Action): State {
+    switch (action.type) {
+      case "begin":
+        return { phase: "question", stepIndex: 0, answers: {}, error: null };
+      case "restart":
+        return { phase: "start" };
+      case "select": {
+        if (state.phase !== "question") return state;
+        return { ...state, answers: { ...state.answers, [action.key]: action.value }, error: null };
       }
-      if (state.stepIndex < STEPS.length - 1) {
-        return { ...state, stepIndex: state.stepIndex + 1, error: null };
+      case "back": {
+        if (state.phase !== "question" || state.stepIndex === 0) return state;
+        return { ...state, stepIndex: state.stepIndex - 1, error: null };
       }
-      // Last step answered — validate and run the deterministic scoring.
-      const definition = getToolDefinition("decision-framework-picker");
-      const parsed = definition.inputSchema.safeParse(state.answers);
-      if (!parsed.success) {
-        return { ...state, error: "Something's missing — please check every question was answered." };
+      case "next": {
+        if (state.phase !== "question") return state;
+        const step = steps[state.stepIndex]!;
+        if (!state.answers[step.key]) {
+          return { ...state, error: chooseOptionError };
+        }
+        if (state.stepIndex < steps.length - 1) {
+          return { ...state, stepIndex: state.stepIndex + 1, error: null };
+        }
+        // Last step answered — validate and run the deterministic scoring.
+        const definition = getToolDefinition("decision-framework-picker");
+        const parsed = definition.inputSchema.safeParse(state.answers);
+        if (!parsed.success) {
+          return { ...state, error: "Something's missing — please check every question was answered." };
+        }
+        const result = definition.run(parsed.data) as DecisionFrameworkPickerResult;
+        return { phase: "result", result };
       }
-      const result = definition.run(parsed.data) as DecisionFrameworkPickerResult;
-      return { phase: "result", result };
+      default:
+        return state;
     }
-    default:
-      return state;
-  }
+  };
 }
 
-export function DecisionFrameworkPickerRunner() {
-  const [state, dispatch] = useReducer(reducer, { phase: "start" });
+export function DecisionFrameworkPickerRunner({ copy: copyOverrides }: { copy?: Record<string, string> }) {
+  const copy = useMemo(() => resolveToolCopy(decisionFrameworkPickerCopySchema, copyOverrides), [copyOverrides]);
+  const steps = useMemo(() => buildSteps(copy), [copy]);
+  const [state, dispatch] = useReducer(createReducer(steps, copy.choose_option_error!), { phase: "start" });
   const errorRegionId = useId();
   const resultHeadingRef = useRef<HTMLHeadingElement>(null);
 
-  const currentStep = state.phase === "question" ? STEPS[state.stepIndex] : undefined;
+  const currentStep = state.phase === "question" ? steps[state.stepIndex] : undefined;
   const selectedValue = currentStep && state.phase === "question" ? state.answers[currentStep.key] : undefined;
 
   const progressLabel = useMemo(() => {
     if (state.phase !== "question") return null;
-    return `Question ${state.stepIndex + 1} of ${STEPS.length}`;
-  }, [state]);
+    return `Question ${state.stepIndex + 1} of ${steps.length}`;
+  }, [state, steps.length]);
 
   if (state.phase === "start") {
     return (
       <div className="rounded-md border border-ink-200 bg-paper-raised p-6">
-        <h2 className="text-lg font-semibold text-ink-900">Before you start</h2>
+        <h2 className="text-lg font-semibold text-ink-900">{copy.intro_heading}</h2>
         <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-700">
-          <li>Takes about 3 minutes — answer based on the decision actually in front of you.</li>
-          <li>Nothing is saved or sent anywhere — this runs entirely in your browser.</li>
-          <li>You&apos;ll get a recommended thinking framework, a runner-up, and one concrete next step.</li>
+          <li>{copy.intro_bullet_1}</li>
+          <li>{copy.intro_bullet_2}</li>
+          <li>{copy.intro_bullet_3}</li>
         </ul>
         <button
           type="button"
           onClick={() => dispatch({ type: "begin" })}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Start picking a framework
+          {copy.intro_cta}
         </button>
       </div>
     );
@@ -194,7 +202,7 @@ export function DecisionFrameworkPickerRunner() {
             disabled={state.stepIndex === 0}
             className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Back
+            {copy.back_label}
           </button>
           <button
             type="button"
@@ -202,7 +210,7 @@ export function DecisionFrameworkPickerRunner() {
             aria-describedby={state.error ? errorRegionId : undefined}
             className="inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
           >
-            {state.stepIndex === STEPS.length - 1 ? "See my result" : "Continue"}
+            {state.stepIndex === steps.length - 1 ? copy.see_result_label : copy.continue_label}
           </button>
         </div>
       </div>
@@ -211,7 +219,12 @@ export function DecisionFrameworkPickerRunner() {
 
   if (state.phase === "result") {
     return (
-      <DecisionFrameworkPickerResultSummary result={state.result} onRestart={() => dispatch({ type: "restart" })} headingRef={resultHeadingRef} />
+      <DecisionFrameworkPickerResultSummary
+        result={state.result}
+        onRestart={() => dispatch({ type: "restart" })}
+        headingRef={resultHeadingRef}
+        copy={copy}
+      />
     );
   }
 

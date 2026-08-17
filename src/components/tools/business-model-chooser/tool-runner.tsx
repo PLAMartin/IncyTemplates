@@ -4,6 +4,8 @@ import { useId, useMemo, useReducer, useRef } from "react";
 import { getToolDefinition } from "@/lib/tools/registry";
 import type { BusinessModelChooserInput, BusinessModelChooserResult } from "@/lib/tools/business-model-chooser/schema";
 import { BusinessModelChooserResultSummary } from "@/components/tools/business-model-chooser/tool-result-summary";
+import { businessModelChooserCopySchema } from "@/lib/tools/business-model-chooser/copy";
+import { resolveToolCopy } from "@/lib/tools/copy";
 
 type StepKey = "audienceStructure" | "payer" | "valueDeliveryPattern" | "growthLever";
 
@@ -14,10 +16,12 @@ type Step = {
   options: { value: string; label: string; description: string }[];
 };
 
-const STEPS: Step[] = [
+function buildSteps(copy: Record<string, string>): Step[] {
+  return [
   {
     key: "audienceStructure",
-    legend: "Does your product connect two different kinds of users, or serve one kind of user directly?",
+    legend: copy.q_audience_structure_legend!,
+    hint: copy.q_audience_structure_hint || undefined,
     options: [
       { value: "two_sided", label: "Two-sided", description: "It connects distinct kinds of users who need each other — e.g. buyers and sellers." },
       { value: "one_sided", label: "One-sided", description: "It serves one kind of user directly." },
@@ -25,7 +29,8 @@ const STEPS: Step[] = [
   },
   {
     key: "payer",
-    legend: "Who actually pays you money?",
+    legend: copy.q_payer_legend!,
+    hint: copy.q_payer_hint || undefined,
     options: [
       { value: "end_user_directly", label: "The end user, directly", description: "The person using the product pays you, on an ongoing basis." },
       { value: "a_third_party", label: "A third party", description: "Someone other than the end user pays — e.g. an advertiser." },
@@ -38,7 +43,8 @@ const STEPS: Step[] = [
   },
   {
     key: "valueDeliveryPattern",
-    legend: "How does your product deliver value — ongoing access, or discrete completed transactions?",
+    legend: copy.q_value_delivery_pattern_legend!,
+    hint: copy.q_value_delivery_pattern_hint || undefined,
     options: [
       { value: "ongoing_access", label: "Ongoing access", description: "Value is delivered continuously, e.g. software people keep using." },
       { value: "discrete_transactions", label: "Discrete transactions", description: "Value is delivered each time a specific transaction completes." },
@@ -46,8 +52,8 @@ const STEPS: Step[] = [
   },
   {
     key: "growthLever",
-    legend: "What's the most realistic way you'll actually grow?",
-    hint: "Think about how your first hundred users will actually arrive, not how you'd like them to.",
+    legend: copy.q_growth_lever_legend!,
+    hint: copy.q_growth_lever_hint || undefined,
     options: [
       {
         value: "self_serve_or_sales_led",
@@ -66,7 +72,8 @@ const STEPS: Step[] = [
       },
     ],
   },
-];
+  ];
+}
 
 type State =
   | { phase: "start" }
@@ -80,7 +87,8 @@ type Action =
   | { type: "back" }
   | { type: "restart" };
 
-function reducer(state: State, action: Action): State {
+function createReducer(steps: Step[]) {
+  return function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "begin":
       return { phase: "question", stepIndex: 0, answers: {}, error: null };
@@ -96,11 +104,11 @@ function reducer(state: State, action: Action): State {
     }
     case "next": {
       if (state.phase !== "question") return state;
-      const step = STEPS[state.stepIndex]!;
+      const step = steps[state.stepIndex]!;
       if (!state.answers[step.key]) {
         return { ...state, error: "Choose an option to continue." };
       }
-      if (state.stepIndex < STEPS.length - 1) {
+      if (state.stepIndex < steps.length - 1) {
         return { ...state, stepIndex: state.stepIndex + 1, error: null };
       }
       // Last step answered — validate and run the deterministic scoring.
@@ -115,36 +123,39 @@ function reducer(state: State, action: Action): State {
     default:
       return state;
   }
+  };
 }
 
-export function BusinessModelChooserRunner() {
-  const [state, dispatch] = useReducer(reducer, { phase: "start" });
+export function BusinessModelChooserRunner({ copy: copyOverrides }: { copy?: Record<string, string> }) {
+  const copy = useMemo(() => resolveToolCopy(businessModelChooserCopySchema, copyOverrides), [copyOverrides]);
+  const steps = useMemo(() => buildSteps(copy), [copy]);
+  const [state, dispatch] = useReducer(createReducer(steps), { phase: "start" });
   const errorRegionId = useId();
   const resultHeadingRef = useRef<HTMLHeadingElement>(null);
 
-  const currentStep = state.phase === "question" ? STEPS[state.stepIndex] : undefined;
+  const currentStep = state.phase === "question" ? steps[state.stepIndex] : undefined;
   const selectedValue = currentStep && state.phase === "question" ? state.answers[currentStep.key] : undefined;
 
   const progressLabel = useMemo(() => {
     if (state.phase !== "question") return null;
-    return `Question ${state.stepIndex + 1} of ${STEPS.length}`;
-  }, [state]);
+    return `Question ${state.stepIndex + 1} of ${steps.length}`;
+  }, [state, steps.length]);
 
   if (state.phase === "start") {
     return (
       <div className="rounded-md border border-ink-200 bg-paper-raised p-6">
-        <h2 className="text-lg font-semibold text-ink-900">Before you start</h2>
+        <h2 className="text-lg font-semibold text-ink-900">{copy.intro_heading}</h2>
         <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-700">
-          <li>Takes about 3 minutes — answer based on how your product actually works, not what sounds impressive.</li>
-          <li>Nothing is saved or sent anywhere — this runs entirely in your browser.</li>
-          <li>You&apos;ll get a recommended business model, a runner-up, and one concrete next step.</li>
+          <li>{copy.intro_bullet_1}</li>
+          <li>{copy.intro_bullet_2}</li>
+          <li>{copy.intro_bullet_3}</li>
         </ul>
         <button
           type="button"
           onClick={() => dispatch({ type: "begin" })}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Start choosing a business model
+          {copy.intro_cta}
         </button>
       </div>
     );
@@ -203,7 +214,7 @@ export function BusinessModelChooserRunner() {
             aria-describedby={state.error ? errorRegionId : undefined}
             className="inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
           >
-            {state.stepIndex === STEPS.length - 1 ? "See my result" : "Continue"}
+            {state.stepIndex === steps.length - 1 ? "See my result" : "Continue"}
           </button>
         </div>
       </div>

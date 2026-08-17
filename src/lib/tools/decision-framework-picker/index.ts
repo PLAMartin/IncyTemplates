@@ -2,6 +2,7 @@ import type { ToolDefinition } from "../types";
 import { decisionFrameworkPickerInputSchema, decisionFrameworkPickerResultSchema } from "./schema";
 import type { DecisionFrameworkPickerInput, DecisionFrameworkPickerResult } from "./schema";
 import { scoreDecisionFrameworkPicker } from "./scoring";
+import { decisionFrameworkPickerCopySchema } from "./copy";
 
 export const DECISION_FRAMEWORK_PICKER_TOOL_KEY = "decision-framework-picker";
 
@@ -11,7 +12,9 @@ export const decisionFrameworkPickerTool: ToolDefinition<DecisionFrameworkPicker
   inputSchema: decisionFrameworkPickerInputSchema,
   resultSchema: decisionFrameworkPickerResultSchema,
   run: scoreDecisionFrameworkPicker,
+  copySchema: decisionFrameworkPickerCopySchema,
 };
 
 export * from "./schema";
 export { scoreDecisionFrameworkPicker } from "./scoring";
+export { decisionFrameworkPickerCopySchema } from "./copy";

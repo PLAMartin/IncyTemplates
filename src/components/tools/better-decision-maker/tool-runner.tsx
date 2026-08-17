@@ -11,6 +11,8 @@ import type {
   Reversibility,
 } from "@/lib/tools/better-decision-maker/schema";
 import { BetterDecisionMakerResultSummary } from "@/components/tools/better-decision-maker/tool-result-summary";
+import { betterDecisionMakerCopySchema } from "@/lib/tools/better-decision-maker/copy";
+import { resolveToolCopy } from "@/lib/tools/copy";
 
 type StepKey =
   | "optionALikelihood"
@@ -60,34 +62,36 @@ const REVERSIBILITY_OPTIONS = [
   },
 ];
 
-function optionSteps(option: "A" | "B"): Step[] {
+function optionSteps(option: "A" | "B", copy: Record<string, string>): Step[] {
   const prefix = `Option ${option}:`;
   return [
     {
       key: (option === "A" ? "optionALikelihood" : "optionBLikelihood") as StepKey,
-      legend: `${prefix} how likely is it to work out?`,
+      legend: `${prefix} ${copy.q_likelihood_legend}`,
       options: LIKELIHOOD_OPTIONS,
     },
     {
       key: (option === "A" ? "optionAImpact" : "optionBImpact") as StepKey,
-      legend: `${prefix} how big is the impact if it works?`,
+      legend: `${prefix} ${copy.q_impact_legend}`,
       options: IMPACT_OPTIONS,
     },
     {
       key: (option === "A" ? "optionAEffort" : "optionBEffort") as StepKey,
-      legend: `${prefix} how much effort would it take to attempt?`,
+      legend: `${prefix} ${copy.q_effort_legend}`,
       options: EFFORT_OPTIONS,
     },
     {
       key: (option === "A" ? "optionAReversibility" : "optionBReversibility") as StepKey,
-      legend: `${prefix} is this a one-way or two-way door?`,
-      hint: "Could you easily reverse this and try something else if it turns out to be wrong?",
+      legend: `${prefix} ${copy.q_reversibility_legend}`,
+      hint: copy.q_reversibility_hint || undefined,
       options: REVERSIBILITY_OPTIONS,
     },
   ];
 }
 
-const STEPS: Step[] = [...optionSteps("A"), ...optionSteps("B")];
+function buildSteps(copy: Record<string, string>): Step[] {
+  return [...optionSteps("A", copy), ...optionSteps("B", copy)];
+}
 
 type State =
   | { phase: "start" }
@@ -101,7 +105,8 @@ type Action =
   | { type: "back" }
   | { type: "restart" };
 
-function reducer(state: State, action: Action): State {
+function createReducer(steps: Step[]) {
+  return function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "begin":
       return { phase: "question", stepIndex: 0, answers: {}, error: null };
@@ -117,11 +122,11 @@ function reducer(state: State, action: Action): State {
     }
     case "next": {
       if (state.phase !== "question") return state;
-      const step = STEPS[state.stepIndex]!;
+      const step = steps[state.stepIndex]!;
       if (!state.answers[step.key]) {
         return { ...state, error: "Choose an option to continue." };
       }
-      if (state.stepIndex < STEPS.length - 1) {
+      if (state.stepIndex < steps.length - 1) {
         return { ...state, stepIndex: state.stepIndex + 1, error: null };
       }
       // Last step answered — validate and run the deterministic scoring.
@@ -136,36 +141,39 @@ function reducer(state: State, action: Action): State {
     default:
       return state;
   }
+  };
 }
 
-export function BetterDecisionMakerRunner() {
-  const [state, dispatch] = useReducer(reducer, { phase: "start" });
+export function BetterDecisionMakerRunner({ copy: copyOverrides }: { copy?: Record<string, string> }) {
+  const copy = useMemo(() => resolveToolCopy(betterDecisionMakerCopySchema, copyOverrides), [copyOverrides]);
+  const steps = useMemo(() => buildSteps(copy), [copy]);
+  const [state, dispatch] = useReducer(createReducer(steps), { phase: "start" });
   const errorRegionId = useId();
   const resultHeadingRef = useRef<HTMLHeadingElement>(null);
 
-  const currentStep = state.phase === "question" ? STEPS[state.stepIndex] : undefined;
+  const currentStep = state.phase === "question" ? steps[state.stepIndex] : undefined;
   const selectedValue = currentStep && state.phase === "question" ? state.answers[currentStep.key] : undefined;
 
   const progressLabel = useMemo(() => {
     if (state.phase !== "question") return null;
-    return `Question ${state.stepIndex + 1} of ${STEPS.length}`;
-  }, [state]);
+    return `Question ${state.stepIndex + 1} of ${steps.length}`;
+  }, [state, steps.length]);
 
   if (state.phase === "start") {
     return (
       <div className="rounded-md border border-ink-200 bg-paper-raised p-6">
-        <h2 className="text-lg font-semibold text-ink-900">Before you start</h2>
+        <h2 className="text-lg font-semibold text-ink-900">{copy.intro_heading}</h2>
         <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-700">
-          <li>Takes about 5–10 minutes — you&apos;ll answer the same four questions for Option A, then Option B.</li>
-          <li>Nothing is saved or sent anywhere — this runs entirely in your browser.</li>
-          <li>You&apos;ll get an expected-value score for each option and one clear next step.</li>
+          <li>{copy.intro_bullet_1}</li>
+          <li>{copy.intro_bullet_2}</li>
+          <li>{copy.intro_bullet_3}</li>
         </ul>
         <button
           type="button"
           onClick={() => dispatch({ type: "begin" })}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Start the comparison
+          {copy.intro_cta}
         </button>
       </div>
     );
@@ -224,7 +232,7 @@ export function BetterDecisionMakerRunner() {
             aria-describedby={state.error ? errorRegionId : undefined}
             className="inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
           >
-            {state.stepIndex === STEPS.length - 1 ? "See my result" : "Continue"}
+            {state.stepIndex === steps.length - 1 ? "See my result" : "Continue"}
           </button>
         </div>
       </div>

@@ -2,6 +2,8 @@
 
 import { useId, useMemo, useReducer, useRef } from "react";
 import { getToolDefinition } from "@/lib/tools/registry";
+import { productNamingSystemCopySchema } from "@/lib/tools/product-naming-system/copy";
+import { resolveToolCopy } from "@/lib/tools/copy";
 import type { Availability, ProductNamingSystemInput, ProductNamingSystemResult, Rating } from "@/lib/tools/product-naming-system/schema";
 import { ProductNamingSystemResultSummary } from "@/components/tools/product-naming-system/tool-result-summary";
 
@@ -34,34 +36,49 @@ const AVAILABILITY_OPTIONS = [
   { value: "fully_available" satisfies Availability, label: "Fully available", description: "Domain, socials and trademark search all look clear." },
 ];
 
-function nameSteps(name: "A" | "B"): Step[] {
+/** Question phrasing comes from `copy` (admin-editable, spec §14.7.1); the "Name A:"/"Name B:" prefix and option labels/descriptions stay hardcoded (see this file's copy.ts doc comment). */
+function nameSteps(name: "A" | "B", copy: Record<string, string>): Step[] {
   const prefix = `Name ${name}:`;
   return [
     {
       key: (name === "A" ? "nameAMemorability" : "nameBMemorability") as StepKey,
-      legend: `${prefix} how memorable is it?`,
+      legend: `${prefix} ${copy.q_memorability_legend}`,
       options: RATING_OPTIONS("memorable"),
     },
     {
       key: (name === "A" ? "nameAClarity" : "nameBClarity") as StepKey,
-      legend: `${prefix} how clearly does it hint at what the product does?`,
+      legend: `${prefix} ${copy.q_clarity_legend}`,
       options: RATING_OPTIONS("clear"),
     },
     {
       key: (name === "A" ? "nameADistinctiveness" : "nameBDistinctiveness") as StepKey,
-      legend: `${prefix} how distinct is it from competitors' names?`,
+      legend: `${prefix} ${copy.q_distinctiveness_legend}`,
       options: RATING_OPTIONS("distinct"),
     },
     {
       key: (name === "A" ? "nameAAvailability" : "nameBAvailability") as StepKey,
-      legend: `${prefix} how available is it?`,
-      hint: "Domain, social handles and an informal trademark search — as best you can tell right now.",
+      legend: `${prefix} ${copy.q_availability_legend}`,
+      hint: copy.q_availability_hint || undefined,
       options: AVAILABILITY_OPTIONS,
     },
   ];
 }
 
-const STEPS: Step[] = [...nameSteps("A"), ...nameSteps("B")];
+function buildSteps(copy: Record<string, string>): Step[] {
+  return [...nameSteps("A", copy), ...nameSteps("B", copy)];
+}
+
+// Keys/order/length only — reducer logic doesn't need copy-driven legend/hint text.
+const STEP_KEYS: StepKey[] = [
+  "nameAMemorability",
+  "nameAClarity",
+  "nameADistinctiveness",
+  "nameAAvailability",
+  "nameBMemorability",
+  "nameBClarity",
+  "nameBDistinctiveness",
+  "nameBAvailability",
+];
 
 type State =
   | { phase: "start" }
@@ -91,11 +108,11 @@ function reducer(state: State, action: Action): State {
     }
     case "next": {
       if (state.phase !== "question") return state;
-      const step = STEPS[state.stepIndex]!;
-      if (!state.answers[step.key]) {
+      const stepKey = STEP_KEYS[state.stepIndex]!;
+      if (!state.answers[stepKey]) {
         return { ...state, error: "Choose an option to continue." };
       }
-      if (state.stepIndex < STEPS.length - 1) {
+      if (state.stepIndex < STEP_KEYS.length - 1) {
         return { ...state, stepIndex: state.stepIndex + 1, error: null };
       }
       // Last step answered — validate and run the deterministic scoring.
@@ -112,34 +129,36 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-export function ProductNamingSystemRunner() {
+export function ProductNamingSystemRunner({ copy: copyOverrides }: { copy?: Record<string, string> }) {
+  const copy = useMemo(() => resolveToolCopy(productNamingSystemCopySchema, copyOverrides), [copyOverrides]);
+  const steps = useMemo(() => buildSteps(copy), [copy]);
   const [state, dispatch] = useReducer(reducer, { phase: "start" });
   const errorRegionId = useId();
   const resultHeadingRef = useRef<HTMLHeadingElement>(null);
 
-  const currentStep = state.phase === "question" ? STEPS[state.stepIndex] : undefined;
+  const currentStep = state.phase === "question" ? steps[state.stepIndex] : undefined;
   const selectedValue = currentStep && state.phase === "question" ? state.answers[currentStep.key] : undefined;
 
   const progressLabel = useMemo(() => {
     if (state.phase !== "question") return null;
-    return `Question ${state.stepIndex + 1} of ${STEPS.length}`;
-  }, [state]);
+    return `Question ${state.stepIndex + 1} of ${steps.length}`;
+  }, [state, steps]);
 
   if (state.phase === "start") {
     return (
       <div className="rounded-md border border-ink-200 bg-paper-raised p-6">
-        <h2 className="text-lg font-semibold text-ink-900">Before you start</h2>
+        <h2 className="text-lg font-semibold text-ink-900">{copy.intro_heading}</h2>
         <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-700">
-          <li>Takes about 5–10 minutes — you&apos;ll answer the same four questions for Name A, then Name B.</li>
-          <li>Nothing is saved or sent anywhere — this runs entirely in your browser.</li>
-          <li>You&apos;ll get a score for each name and a recommendation, taking availability into account.</li>
+          <li>{copy.intro_bullet_1}</li>
+          <li>{copy.intro_bullet_2}</li>
+          <li>{copy.intro_bullet_3}</li>
         </ul>
         <button
           type="button"
           onClick={() => dispatch({ type: "begin" })}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Start comparing two names
+          {copy.intro_cta}
         </button>
       </div>
     );
@@ -198,7 +217,7 @@ export function ProductNamingSystemRunner() {
             aria-describedby={state.error ? errorRegionId : undefined}
             className="inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
           >
-            {state.stepIndex === STEPS.length - 1 ? "See my result" : "Continue"}
+            {state.stepIndex === steps.length - 1 ? "See my result" : "Continue"}
           </button>
         </div>
       </div>

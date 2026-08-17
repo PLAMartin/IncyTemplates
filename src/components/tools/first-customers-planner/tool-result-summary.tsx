@@ -40,10 +40,12 @@ export function FirstCustomersPlannerResultSummary({
   result,
   onRestart,
   headingRef,
+  copy,
 }: {
   result: FirstCustomersPlannerResult;
   onRestart: () => void;
   headingRef: RefObject<HTMLHeadingElement | null>;
+  copy: Record<string, string>;
 }) {
   const [copied, setCopied] = useState(false);
   const fit = FIT_COPY[result.fit];
@@ -68,44 +70,42 @@ export function FirstCustomersPlannerResultSummary({
   return (
     <div className="rounded-md border border-ink-200 bg-paper-raised p-6" role="region" aria-label="Your result">
       <h2 ref={headingRef} tabIndex={-1} className="font-serif text-2xl font-semibold text-ink-900 outline-none">
-        Your result: {CHANNEL_TYPE_LABEL[result.channelType]}
+        {copy.result_heading_prefix}
+        {CHANNEL_TYPE_LABEL[result.channelType]}
       </h2>
 
       <span className={`mt-3 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${fit.className}`}>{fit.label}</span>
 
       <div className="mt-4">
         <div className="flex items-center justify-between text-sm text-ink-500">
-          <span>Fit score</span>
+          <span>{copy.score_label}</span>
           <span className="font-semibold text-ink-900">{result.fitScore}/100</span>
         </div>
-        <div className="mt-1 h-2 rounded-full bg-ink-100" role="img" aria-label={`Fit score: ${result.fitScore} out of 100`}>
+        <div className="mt-1 h-2 rounded-full bg-ink-100" role="img" aria-label={`${copy.score_label}: ${result.fitScore} out of 100`}>
           <div className="h-2 rounded-full bg-brand-600" style={{ width: `${result.fitScore}%` }} />
         </div>
       </div>
 
       <dl className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <dt className="text-sm font-semibold text-ink-900">Strongest factor</dt>
+          <dt className="text-sm font-semibold text-ink-900">{copy.strongest_factor_label}</dt>
           <dd className="mt-1 text-sm text-ink-700">{result.strongestFactor}</dd>
         </div>
         <div>
-          <dt className="text-sm font-semibold text-ink-900">Weakest factor</dt>
+          <dt className="text-sm font-semibold text-ink-900">{copy.weakest_factor_label}</dt>
           <dd className="mt-1 text-sm text-ink-700">{result.weakestFactor}</dd>
         </div>
         <div>
-          <dt className="text-sm font-semibold text-ink-900">Biggest uncertainty</dt>
+          <dt className="text-sm font-semibold text-ink-900">{copy.biggest_uncertainty_label}</dt>
           <dd className="mt-1 text-sm text-ink-700">{result.biggestUncertainty}</dd>
         </div>
         <div>
-          <dt className="text-sm font-semibold text-ink-900">Next step</dt>
+          <dt className="text-sm font-semibold text-ink-900">{copy.next_step_label}</dt>
           <dd className="mt-1 text-sm text-ink-700">{result.nextStep}</dd>
         </div>
       </dl>
 
-      <p className="mt-6 text-xs text-ink-500">
-        This score is a structured read on the factors you reported, not a guarantee this channel will work — see it
-        as a prompt for what to check next, not a verdict.
-      </p>
+      <p className="mt-6 text-xs text-ink-500">{copy.disclaimer}</p>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
         <button
@@ -113,14 +113,14 @@ export function FirstCustomersPlannerResultSummary({
           onClick={handleCopy}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          {copied ? "Copied" : "Copy result"}
+          {copied ? copy.copied_label : copy.copy_result_label}
         </button>
         <button
           type="button"
           onClick={onRestart}
           className="inline-flex min-h-11 items-center rounded-md border border-ink-200 px-4 text-sm font-medium text-ink-900 hover:bg-ink-100 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
-          Score another channel
+          {copy.restart_label}
         </button>
       </div>
     </div>

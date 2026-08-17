@@ -3,6 +3,7 @@ import { getSupabaseServerClient } from "@/lib/supabase/server-client";
 import { getSupabaseServiceRoleClient } from "@/lib/supabase/service-role-client";
 import { findToolDefinition, listRegisteredToolKeys } from "@/lib/tools/registry";
 import type { ToolCopySchema } from "@/lib/tools/types";
+import { resolveCommonCopy, type CommonProductCopy } from "@/server/admin/editorial-content";
 
 export type AdminToolListItem = {
   toolKey: string;
@@ -44,32 +45,111 @@ export type AdminToolCopyRevision = {
   published_at: string | null;
 };
 
+export type AdminCommonCopyRevision = {
+  id: string;
+  revision_number: number;
+  content_schema_version: number;
+  content_data: { common?: Partial<CommonProductCopy> };
+  change_note: string | null;
+  created_at: string;
+  published_at: string | null;
+};
+
 export type AdminToolCopyDetail = {
   toolKey: string;
+  productId: string | null;
   schema: ToolCopySchema;
   draftRevision: AdminToolCopyRevision | null;
   publishedRevision: AdminToolCopyRevision | null;
   history: AdminToolCopyRevision[];
+  commonCopy: CommonProductCopy;
+  commonPublishedRevisionId: string | null;
+  commonHistory: AdminCommonCopyRevision[];
 };
 
+const EMPTY_COMMON_COPY: CommonProductCopy = {
+  name: "",
+  short_description: "",
+  full_description: "",
+  outcome_statement: "",
+  target_audience: "",
+  when_to_use: "",
+  when_not_to_use: "",
+  seo_title: "",
+  seo_description: "",
+};
+
+/**
+ * Loads the Tool-specific copy (existing behaviour) plus, per spec v8 §10.11.5, the common
+ * product copy for the `it_products` row this `tool_key` backs — resolved the same way as
+ * Guide/Template (`resolveCommonCopy`), so the Tool editor shows the same "draft > published >
+ * live" precedence for common fields as the other two admin editors.
+ */
 export async function getToolCopyForAdmin(toolKey: string): Promise<AdminToolCopyDetail | null> {
   const definition = findToolDefinition(toolKey);
   if (!definition?.copySchema) return null;
 
   const supabase = await getSupabaseServerClient();
-  const { data: revisions, error } = await supabase
-    .from("it_tool_copy_revisions")
-    .select("id, revision_number, content_data, change_note, created_at, published_at")
-    .eq("tool_key", toolKey)
-    .order("revision_number", { ascending: false });
+
+  const [{ data: revisions, error }, { data: product, error: productError }] = await Promise.all([
+    supabase
+      .from("it_tool_copy_revisions")
+      .select("id, revision_number, content_data, change_note, created_at, published_at")
+      .eq("tool_key", toolKey)
+      .order("revision_number", { ascending: false }),
+    supabase
+      .from("it_products")
+      .select(
+        "id, name, short_description, full_description, outcome_statement, target_audience, when_to_use, when_not_to_use, seo_title, seo_description, current_content_revision_id",
+      )
+      .eq("tool_key", toolKey)
+      .maybeSingle(),
+  ]);
   if (error) throw new Error(`Failed to load tool copy: ${error.message}`);
+  if (productError) throw new Error(`Failed to load tool product: ${productError.message}`);
 
   const all = (revisions ?? []) as unknown as AdminToolCopyRevision[];
   const draftRevision = all.find((r) => r.published_at === null) ?? null;
   const publishedRevision = all.find((r) => r.published_at !== null) ?? null;
   const history = all.filter((r) => r.published_at !== null);
 
-  return { toolKey, schema: definition.copySchema, draftRevision, publishedRevision, history };
+  if (!product) {
+    return {
+      toolKey,
+      productId: null,
+      schema: definition.copySchema,
+      draftRevision,
+      publishedRevision,
+      history,
+      commonCopy: EMPTY_COMMON_COPY,
+      commonPublishedRevisionId: null,
+      commonHistory: [],
+    };
+  }
+
+  const { data: commonRevisions, error: commonError } = await supabase
+    .from("it_product_content_revisions")
+    .select("id, revision_number, content_schema_version, content_data, change_note, created_at, published_at")
+    .eq("product_id", product.id)
+    .order("revision_number", { ascending: false });
+  if (commonError) throw new Error(`Failed to load common copy: ${commonError.message}`);
+
+  const allCommon = (commonRevisions ?? []) as unknown as AdminCommonCopyRevision[];
+  const commonDraft = allCommon.find((r) => r.published_at === null) ?? null;
+  const commonHistory = allCommon.filter((r) => r.published_at !== null);
+  const editableCommon = commonDraft ?? allCommon.find((r) => r.id === product.current_content_revision_id) ?? null;
+
+  return {
+    toolKey,
+    productId: product.id,
+    schema: definition.copySchema,
+    draftRevision,
+    publishedRevision,
+    history,
+    commonCopy: resolveCommonCopy(editableCommon?.content_data, editableCommon?.content_schema_version, product),
+    commonPublishedRevisionId: product.current_content_revision_id ?? null,
+    commonHistory,
+  };
 }
 
 export type SaveToolCopyDraftInput = {

@@ -6,9 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FormField } from "@/components/ui/form-field";
 import { Button } from "@/components/ui/button";
+import { CommonProductCopyFields } from "@/components/admin/common-product-copy-fields";
+import type { CommonProductCopy } from "@/server/admin/editorial-content";
 
 type Props = {
   productId: string;
+  initialCommon: CommonProductCopy;
   initialBodyMarkdown: string;
   initialAuthor: string;
 };
@@ -20,7 +23,8 @@ type Props = {
  * round trip via saveAndPublishGuideAction, so the public page reflects it
  * immediately.
  */
-export function GuideEditorForm({ productId, initialBodyMarkdown, initialAuthor }: Props) {
+export function GuideEditorForm({ productId, initialCommon, initialBodyMarkdown, initialAuthor }: Props) {
+  const [common, setCommon] = useState<CommonProductCopy>(initialCommon);
   const [bodyMarkdown, setBodyMarkdown] = useState(initialBodyMarkdown);
   const [author, setAuthor] = useState(initialAuthor);
   const [changeNote, setChangeNote] = useState("");
@@ -31,7 +35,7 @@ export function GuideEditorForm({ productId, initialBodyMarkdown, initialAuthor 
     setMessage(null);
     startTransition(async () => {
       const action = publish ? saveAndPublishGuideAction : saveGuideDraftAction;
-      const result = await action({ productId, bodyMarkdown, author, changeNote: changeNote || undefined });
+      const result = await action({ productId, common, bodyMarkdown, author, changeNote: changeNote || undefined });
       if (result.status === "success") {
         setMessage({ kind: "success", text: publish ? "Published." : "Draft saved." });
         setChangeNote("");
@@ -43,6 +47,7 @@ export function GuideEditorForm({ productId, initialBodyMarkdown, initialAuthor 
 
   return (
     <div className="space-y-4">
+      <CommonProductCopyFields values={common} onChange={(patch) => setCommon((prev) => ({ ...prev, ...patch }))} />
       <FormField label="Author">
         {(fieldProps) => <Input {...fieldProps} value={author} onChange={(e) => setAuthor(e.target.value)} />}
       </FormField>
