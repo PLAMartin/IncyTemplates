@@ -53,7 +53,7 @@ export default async function AdminTemplateEditPage({ params }: Props) {
             change_note: r.change_note,
             published_at: r.published_at,
           }))}
-          onRollback={(sourceRevisionId) => rollbackTemplateContentAction({ productId: template.id, sourceRevisionId })}
+          onRollback={rollbackTemplateContentAction.bind(null, template.id)}
         />
       </section>
 

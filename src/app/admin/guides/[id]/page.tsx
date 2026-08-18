@@ -47,7 +47,7 @@ export default async function AdminGuideEditPage({ params }: Props) {
             change_note: r.change_note,
             published_at: r.published_at,
           }))}
-          onRollback={(sourceRevisionId) => rollbackGuideRevisionAction({ productId: guide.id, sourceRevisionId })}
+          onRollback={rollbackGuideRevisionAction.bind(null, guide.id)}
         />
       </section>
     </div>

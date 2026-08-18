@@ -2,6 +2,17 @@ import Link from "next/link";
 import { site } from "@/config/site";
 import { requireStaffSession } from "@/server/auth/dal";
 
+/**
+ * Every `/admin` route is session-gated and must never be statically prerendered — but
+ * `getSupabaseServerClient()` (src/lib/supabase/server-client.ts) throws its own "no env
+ * configured" guard *before* calling `cookies()`, so with no Supabase env set (this repo's
+ * zero-config fixtures build — see README's "builds and runs with zero cloud credentials")
+ * Next never observes a dynamic API being used and tries to prerender this tree anyway, turning
+ * that guard's Error into a hard build failure instead of a "render this dynamically" signal.
+ * Forcing dynamic rendering explicitly sidesteps that ordering problem entirely.
+ */
+export const dynamic = "force-dynamic";
+
 const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/frameworks", label: "Frameworks" },

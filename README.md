@@ -343,6 +343,16 @@ npm run test       # unit/component tests (Vitest)
 npm run e2e         # e2e + accessibility smoke tests (Playwright, needs a running build)
 ```
 
+Most of `npm run e2e` runs against the local fixtures data source, no credentials needed. Two
+specs — `admin-template-editor.spec.ts`, `admin-tool-editor.spec.ts` — cover the admin
+Template/Tool editorial-content editors (spec v8 §10.11) and need a real staff session, since
+`/admin` has no fixtures path. They self-skip unless `NEXT_PUBLIC_SUPABASE_URL` /
+`SUPABASE_SERVICE_ROLE_KEY` / `E2E_STAFF_EMAIL` are exported in the shell first (this repo's
+tsx/Playwright runs never auto-load `.env.local` — export it yourself, e.g. `set -a; source
+.env.local; export E2E_STAFF_EMAIL=you@example.com; set +a`). They only ever click "Save draft",
+never "Publish", so they're safe to run against a live project — see
+`tests/e2e/helpers/admin-auth.ts`.
+
 ## Branch / PR workflow
 
 - `main` is production; work happens on short-lived `feature/*` branches.

@@ -65,8 +65,17 @@ export async function saveToolCopyDraftAction(input: z.infer<typeof saveDraftSch
 
 const rollbackSchema = z.object({ toolKey: z.string().min(1), sourceRevisionId: z.uuid(), reason: z.string().max(500).optional() });
 
-export async function rollbackToolCopyAction(input: z.infer<typeof rollbackSchema>): Promise<AdminActionResult> {
-  const parsed = rollbackSchema.safeParse(input);
+/**
+ * Positional args, not a single object — see rollbackGuideRevisionAction's doc comment
+ * (admin-guides.ts) for why: a Server Component must pass a bound Server Action reference
+ * (`.bind(null, toolKey)`) to the Client Component rollback list, not a wrapping closure.
+ */
+export async function rollbackToolCopyAction(
+  toolKey: string,
+  sourceRevisionId: string,
+  reason?: string,
+): Promise<AdminActionResult> {
+  const parsed = rollbackSchema.safeParse({ toolKey, sourceRevisionId, reason });
   if (!parsed.success) {
     return { status: "invalid", message: parsed.error.issues[0]?.message ?? "Invalid input." };
   }
@@ -157,9 +166,18 @@ export async function saveAndPublishToolContentAction(input: z.infer<typeof save
 
 const rollbackCommonCopySchema = z.object({ productId: zId, sourceRevisionId: z.uuid(), reason: z.string().max(500).optional() });
 
-/** Rolls back only the common-copy revision for the product a `tool_key` backs — independent of Tool-specific copy rollback (`rollbackToolCopyAction` above), since the two are separate revision timelines. */
-export async function rollbackToolCommonCopyAction(input: z.infer<typeof rollbackCommonCopySchema>): Promise<AdminActionResult> {
-  const parsed = rollbackCommonCopySchema.safeParse(input);
+/**
+ * Rolls back only the common-copy revision for the product a `tool_key` backs — independent of
+ * Tool-specific copy rollback (`rollbackToolCopyAction` above), since the two are separate
+ * revision timelines. Positional args, not a single object — see rollbackGuideRevisionAction's
+ * doc comment (admin-guides.ts) for why.
+ */
+export async function rollbackToolCommonCopyAction(
+  productId: string,
+  sourceRevisionId: string,
+  reason?: string,
+): Promise<AdminActionResult> {
+  const parsed = rollbackCommonCopySchema.safeParse({ productId, sourceRevisionId, reason });
   if (!parsed.success) {
     return { status: "invalid", message: parsed.error.issues[0]?.message ?? "Invalid input." };
   }

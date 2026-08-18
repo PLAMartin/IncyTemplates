@@ -167,6 +167,13 @@ additional_redirect_urls = [
   "https://incytemplates.com/auth/callback/implicit",
   "http://127.0.0.1:3000/auth/callback/implicit",
   "http://localhost:3000/auth/callback/implicit",
+  # Port 4000, not 3000, is this repo's actual e2e/CI convention (playwright.config.ts's
+  # default baseURL, .github/workflows/ci.yml's `next start -p 4000`) — added for
+  # tests/e2e/helpers/admin-auth.ts's generateLink() + /auth/callback/implicit staff-session
+  # technique, which needs its exact redirectTo pre-whitelisted here or Supabase silently
+  # falls back to site_url instead of erroring.
+  "http://127.0.0.1:4000/auth/callback/implicit",
+  "http://localhost:4000/auth/callback/implicit",
 ]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600

@@ -83,6 +83,55 @@ needed there; each Tool only needed to start using the prop it was already being
   in this environment, consistent with every other pgTAP suite in this repo) — it was extended
   with 4 new assertions for the schema-v2 common-copy publish/rollback behaviour, authored but
   unrun, same status as the rest of that suite.
-- Playwright e2e coverage for the new Template/Tool editor sections was not added in this pass;
-  existing per-tool e2e specs (`tests/e2e/<tool>-tool.spec.ts`) were not re-run here since that
-  requires a dev server against real data.
+
+**Update 2026-08-18: Playwright e2e coverage added, live-verified — and it caught two real,
+previously-undetected bugs.** `tests/e2e/admin-template-editor.spec.ts` and
+`tests/e2e/admin-tool-editor.spec.ts`, backed by a new reusable staff-session helper
+(`tests/e2e/helpers/admin-auth.ts`, `auth.admin.generateLink()` + the existing
+`/auth/callback/implicit` page) and a Playwright "setup project"
+(`tests/e2e/admin-auth.setup.ts`, `playwright.config.ts`'s `admin-setup`/`admin` projects) that
+signs in once and shares the storageState — the first permanent Playwright coverage of an
+authenticated admin session in this repo; prior sessions only ever ran the technique as one-off
+Node scripts, and calling `signInAsStaff()` from each test's own `beforeEach` was tried first but
+flaked: concurrent workers each requesting a fresh magic link for the same staff email invalidate
+one another's not-yet-redeemed link. Both specs target the `mvp-scoper` family (Template "MVP
+Scope in One Page", Tool "Scope Decider") and are deliberately draft-only — only ever "Save
+draft", never "Publish" — safe to run repeatedly against the live project with no cleanup step.
+They self-skip (`getStaffAuthConfig()`) when `NEXT_PUBLIC_SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`/
+`E2E_STAFF_EMAIL` aren't exported, so CI (no secrets) is unaffected.
+
+Two real bugs surfaced and fixed in the process, both invisible to typecheck/lint/build/unit
+tests — only a genuine authenticated click-through caught them:
+
+1. **Every admin rollback button was broken.** `ContentRevisionRollbackList`'s `onRollback` prop
+   was passed as `(sourceRevisionId) => rollbackXAction({ ...extra, sourceRevisionId })` — an
+   inline closure created in a Server Component page and passed to a Client Component. Next.js
+   can only serialize a Server Action reference (optionally `.bind()`-curried) across that
+   boundary, not an arbitrary closure; every visit to `/admin/guides/[id]`,
+   `/admin/templates/[id]` or `/admin/tools/[toolKey]` 500'd outright ("Event handlers cannot be
+   passed to Client Component props"). This predates v8 — the original Guide-only
+   `GuideRollbackList` called its action directly from inside the Client Component, so v8's
+   generalisation (moving the call out into the page) introduced the regression. Fixed by
+   changing `rollbackGuideRevisionAction`/`rollbackTemplateContentAction`/`rollbackToolCopyAction`/
+   `rollbackToolCommonCopyAction` to positional args and passing `<action>.bind(null, id)` from
+   each page instead.
+2. **`npm run build` (the README's advertised zero-credential fixtures build, and what CI's own
+   build step runs) failed outright** with no Supabase env set: `getSupabaseServerClient()`
+   throws its own "no env configured" guard *before* calling `cookies()`, so Next never observes
+   a dynamic API being used and tries to statically prerender `/admin/*`/`/account/*` anyway,
+   turning that guard's Error into a hard build failure instead of a "render this dynamically"
+   signal. Predates v8 (present since Phase 6 introduced `/admin`); `/account` has the identical
+   defect. Fixed with `export const dynamic = "force-dynamic"` on `src/app/admin/layout.tsx` and
+   `src/app/account/(protected)/layout.tsx`. Re-verified clean: fixtures build exits 0 with every
+   `/admin/*`/`/account/*` route now listed dynamic (`ƒ`), `typecheck`/`lint`/`test` (518 tests)
+   all pass.
+
+Also fixed along the way: the Supabase project's auth redirect allowlist only had `localhost:3000`
+entries, not this repo's actual e2e/CI convention of port 4000 — added
+`{127.0.0.1,localhost}:4000/auth/callback/implicit` to `supabase/config.toml` and pushed live
+(confirmed clean single-section diff via `supabase config push`, no other settings touched).
+
+Both new specs pass live, in isolation and as part of the full suite (141/145 e2e tests passing;
+the other 4 failures — two axe color-contrast findings on live content, one live-Supabase
+sign-in-copy mismatch, one one-off dev-server-under-load flake that reran clean — are pre-existing
+and environment-specific, not caused by this work; not investigated further here).

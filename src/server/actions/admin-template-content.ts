@@ -83,8 +83,17 @@ export async function saveAndPublishTemplateContentAction(input: z.infer<typeof 
 
 const rollbackSchema = z.object({ productId: zId, sourceRevisionId: z.uuid(), reason: z.string().max(500).optional() });
 
-export async function rollbackTemplateContentAction(input: z.infer<typeof rollbackSchema>): Promise<AdminActionResult> {
-  const parsed = rollbackSchema.safeParse(input);
+/**
+ * Positional args, not a single object — see rollbackGuideRevisionAction's doc comment
+ * (admin-guides.ts) for why: a Server Component must pass a bound Server Action reference
+ * (`.bind(null, productId)`) to the Client Component rollback list, not a wrapping closure.
+ */
+export async function rollbackTemplateContentAction(
+  productId: string,
+  sourceRevisionId: string,
+  reason?: string,
+): Promise<AdminActionResult> {
+  const parsed = rollbackSchema.safeParse({ productId, sourceRevisionId, reason });
   if (!parsed.success) {
     return { status: "invalid", message: parsed.error.issues[0]?.message ?? "Invalid input." };
   }

@@ -4,6 +4,12 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { requireCustomerSession } from "@/server/auth/customer-dal";
 import { signOutCustomer } from "@/server/actions/customer-auth";
 
+/**
+ * Every `/account` route is session-gated and must never be statically prerendered — same
+ * reasoning as `src/app/admin/layout.tsx`'s identical directive, see its doc comment.
+ */
+export const dynamic = "force-dynamic";
+
 const NAV_ITEMS = [
   { href: "/account/library", label: "Library" },
   { href: "/account/orders", label: "Orders" },

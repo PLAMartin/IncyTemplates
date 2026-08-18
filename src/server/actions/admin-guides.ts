@@ -83,8 +83,18 @@ export async function publishGuideRevisionAction(input: z.infer<typeof publishSc
 
 const rollbackSchema = z.object({ productId: zId, sourceRevisionId: z.uuid(), reason: z.string().max(500).optional() });
 
-export async function rollbackGuideRevisionAction(input: z.infer<typeof rollbackSchema>): Promise<AdminActionResult> {
-  const parsed = rollbackSchema.safeParse(input);
+/**
+ * Positional args, not a single object, so a Server Component can pass a bound reference
+ * (`rollbackGuideRevisionAction.bind(null, guide.id)`) to the Client Component rollback list —
+ * Next.js can only serialize a Server Action reference (optionally `.bind()`-curried) across
+ * the server/client boundary, not an arbitrary closure that captures `productId` itself.
+ */
+export async function rollbackGuideRevisionAction(
+  productId: string,
+  sourceRevisionId: string,
+  reason?: string,
+): Promise<AdminActionResult> {
+  const parsed = rollbackSchema.safeParse({ productId, sourceRevisionId, reason });
   if (!parsed.success) {
     return { status: "invalid", message: parsed.error.issues[0]?.message ?? "Invalid input." };
   }

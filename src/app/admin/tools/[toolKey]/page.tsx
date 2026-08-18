@@ -49,7 +49,7 @@ export default async function AdminToolCopyEditPage({ params }: Props) {
             change_note: r.change_note,
             published_at: r.published_at,
           }))}
-          onRollback={(sourceRevisionId) => rollbackToolCopyAction({ toolKey, sourceRevisionId })}
+          onRollback={rollbackToolCopyAction.bind(null, toolKey)}
         />
       </section>
 
@@ -64,7 +64,7 @@ export default async function AdminToolCopyEditPage({ params }: Props) {
               change_note: r.change_note,
               published_at: r.published_at,
             }))}
-            onRollback={(sourceRevisionId) => rollbackToolCommonCopyAction({ productId: detail.productId!, sourceRevisionId })}
+            onRollback={rollbackToolCommonCopyAction.bind(null, detail.productId!)}
           />
         </section>
       ) : null}
