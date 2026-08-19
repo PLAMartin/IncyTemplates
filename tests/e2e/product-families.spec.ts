@@ -39,9 +39,10 @@ test("the published Customer Discovery Kit family page shows full detail, its ou
   // and Evidence Tracker) — both should render under the Template column.
   await expect(page.getByRole("link", { name: /Customer Interview Planner/ })).toBeVisible();
   await expect(page.getByRole("link", { name: /Assumption and Evidence Tracker/ })).toBeVisible();
-  // Recommended next step per its `next_step_framework_slug`.
+  // v9 §3.4: Core Collection order is now authoritative for this family's next step
+  // (docs/decisions/0062) — was Better Decision Maker (now unlisted, non-core).
   await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Better Decision Maker/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Customer Demand Test/ })).toBeVisible();
 });
 
 test("the published Better Decision Maker family page shows full detail, its outputs, and links on to its next step", async ({
@@ -69,9 +70,10 @@ test("the published MVP Scoper family page shows full detail, its outputs, and l
   // The pre-existing free MVP Scope in One Page template was reassigned to this family —
   // the separate, paid MVP Scope template (Product Definition Pack) was not.
   await expect(page.getByRole("link", { name: /MVP Scope in One Page/ })).toBeVisible();
-  // Recommended next step per its `next_step_framework_slug`.
+  // v9 §3.4: Core Collection order is now authoritative for this family's next step
+  // (docs/decisions/0062) — was Product Naming System (now unlisted, non-core).
   await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Product Naming System/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /First Customers Planner/ })).toBeVisible();
 });
 
 test("the published Product Naming System family page shows full detail, its outputs, and links on to its next step", async ({
@@ -89,7 +91,7 @@ test("the published Product Naming System family page shows full detail, its out
   await expect(page.getByRole("link", { name: /First Customers Planner/ })).toBeVisible();
 });
 
-test("the published First Customers Planner family page shows full detail, its outputs, and links on to its next step", async ({
+test("the published First Customers Planner family page shows full detail and its outputs, with no next step", async ({
   page,
 }) => {
   await page.goto("/products/first-customers-planner");
@@ -99,12 +101,14 @@ test("the published First Customers Planner family page shows full detail, its o
   await expect(page.getByText("Do it yourself")).toBeVisible();
   await expect(page.getByText("Do it interactively")).toBeVisible();
   await expect(page.getByRole("link", { name: /First 10 Customers Plan/ })).toBeVisible();
-  // Recommended next step per its `next_step_framework_slug`.
-  await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Product\/Market Fit Tracker/ })).toBeVisible();
+  // v9 §3.4/§36.10: the final Core Collection step (docs/decisions/0062) — its old target
+  // (Product/Market Fit Tracker) is now unlisted/non-core, and `next_step_framework_slug` is
+  // deliberately null rather than pointed at unlisted content. A real continue/review state is
+  // Phase 4 (continue-your-journey) work, not built yet.
+  await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
 });
 
-test("the published Product/Market Fit Tracker family page shows full detail, its outputs, and links on to its next step", async ({
+test("the published Product/Market Fit Tracker family page shows full detail and its outputs, with no next step", async ({
   page,
 }) => {
   await page.goto("/products/product-market-fit-tracker");
@@ -114,9 +118,12 @@ test("the published Product/Market Fit Tracker family page shows full detail, it
   await expect(page.getByText("Do it yourself")).toBeVisible();
   await expect(page.getByText("Do it interactively")).toBeVisible();
   await expect(page.getByRole("link", { name: /PMF Signal Tracker/ })).toBeVisible();
-  // Recommended next step per its `next_step_framework_slug`.
-  await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Pricing Your Product/ })).toBeVisible();
+  // v9 §5.3 (docs/decisions/0062): non-core family, now unlisted — its own next-step target
+  // (Pricing Your Product) is also now unlisted, so the family-page teaser lookup correctly
+  // finds nothing and the "Next step" section doesn't render (it_frameworks_teasers already
+  // excludes non-public rows, 20260812110000). Not touched/re-chained: non-core content
+  // coherence is Phase 2/3 scope, not this session's.
+  await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
 });
 
 test("the published Pricing Your Product family page shows full detail and its outputs, with no next step", async ({
@@ -151,7 +158,7 @@ test("the published Product Idea Generator family page shows full detail, its ou
   await expect(page.getByRole("link", { name: /Product Idea Assessor/ })).toBeVisible();
 });
 
-test("the published Business Model Chooser family page shows full detail, its outputs, and links on to its next step", async ({
+test("the published Business Model Chooser family page shows full detail and its outputs, with no next step", async ({
   page,
 }) => {
   await page.goto("/products/business-model-chooser");
@@ -161,11 +168,10 @@ test("the published Business Model Chooser family page shows full detail, its ou
   await expect(page.getByText("Do it yourself")).toBeVisible();
   await expect(page.getByText("Do it interactively")).toBeVisible();
   await expect(page.getByRole("link", { name: /Business Model Comparison Canvas/ })).toBeVisible();
-  // Fourth Tier 2 family — reuses Pricing Your Product's next-step target, the same "many
-  // families can point at one target" pattern Launch already uses as a shared journey stage
-  // (docs/decisions/0030).
-  await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Pricing Your Product/ })).toBeVisible();
+  // v9 §5.3 (docs/decisions/0062): non-core family, now unlisted — its next-step target
+  // (Pricing Your Product) is also now unlisted, so no "Next step" section renders. Not
+  // re-chained: non-core content coherence is Phase 2/3 scope, not this session's.
+  await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
 });
 
 test("the published Decision Framework Picker family page shows full detail and its outputs, with no next step", async ({
@@ -184,7 +190,7 @@ test("the published Decision Framework Picker family page shows full detail and 
   await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
 });
 
-test("the published Product Positioning Builder family page shows full detail, its outputs, and links on to its next step", async ({
+test("the published Product Positioning Builder family page shows full detail and its outputs, with no next step", async ({
   page,
 }) => {
   await page.goto("/products/product-positioning-builder");
@@ -194,10 +200,10 @@ test("the published Product Positioning Builder family page shows full detail, i
   await expect(page.getByText("Do it yourself")).toBeVisible();
   await expect(page.getByText("Do it interactively")).toBeVisible();
   await expect(page.getByRole("link", { name: /Positioning One-Pager/ })).toBeVisible();
-  // Sixth Tier 2 family — a second branch into Product Naming System alongside MVP Scoper,
-  // since positioning naturally precedes settling on a name that matches it (docs/decisions/0032).
-  await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Product Naming System/ })).toBeVisible();
+  // v9 §5.3 (docs/decisions/0062): non-core family, now unlisted — its next-step target
+  // (Product Naming System) is also now unlisted, so no "Next step" section renders. Not
+  // re-chained: non-core content coherence is Phase 2/3 scope, not this session's.
+  await expect(page.getByRole("heading", { name: "Next step" })).toHaveCount(0);
 });
 
 test("the published Customer Demand Test family page shows full detail, its outputs, and links on to its next step", async ({
@@ -210,11 +216,10 @@ test("the published Customer Demand Test family page shows full detail, its outp
   await expect(page.getByText("Do it yourself")).toBeVisible();
   await expect(page.getByText("Do it interactively")).toBeVisible();
   await expect(page.getByRole("link", { name: /Demand Test Experiment Planner/ })).toBeVisible();
-  // Seventh Tier 2 family — a second branch into Better Decision Maker alongside Customer
-  // Discovery Kit, since a real demand signal is exactly the evidence that family helps you
-  // act on (docs/decisions/0033).
+  // v9 §3.4: Core Collection order is now authoritative for this family's next step
+  // (docs/decisions/0062) — was Better Decision Maker (now unlisted, non-core).
   await expect(page.getByRole("heading", { name: "Next step" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Better Decision Maker/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /MVP Scoper/ })).toBeVisible();
 });
 
 test("the published Product Prioritisation Tool family page shows full detail and its outputs, with no next step", async ({

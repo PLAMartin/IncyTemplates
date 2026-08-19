@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { changeFrameworkVisibility } from "@/server/actions/admin-frameworks";
 import { changeProductVisibility } from "@/server/actions/admin-products";
+import { changeCollectionVisibility } from "@/server/actions/admin-collections";
 import { Select } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,7 @@ import type { PublicVisibility } from "@/types/admin";
 
 type Props = {
   entityId: string;
-  kind: "framework" | "product";
+  kind: "framework" | "product" | "collection";
   currentVisibility: PublicVisibility;
 };
 
@@ -36,7 +37,9 @@ export function VisibilityForm({ entityId, kind, currentVisibility }: Props) {
       const result =
         kind === "framework"
           ? await changeFrameworkVisibility({ frameworkId: entityId, visibility, reason: reason || undefined })
-          : await changeProductVisibility({ productId: entityId, visibility, reason: reason || undefined });
+          : kind === "product"
+            ? await changeProductVisibility({ productId: entityId, visibility, reason: reason || undefined })
+            : await changeCollectionVisibility({ collectionId: entityId, visibility, reason: reason || undefined });
       if (result.status === "success") {
         setMessage({ kind: "success", text: "Saved." });
         setReason("");

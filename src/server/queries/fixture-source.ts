@@ -6,6 +6,8 @@ import type {
   CatalogueFilters,
   CatalogueResult,
   Category,
+  Collection,
+  CollectionMember,
   Framework,
   FrameworkTeaser,
   FrameworkVisual,
@@ -238,6 +240,64 @@ export class FixtureCatalogueSource implements CatalogueSource {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getFrameworkVisual(frameworkId: string, assetType: FrameworkVisual["assetType"]): Promise<FrameworkVisual | null> {
     return null;
+  }
+
+  // --- v9: curated Collections (spec §14.3.1, §12.3.2) --------------------
+
+  /**
+   * `public_visibility` isn't modelled on fixture frameworks (see this class's header comment
+   * — every fixture framework is implicitly public), so the only filter applied to members here
+   * is `status === "published"`, matching `getFrameworkTeasers`'/`getFrameworkOutputs`' own
+   * fixture-side visibility story.
+   */
+  private resolveCollection(predicate: (seed: (typeof catalogue.collections)[number]) => boolean): Collection | null {
+    const seed = catalogue.collections.find((c) => c.status === "published" && predicate(c));
+    if (!seed) return null;
+
+    const members: CollectionMember[] = seed.members
+      .map((member) => {
+        const framework = catalogue.frameworks.find((f) => f.slug === member.framework_slug && f.status === "published");
+        if (!framework) return null;
+        const teaser: FrameworkTeaser = {
+          id: framework.id,
+          name: framework.name,
+          slug: framework.slug,
+          short_description: framework.short_description,
+          outcome_statement: framework.outcome_statement,
+          status: framework.status,
+          journey_stage: framework.journey_stage,
+          cardImage: null,
+        };
+        return {
+          stepOrder: member.step_order,
+          stepLabel: member.step_label,
+          transitionCopy: member.transition_copy,
+          isRequired: member.is_required,
+          framework: teaser,
+        };
+      })
+      .filter((m): m is CollectionMember => m !== null)
+      .sort((a, b) => a.stepOrder - b.stepOrder);
+
+    return {
+      id: seed.id,
+      name: seed.name,
+      slug: seed.slug,
+      headline: seed.headline,
+      short_description: seed.short_description,
+      is_core: seed.is_core,
+      seo_title: seed.seo_title,
+      seo_description: seed.seo_description,
+      members,
+    };
+  }
+
+  async getCollectionBySlug(slug: string): Promise<Collection | null> {
+    return this.resolveCollection((c) => c.slug === slug);
+  }
+
+  async getActiveCoreCollection(): Promise<Collection | null> {
+    return this.resolveCollection((c) => c.is_core);
   }
 }
 

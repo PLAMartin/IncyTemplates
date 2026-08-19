@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 import { STAFF_STORAGE_STATE_PATH } from "./tests/e2e/helpers/admin-auth";
 
-const ADMIN_AUTHENTICATED_SPECS = ["**/admin-template-editor.spec.ts", "**/admin-tool-editor.spec.ts"];
+const ADMIN_AUTHENTICATED_SPECS = ["**/admin-template-editor.spec.ts", "**/admin-tool-editor.spec.ts", "**/admin-collections.spec.ts"];
 
 /**
  * Originally Phase 0/1 scope only (flows that don't need Stripe/Auth/a live

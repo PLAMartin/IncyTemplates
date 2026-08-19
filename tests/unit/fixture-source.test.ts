@@ -84,3 +84,33 @@ describe("FixtureCatalogueSource visibility filtering", () => {
     expect(result2).toBeNull();
   });
 });
+
+describe("FixtureCatalogueSource collections (spec v9 §14.3.1)", () => {
+  it("getActiveCoreCollection returns the Start a Product collection with all five members in order", async () => {
+    const collection = await source.getActiveCoreCollection();
+    expect(collection).toBeTruthy();
+    expect(collection!.slug).toBe("start-a-product");
+    expect(collection!.is_core).toBe(true);
+    expect(collection!.members.map((m) => m.framework.slug)).toEqual([
+      "product-idea-assessor",
+      "customer-discovery-kit",
+      "customer-demand-test",
+      "mvp-scoper",
+      "first-customers-planner",
+    ]);
+    expect(collection!.members.every((m) => m.framework.status === "published")).toBe(true);
+    // step order is contiguous and matches array order
+    collection!.members.forEach((m, i) => expect(m.stepOrder).toBe(i + 1));
+  });
+
+  it("getCollectionBySlug matches getActiveCoreCollection for the same collection", async () => {
+    const bySlug = await source.getCollectionBySlug("start-a-product");
+    const core = await source.getActiveCoreCollection();
+    expect(bySlug).toEqual(core);
+  });
+
+  it("getCollectionBySlug returns null for an unknown slug", async () => {
+    const result = await source.getCollectionBySlug("not-a-real-collection-slug");
+    expect(result).toBeNull();
+  });
+});

@@ -556,18 +556,18 @@ on conflict (id) do update set status = excluded.status, name = excluded.name, s
 
 -- it_frameworks next-step links (second pass, see comment above)
 update public.it_frameworks set next_step_framework_id = '1c2a8bbd-308d-3e5c-c08e-30a596a3f716' where id = 'bd063cd6-3bdc-e7a0-47fa-dabc2cd8a448';
-update public.it_frameworks set next_step_framework_id = '4d32e24c-2646-908d-569c-a9789dfb06e1' where id = '1c2a8bbd-308d-3e5c-c08e-30a596a3f716';
+update public.it_frameworks set next_step_framework_id = '1f89a87d-7453-562b-4325-176c604587bf' where id = '1c2a8bbd-308d-3e5c-c08e-30a596a3f716';
 update public.it_frameworks set next_step_framework_id = 'a6f884a5-57d0-cbc7-58cf-9d6cc927f4a6' where id = '4d32e24c-2646-908d-569c-a9789dfb06e1';
-update public.it_frameworks set next_step_framework_id = '46a94166-2f8a-ceb8-98c3-56610ca412aa' where id = 'a6f884a5-57d0-cbc7-58cf-9d6cc927f4a6';
+update public.it_frameworks set next_step_framework_id = 'beb80f09-0dbb-02cf-91f6-7a611a156ab1' where id = 'a6f884a5-57d0-cbc7-58cf-9d6cc927f4a6';
 update public.it_frameworks set next_step_framework_id = 'beb80f09-0dbb-02cf-91f6-7a611a156ab1' where id = '46a94166-2f8a-ceb8-98c3-56610ca412aa';
-update public.it_frameworks set next_step_framework_id = '51b832a2-019f-c47a-1d77-d150590bf525' where id = 'beb80f09-0dbb-02cf-91f6-7a611a156ab1';
+update public.it_frameworks set next_step_framework_id = null where id = 'beb80f09-0dbb-02cf-91f6-7a611a156ab1';
 update public.it_frameworks set next_step_framework_id = 'a358fbce-aa36-7746-2f0b-1d93f2764830' where id = '51b832a2-019f-c47a-1d77-d150590bf525';
 update public.it_frameworks set next_step_framework_id = null where id = 'a358fbce-aa36-7746-2f0b-1d93f2764830';
 update public.it_frameworks set next_step_framework_id = 'bd063cd6-3bdc-e7a0-47fa-dabc2cd8a448' where id = '8557a22c-656d-c4f4-a1f6-525139231fb2';
 update public.it_frameworks set next_step_framework_id = 'a358fbce-aa36-7746-2f0b-1d93f2764830' where id = '3aa044a5-b513-0185-8621-fdd2faa7684b';
 update public.it_frameworks set next_step_framework_id = null where id = '56a1d86d-13dc-5eed-5d9f-28d2db214936';
 update public.it_frameworks set next_step_framework_id = '46a94166-2f8a-ceb8-98c3-56610ca412aa' where id = 'e18f5299-6393-38b5-a62c-f97526ed1498';
-update public.it_frameworks set next_step_framework_id = '4d32e24c-2646-908d-569c-a9789dfb06e1' where id = '1f89a87d-7453-562b-4325-176c604587bf';
+update public.it_frameworks set next_step_framework_id = 'a6f884a5-57d0-cbc7-58cf-9d6cc927f4a6' where id = '1f89a87d-7453-562b-4325-176c604587bf';
 update public.it_frameworks set next_step_framework_id = null where id = '8205be51-5547-9286-0ce3-a3da135056c2';
 update public.it_frameworks set next_step_framework_id = 'bd063cd6-3bdc-e7a0-47fa-dabc2cd8a448' where id = '5512a79d-6966-0c5a-9f13-008790d31dba';
 update public.it_frameworks set next_step_framework_id = null where id = 'c219c343-334a-77cf-bc15-c277e2ffdab9';
@@ -581,6 +581,36 @@ update public.it_frameworks set next_step_framework_id = 'a6f884a5-57d0-cbc7-58c
 update public.it_frameworks set next_step_framework_id = null where id = 'e5bffb53-b662-37d9-cdd0-1bfa7713aa6e';
 update public.it_frameworks set next_step_framework_id = 'beb80f09-0dbb-02cf-91f6-7a611a156ab1' where id = '4ac8989e-8dd5-5c60-6c61-74e4b68f7a15';
 update public.it_frameworks set next_step_framework_id = null where id = 'e7e8f829-8881-54da-b21d-6c74e8388068';
+
+-- it_collections
+insert into public.it_collections (
+  id, name, slug, status, public_visibility, headline, short_description, display_order, is_core, seo_title, seo_description, published_at
+) values (
+  '9c0bf640-7801-0fd5-2082-15d1a502f89a', 'Start a Product', 'start-a-product', 'published', 'public', 'Five connected steps from assessing your idea to finding your first customers.', 'The launch Core Collection (spec v9 §3.4): a curated, ordered sequence through Product Idea Assessor, Customer Discovery Kit, Customer Demand Test, MVP Scoper and First Customers Planner.', 1, true, 'Start a Product — five steps from idea to first customers', 'Assess your idea, understand your customers, test demand, scope your MVP and find your first customers — five connected, practical steps.', '2026-08-19T09:00:00Z'
+)
+on conflict (id) do update set name = excluded.name, slug = excluded.slug, status = excluded.status,
+  public_visibility = excluded.public_visibility, headline = excluded.headline,
+  short_description = excluded.short_description, display_order = excluded.display_order,
+  is_core = excluded.is_core, seo_title = excluded.seo_title, seo_description = excluded.seo_description,
+  published_at = excluded.published_at;
+
+-- it_collection_frameworks (full replace per collection this script manages)
+delete from public.it_collection_frameworks where collection_id = '9c0bf640-7801-0fd5-2082-15d1a502f89a';
+insert into public.it_collection_frameworks (collection_id, framework_id, step_order, step_label, transition_copy, is_required) values (
+  '9c0bf640-7801-0fd5-2082-15d1a502f89a', 'bd063cd6-3bdc-e7a0-47fa-dabc2cd8a448', 1, 'Assess the idea', 'Decide what evidence is missing', true
+);
+insert into public.it_collection_frameworks (collection_id, framework_id, step_order, step_label, transition_copy, is_required) values (
+  '9c0bf640-7801-0fd5-2082-15d1a502f89a', '1c2a8bbd-308d-3e5c-c08e-30a596a3f716', 2, 'Understand customers', 'Turn conversations into evidence', true
+);
+insert into public.it_collection_frameworks (collection_id, framework_id, step_order, step_label, transition_copy, is_required) values (
+  '9c0bf640-7801-0fd5-2082-15d1a502f89a', '1f89a87d-7453-562b-4325-176c604587bf', 3, 'Test demand', 'Test behaviour before building', true
+);
+insert into public.it_collection_frameworks (collection_id, framework_id, step_order, step_label, transition_copy, is_required) values (
+  '9c0bf640-7801-0fd5-2082-15d1a502f89a', 'a6f884a5-57d0-cbc7-58cf-9d6cc927f4a6', 4, 'Scope the MVP', 'Define the smallest useful test/release', true
+);
+insert into public.it_collection_frameworks (collection_id, framework_id, step_order, step_label, transition_copy, is_required) values (
+  '9c0bf640-7801-0fd5-2082-15d1a502f89a', 'beb80f09-0dbb-02cf-91f6-7a611a156ab1', 5, 'Find first customers', 'Turn the product into named outreach/actions', true
+);
 
 -- it_products
 insert into public.it_products (

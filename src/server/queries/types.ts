@@ -3,6 +3,7 @@ import type {
   CatalogueFilters,
   CatalogueResult,
   Category,
+  Collection,
   Framework,
   FrameworkTeaser,
   FrameworkVisual,
@@ -68,4 +69,15 @@ export type CatalogueSource = {
    * otherwise useful output").
    */
   getFrameworkVisual(frameworkId: string, assetType: FrameworkVisual["assetType"]): Promise<FrameworkVisual | null>;
+
+  // --- v9: curated Collections (spec §14.3.1, §12.3.2) --------------------
+
+  /**
+   * A published, public Collection by slug, with its ordered members —
+   * public/published member frameworks only (spec §12.3.2). Null if not
+   * found, not published, or not public.
+   */
+  getCollectionBySlug(slug: string): Promise<Collection | null>;
+  /** The current active `is_core = true` published Collection, if any (the launch "Start a Product" collection). */
+  getActiveCoreCollection(): Promise<Collection | null>;
 };

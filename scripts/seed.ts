@@ -153,6 +153,47 @@ function main() {
     );
   }
 
+  // v9 §14.3.1: curated Collections layer above frameworks.
+  const collectionIds = new Map(catalogue.collections.map((c) => [c.slug, deterministicUuid(`collection:${c.slug}`)]));
+
+  lines.push("", "-- it_collections");
+  for (const col of catalogue.collections) {
+    lines.push(
+      [
+        "insert into public.it_collections (",
+        "  id, name, slug, status, public_visibility, headline, short_description, display_order, is_core, seo_title, seo_description, published_at",
+        ") values (",
+        `  ${sqlString(collectionIds.get(col.slug)!)}, ${sqlString(col.name)}, ${sqlString(col.slug)}, ${sqlString(col.status)}, 'public', ${sqlString(col.headline)}, ${sqlString(col.short_description)}, ${sqlNumber(col.display_order)}, ${sqlBool(col.is_core)}, ${sqlString(col.seo_title)}, ${sqlString(col.seo_description)}, ${sqlTimestamp(col.published_at)}`,
+        ")",
+        "on conflict (id) do update set name = excluded.name, slug = excluded.slug, status = excluded.status,",
+        "  public_visibility = excluded.public_visibility, headline = excluded.headline,",
+        "  short_description = excluded.short_description, display_order = excluded.display_order,",
+        "  is_core = excluded.is_core, seo_title = excluded.seo_title, seo_description = excluded.seo_description,",
+        "  published_at = excluded.published_at;",
+      ].join("\n"),
+    );
+  }
+
+  // it_collection_frameworks has no natural single-column id to key an upsert on, and a
+  // collection's membership/ordering can change entirely between runs — same "full replace"
+  // reasoning as it_product_categories/it_product_stages below, applied per-collection.
+  lines.push("", "-- it_collection_frameworks (full replace per collection this script manages)");
+  for (const col of catalogue.collections) {
+    const collectionId = collectionIds.get(col.slug)!;
+    lines.push(`delete from public.it_collection_frameworks where collection_id = ${sqlString(collectionId)};`);
+    for (const member of col.members) {
+      const frameworkId = frameworkIdBySlug.get(member.framework_slug);
+      if (!frameworkId) continue;
+      lines.push(
+        [
+          "insert into public.it_collection_frameworks (collection_id, framework_id, step_order, step_label, transition_copy, is_required) values (",
+          `  ${sqlString(collectionId)}, ${sqlString(frameworkId)}, ${sqlNumber(member.step_order)}, ${sqlString(member.step_label)}, ${sqlString(member.transition_copy)}, ${sqlBool(member.is_required)}`,
+          ");",
+        ].join("\n"),
+      );
+    }
+  }
+
   lines.push("", "-- it_products");
   for (const p of allProducts) {
     const id = productIds.get(p.slug)!;
@@ -236,7 +277,7 @@ function main() {
   const outputPath = resolve(process.cwd(), "supabase/seed.sql");
   writeFileSync(outputPath, lines.join("\n") + "\n", "utf8");
   console.log(
-    `Wrote ${outputPath} (${allProducts.length} products, ${catalogue.frameworks.length} frameworks, ${catalogue.categories.length} categories, ${catalogue.stages.length} stages, ${catalogue.licences.length} licences).`,
+    `Wrote ${outputPath} (${allProducts.length} products, ${catalogue.frameworks.length} frameworks, ${catalogue.collections.length} collections, ${catalogue.categories.length} categories, ${catalogue.stages.length} stages, ${catalogue.licences.length} licences).`,
   );
 }
 

@@ -24,6 +24,8 @@ import type {
   CatalogueFilters,
   CatalogueResult,
   Category,
+  Collection,
+  CollectionMember,
   FileFormat,
   Framework,
   FrameworkStatus,
@@ -62,6 +64,17 @@ type CategoryRow = {
 };
 
 type StageRow = CategoryRow;
+
+type CollectionRow = {
+  id: string;
+  name: string;
+  slug: string;
+  headline: string | null;
+  short_description: string;
+  is_core: boolean;
+  seo_title: string | null;
+  seo_description: string | null;
+};
 
 type LicenceRow = {
   id: string;
@@ -919,5 +932,107 @@ export class SupabaseCatalogueSource implements CatalogueSource {
         format: v.format as string,
       })),
     };
+  }
+
+  // --- v9: curated Collections (spec §14.3.1, §12.3.2) --------------------
+
+  /**
+   * Shared loader for both public Collection reads. `slug` looks up a specific Collection for
+   * direct/slug-based access (public or unlisted, matching the rest of this file's
+   * getFrameworkBySlug-style direct-access convention); omitting it looks up the single active
+   * `is_core = true` Collection, which must be strictly `public` (it's a discovery/homepage
+   * surface, not a direct link).
+   *
+   * Member frameworks are filtered defensively in application code rather than via a PostgREST
+   * embedded-filter/`!inner` clause — same reasoning as the journey-stage re-filter above: this
+   * file has repeatedly found PostgREST's embedded-relationship filtering behaviour unverified
+   * against the live schema, so query broadly and filter safely in code instead of trusting an
+   * unverified filter syntax to do it.
+   */
+  private async loadCollection(opts: { slug: string } | { isCore: true }): Promise<Collection | null> {
+    let query = this.client
+      .from("it_collections")
+      .select("id, name, slug, headline, short_description, is_core, seo_title, seo_description")
+      .eq("status", "published");
+
+    query = "slug" in opts ? query.eq("slug", opts.slug).in("public_visibility", ["public", "unlisted"]) : query.eq("is_core", true).eq("public_visibility", "public");
+
+    const { data: collection, error } = await query.maybeSingle();
+    if (error) throw error;
+    if (!collection) return null;
+
+    type MemberFrameworkRow = {
+      id: string;
+      name: string;
+      slug: string;
+      short_description: string;
+      outcome_statement: string;
+      status: FrameworkStatus;
+      public_visibility: string;
+      journey_stage: StageRow | null;
+    };
+    type MemberRow = {
+      step_order: number;
+      step_label: string;
+      transition_copy: string | null;
+      is_required: boolean;
+      framework: MemberFrameworkRow | null;
+    };
+
+    const { data: memberRows, error: membersError } = await this.client
+      .from("it_collection_frameworks")
+      .select(
+        "step_order, step_label, transition_copy, is_required, framework:it_frameworks ( id, name, slug, short_description, outcome_statement, status, public_visibility, journey_stage:it_stages ( id, name, slug, description, display_order ) )",
+      )
+      .eq("collection_id", (collection as { id: string }).id)
+      .order("step_order", { ascending: true });
+    if (membersError) throw membersError;
+
+    const publicMemberRows = ((memberRows ?? []) as unknown as MemberRow[]).filter(
+      (row): row is MemberRow & { framework: MemberFrameworkRow } =>
+        row.framework !== null && row.framework.status === "published" && row.framework.public_visibility === "public",
+    );
+
+    const cardImages = await this.getFrameworkCardImages(publicMemberRows.map((row) => row.framework.id));
+
+    const members: CollectionMember[] = publicMemberRows.map((row) => ({
+      stepOrder: row.step_order,
+      stepLabel: row.step_label,
+      transitionCopy: row.transition_copy,
+      isRequired: row.is_required,
+      framework: {
+        id: row.framework.id,
+        name: row.framework.name,
+        slug: row.framework.slug,
+        short_description: row.framework.short_description,
+        outcome_statement: row.framework.outcome_statement,
+        status: row.framework.status,
+        journey_stage: row.framework.journey_stage
+          ? { slug: row.framework.journey_stage.slug, name: row.framework.journey_stage.name }
+          : null,
+        cardImage: cardImages.get(row.framework.id) ?? null,
+      },
+    }));
+
+    const c = collection as unknown as CollectionRow;
+    return {
+      id: c.id,
+      name: c.name,
+      slug: c.slug,
+      headline: c.headline,
+      short_description: c.short_description,
+      is_core: c.is_core,
+      seo_title: c.seo_title,
+      seo_description: c.seo_description,
+      members,
+    };
+  }
+
+  async getCollectionBySlug(slug: string): Promise<Collection | null> {
+    return this.loadCollection({ slug });
+  }
+
+  async getActiveCoreCollection(): Promise<Collection | null> {
+    return this.loadCollection({ isCore: true });
   }
 }

@@ -368,7 +368,9 @@ export const frameworks: Framework[] = [
     seo_description:
       "Plan interviews that avoid leading questions, log what you learn separately from what you're assuming, and score how strong your evidence actually is.",
     published_at: "2026-08-09T09:00:00Z",
-    next_step_framework_slug: "better-decision-maker",
+    // v9 §3.4: Core Collection order is authoritative for the launch chain, superseding the
+    // legacy flagship chain's "better-decision-maker" target (now unlisted, non-core).
+    next_step_framework_slug: "customer-demand-test",
   },
   {
     id: BETTER_DECISION_MAKER_FRAMEWORK_ID,
@@ -427,7 +429,9 @@ export const frameworks: Framework[] = [
     seo_description:
       "How to scope a minimum viable product: necessity, your riskiest open question, build effort, and what you can fake instead of building.",
     published_at: "2026-08-09T09:00:00Z",
-    next_step_framework_slug: "product-naming-system",
+    // v9 §3.4: Core Collection order supersedes the legacy chain's "product-naming-system"
+    // target (now unlisted, non-core).
+    next_step_framework_slug: "first-customers-planner",
   },
   {
     id: PRODUCT_NAMING_SYSTEM_FRAMEWORK_ID,
@@ -485,7 +489,11 @@ export const frameworks: Framework[] = [
     seo_description:
       "How to plan customer acquisition for a new product: starting warm, picking one channel, personalised outreach, and tracking real people by name.",
     published_at: "2026-08-09T09:00:00Z",
-    next_step_framework_slug: "product-market-fit-tracker",
+    // v9 §3.4/§36.10: the final Core Collection step — its old target (product-market-fit-tracker)
+    // is now unlisted/non-core, and spec requires a genuine review/continue outcome here rather
+    // than a link into unlisted content. No replacement continue-journey UI exists yet (that's
+    // Phase 4), so this is left null rather than pointed at something misleading.
+    next_step_framework_slug: null,
   },
   {
     id: PRODUCT_MARKET_FIT_TRACKER_FRAMEWORK_ID,
@@ -688,7 +696,9 @@ export const frameworks: Framework[] = [
     seo_description:
       "Work out whether a Fake Door Test, Wizard of Oz, YouTube MVP or The Infiltrator fits testing real demand for your idea.",
     published_at: "2026-08-11T09:00:00Z",
-    next_step_framework_slug: "better-decision-maker",
+    // v9 §3.4: Core Collection order supersedes the legacy chain's "better-decision-maker"
+    // target (now unlisted, non-core).
+    next_step_framework_slug: "mvp-scoper",
   },
   {
     id: PRODUCT_PRIORITISATION_TOOL_FRAMEWORK_ID,
@@ -1047,6 +1057,96 @@ export const frameworks: Framework[] = [
     seo_description: "Plan how you'll learn a specific skill fast, using Tim Ferriss's four-step DSSS framework.",
     published_at: "2026-08-16T09:00:00Z",
     next_step_framework_slug: null,
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Collections (spec v9 §14.3.1, §3.4) — a lightweight editorial grouping of
+// frameworks, independent of `flagship`/`next_step_framework_slug` above (v9
+// §12.3.2 is explicit these must stay separate). Fixture rows hold only a
+// `framework_slug` reference, resolved against `frameworks` above by
+// `FixtureCatalogueSource` at query time — same "reference, not object" shape
+// as `stageRef()`/`catRef()` elsewhere in this file, just keyed by slug
+// instead of a helper, since collection membership only ever needs the slug.
+// ---------------------------------------------------------------------------
+
+export type CollectionMemberSeed = {
+  framework_slug: string;
+  step_order: number;
+  step_label: string;
+  transition_copy: string | null;
+  is_required: boolean;
+};
+
+export type CollectionSeed = {
+  id: string;
+  name: string;
+  slug: string;
+  status: "draft" | "published" | "archived";
+  headline: string | null;
+  short_description: string;
+  display_order: number;
+  is_core: boolean;
+  seo_title: string | null;
+  seo_description: string | null;
+  published_at: string | null;
+  members: CollectionMemberSeed[];
+};
+
+export const START_A_PRODUCT_COLLECTION_ID = "collection-start-a-product";
+
+export const collections: CollectionSeed[] = [
+  {
+    id: START_A_PRODUCT_COLLECTION_ID,
+    name: "Start a Product",
+    slug: "start-a-product",
+    status: "published",
+    headline: "Five connected steps from assessing your idea to finding your first customers.",
+    short_description:
+      "The launch Core Collection (spec v9 §3.4): a curated, ordered sequence through Product Idea Assessor, Customer Discovery Kit, Customer Demand Test, MVP Scoper and First Customers Planner.",
+    display_order: 1,
+    is_core: true,
+    seo_title: "Start a Product — five steps from idea to first customers",
+    seo_description:
+      "Assess your idea, understand your customers, test demand, scope your MVP and find your first customers — five connected, practical steps.",
+    published_at: "2026-08-19T09:00:00Z",
+    members: [
+      {
+        framework_slug: "product-idea-assessor",
+        step_order: 1,
+        step_label: "Assess the idea",
+        transition_copy: "Decide what evidence is missing",
+        is_required: true,
+      },
+      {
+        framework_slug: "customer-discovery-kit",
+        step_order: 2,
+        step_label: "Understand customers",
+        transition_copy: "Turn conversations into evidence",
+        is_required: true,
+      },
+      {
+        framework_slug: "customer-demand-test",
+        step_order: 3,
+        step_label: "Test demand",
+        transition_copy: "Test behaviour before building",
+        is_required: true,
+      },
+      {
+        framework_slug: "mvp-scoper",
+        step_order: 4,
+        step_label: "Scope the MVP",
+        transition_copy: "Define the smallest useful test/release",
+        is_required: true,
+      },
+      {
+        framework_slug: "first-customers-planner",
+        step_order: 5,
+        step_label: "Find first customers",
+        transition_copy: "Turn the product into named outreach/actions",
+        is_required: true,
+      },
+    ],
   },
 ];
 
@@ -5591,6 +5691,6 @@ export const bundles: Bundle[] = [
   },
 ];
 
-export const catalogue = { products, bundles, categories, stages, licences, frameworks };
+export const catalogue = { products, bundles, categories, stages, licences, frameworks, collections };
 
 export default catalogue;

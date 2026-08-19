@@ -155,6 +155,33 @@ export type FrameworkTeaser = {
   cardImage: FrameworkTeaserImage | null;
 };
 
+/**
+ * A curated, ordered editorial grouping of frameworks (spec v9 §14.3.1/§12.3.2), e.g. the
+ * launch "Start a Product" collection. Deliberately separate from `flagship`/`next_step_*`:
+ * a Collection is explicit editorial state, not a byproduct of a single framework field.
+ * `member` only ever contains frameworks that are themselves public/published — a collection
+ * fetched through `CatalogueSource` never surfaces an unlisted/hidden member.
+ */
+export type CollectionMember = {
+  stepOrder: number;
+  stepLabel: string;
+  transitionCopy: string | null;
+  isRequired: boolean;
+  framework: FrameworkTeaser;
+};
+
+export type Collection = {
+  id: string;
+  name: string;
+  slug: string;
+  headline: string | null;
+  short_description: string;
+  is_core: boolean;
+  seo_title: string | null;
+  seo_description: string | null;
+  members: CollectionMember[];
+};
+
 export type Licence = {
   id: string;
   name: string;
