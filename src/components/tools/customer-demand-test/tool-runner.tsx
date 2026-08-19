@@ -6,6 +6,7 @@ import { customerDemandTestCopySchema } from "@/lib/tools/customer-demand-test/c
 import { resolveToolCopy } from "@/lib/tools/copy";
 import type { CustomerDemandTestInput, CustomerDemandTestResult } from "@/lib/tools/customer-demand-test/schema";
 import { CustomerDemandTestResultSummary } from "@/components/tools/customer-demand-test/tool-result-summary";
+import { RecordProgressCompletion } from "@/components/collections/record-progress";
 
 type StepKey = "explainability" | "manualFulfilment" | "existingPlatform" | "reachNeeded";
 
@@ -202,12 +203,15 @@ export function CustomerDemandTestRunner({ copy: copyOverrides }: { copy?: Recor
 
   if (state.phase === "result") {
     return (
-      <CustomerDemandTestResultSummary
-        result={state.result}
-        onRestart={() => dispatch({ type: "restart" })}
-        headingRef={resultHeadingRef}
-        copy={copy}
-      />
+      <div className="space-y-4">
+        <RecordProgressCompletion collectionSlug="start-a-product" frameworkSlug="customer-demand-test" outputType="tool" />
+        <CustomerDemandTestResultSummary
+          result={state.result}
+          onRestart={() => dispatch({ type: "restart" })}
+          headingRef={resultHeadingRef}
+          copy={copy}
+        />
+      </div>
     );
   }
 

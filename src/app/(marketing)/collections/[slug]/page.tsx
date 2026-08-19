@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/content/json-ld";
 import { Breadcrumbs } from "@/components/product/breadcrumbs";
 import { ButtonLink } from "@/components/ui/button";
 import { CollectionSteps } from "@/components/collections/collection-steps";
+import { ContinueJourney } from "@/components/collections/continue-journey";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -54,6 +55,10 @@ export default async function CollectionPage({ params }: Props) {
           For solo founders, indie makers and small teams turning an idea into something real — start wherever fits
           what you&apos;re facing right now, or work through all five in order.
         </p>
+      </div>
+
+      <div className="mt-8 max-w-2xl">
+        <ContinueJourney collection={collection} />
       </div>
 
       <div className="mt-10">

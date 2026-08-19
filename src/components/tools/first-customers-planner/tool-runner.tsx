@@ -4,6 +4,7 @@ import { useId, useMemo, useReducer, useRef } from "react";
 import { getToolDefinition } from "@/lib/tools/registry";
 import type { ChannelType, FirstCustomersPlannerInput, FirstCustomersPlannerResult, Rating } from "@/lib/tools/first-customers-planner/schema";
 import { FirstCustomersPlannerResultSummary } from "@/components/tools/first-customers-planner/tool-result-summary";
+import { RecordProgressCompletion } from "@/components/collections/record-progress";
 import { firstCustomersPlannerCopySchema } from "@/lib/tools/first-customers-planner/copy";
 import { resolveToolCopy } from "@/lib/tools/copy";
 
@@ -231,12 +232,15 @@ export function FirstCustomersPlannerRunner({ copy: copyOverrides }: { copy?: Re
 
   if (state.phase === "result") {
     return (
-      <FirstCustomersPlannerResultSummary
-        result={state.result}
-        onRestart={() => dispatch({ type: "restart" })}
-        headingRef={resultHeadingRef}
-        copy={copy}
-      />
+      <div className="space-y-4">
+        <RecordProgressCompletion collectionSlug="start-a-product" frameworkSlug="first-customers-planner" outputType="tool" />
+        <FirstCustomersPlannerResultSummary
+          result={state.result}
+          onRestart={() => dispatch({ type: "restart" })}
+          headingRef={resultHeadingRef}
+          copy={copy}
+        />
+      </div>
     );
   }
 

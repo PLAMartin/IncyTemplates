@@ -12,6 +12,7 @@ import type {
   QuestionStyle,
 } from "@/lib/tools/customer-discovery-kit/schema";
 import { CustomerDiscoveryKitResultSummary } from "@/components/tools/customer-discovery-kit/tool-result-summary";
+import { RecordProgressCompletion } from "@/components/collections/record-progress";
 import { customerDiscoveryKitCopySchema } from "@/lib/tools/customer-discovery-kit/copy";
 import { resolveToolCopy } from "@/lib/tools/copy";
 
@@ -265,7 +266,10 @@ export function CustomerDiscoveryKitRunner({ copy: copyOverrides }: { copy?: Rec
 
   if (state.phase === "result") {
     return (
-      <CustomerDiscoveryKitResultSummary result={state.result} onRestart={() => dispatch({ type: "restart" })} headingRef={resultHeadingRef} copy={copy} />
+      <div className="space-y-4">
+        <RecordProgressCompletion collectionSlug="start-a-product" frameworkSlug="customer-discovery-kit" outputType="tool" />
+        <CustomerDiscoveryKitResultSummary result={state.result} onRestart={() => dispatch({ type: "restart" })} headingRef={resultHeadingRef} copy={copy} />
+      </div>
     );
   }
 

@@ -5,10 +5,11 @@ import { compileMDX } from "next-mdx-remote/rsc";
 import rehypeSlug from "rehype-slug";
 import { serverEnv } from "@/lib/env/server";
 import { getSupabaseServiceRoleClient, hasServiceRoleConfig } from "@/lib/supabase/service-role-client";
-import { getProductBySlug } from "@/server/queries";
+import { getProductBySlug, getFrameworkById, getActiveCoreCollection } from "@/server/queries";
 import { resolveFreeTemplateFile } from "@/server/downloads/resolve-free-template-file";
 import { verifyViewGrant } from "@/server/downloads/view-grant";
 import { Breadcrumbs } from "@/components/product/breadcrumbs";
+import { RecordProgressCompletion } from "@/components/collections/record-progress";
 
 export const dynamic = "force-dynamic";
 
@@ -79,6 +80,12 @@ export default async function TemplateViewPage({ params }: Props) {
     redirect(`/templates/${slug}`);
   }
 
+  const [framework, coreCollection] = await Promise.all([
+    product.framework_id ? getFrameworkById(product.framework_id) : Promise.resolve(null),
+    getActiveCoreCollection(),
+  ]);
+  const isCoreFamily = Boolean(framework && coreCollection?.members.some((m) => m.framework.slug === framework.slug));
+
   const source = await fileBlob.text();
 
   let renderedContent: React.ReactNode;
@@ -104,6 +111,10 @@ export default async function TemplateViewPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
       <Breadcrumbs items={breadcrumbItems.map((b) => ({ name: b.name, href: b.path }))} />
+
+      {isCoreFamily && coreCollection && framework ? (
+        <RecordProgressCompletion collectionSlug={coreCollection.slug} frameworkSlug={framework.slug} outputType="template" />
+      ) : null}
 
       <header className="mt-6">
         <h1 className="font-serif text-3xl font-semibold text-ink-900 sm:text-4xl">{product.name}</h1>

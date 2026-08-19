@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ComponentType } from "react";
-import { getProductByToolKey, getFrameworkOutputs, getFrameworkById, getFrameworkTeasers } from "@/server/queries";
+import {
+  getProductByToolKey,
+  getFrameworkOutputs,
+  getFrameworkById,
+  getFrameworkTeasers,
+  getActiveCoreCollection,
+} from "@/server/queries";
 import { getToolCopyForToolKey } from "@/server/queries/tool-copy";
 import { canonicalUrl } from "@/lib/seo/canonical";
 import { breadcrumbJsonLd } from "@/lib/seo/structured-data";
@@ -9,6 +15,7 @@ import { JsonLd } from "@/components/content/json-ld";
 import { Breadcrumbs } from "@/components/product/breadcrumbs";
 import { AccessBadge } from "@/components/ui/badge";
 import { FrameworkCard } from "@/components/framework/framework-card";
+import { RecordProgressVisit } from "@/components/collections/record-progress";
 import { ProductCard } from "@/components/catalogue/product-card";
 import { ProductIdeaAssessorRunner } from "@/components/tools/product-idea-assessor/tool-runner";
 import { CustomerDiscoveryKitRunner } from "@/components/tools/customer-discovery-kit/tool-runner";
@@ -118,12 +125,14 @@ export default async function ToolPage({ params }: Props) {
   const copy = await getToolCopyForToolKey(toolKey);
 
   const framework = product.framework_id ? await getFrameworkById(product.framework_id) : null;
-  const [familyOutputs, nextStepTeasers] = await Promise.all([
+  const [familyOutputs, nextStepTeasers, coreCollection] = await Promise.all([
     product.framework_id ? getFrameworkOutputs(product.framework_id) : Promise.resolve([]),
     framework?.next_step_framework_slug ? getFrameworkTeasers() : Promise.resolve([]),
+    getActiveCoreCollection(),
   ]);
   const sameFamily = familyOutputs.filter((o) => o.id !== product.id);
   const nextStep = nextStepTeasers.find((t) => t.slug === framework?.next_step_framework_slug);
+  const isCoreFamily = Boolean(framework && coreCollection?.members.some((m) => m.framework.slug === framework.slug));
 
   const path = `/tools/${toolKey}`;
   const breadcrumbItems = [
@@ -136,6 +145,10 @@ export default async function ToolPage({ params }: Props) {
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
       <JsonLd data={breadcrumbJsonLd(breadcrumbItems)} />
       <Breadcrumbs items={breadcrumbItems.map((b) => ({ name: b.name, href: b.path }))} />
+
+      {isCoreFamily && coreCollection && framework ? (
+        <RecordProgressVisit collectionSlug={coreCollection.slug} frameworkSlug={framework.slug} outputType="tool" />
+      ) : null}
 
       <div className="mt-6">
         <AccessBadge state="free" />

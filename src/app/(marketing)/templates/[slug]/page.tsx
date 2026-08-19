@@ -2,7 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getFeaturedBundle, getFrameworkById, getFrameworkOutputs, getProductBySlug, getRelatedProducts } from "@/server/queries";
+import {
+  getFeaturedBundle,
+  getFrameworkById,
+  getFrameworkOutputs,
+  getProductBySlug,
+  getRelatedProducts,
+  getActiveCoreCollection,
+} from "@/server/queries";
 import { canonicalUrl } from "@/lib/seo/canonical";
 import { productJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo/structured-data";
 import { buildProductFaq } from "@/lib/content/product-faq";
@@ -17,6 +24,7 @@ import { WaitlistForm } from "@/components/product/waitlist-form";
 import { ViewForm } from "@/components/product/view-form";
 import { BuyButton } from "@/components/product/buy-button";
 import { ProductCard, productHref } from "@/components/catalogue/product-card";
+import { RecordProgressVisit } from "@/components/collections/record-progress";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -40,11 +48,13 @@ export default async function ProductPage({ params }: Props) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const [related, featuredBundle, framework] = await Promise.all([
+  const [related, featuredBundle, framework, coreCollection] = await Promise.all([
     getRelatedProducts(product.id, 4),
     getFeaturedBundle(),
     product.framework_id ? getFrameworkById(product.framework_id) : Promise.resolve(null),
+    getActiveCoreCollection(),
   ]);
+  const isCoreFamily = Boolean(framework && coreCollection?.members.some((m) => m.framework.slug === framework.slug));
 
   const sameFamilyOutputs = framework
     ? (await getFrameworkOutputs(framework.id)).filter((o) => o.id !== product.id)
@@ -79,6 +89,10 @@ export default async function ProductPage({ params }: Props) {
       {faqEntries.length > 0 ? <JsonLd data={faqJsonLd(faqEntries.map((e) => ({ question: e.question, answer: e.answer })))} /> : null}
 
       <Breadcrumbs items={breadcrumbItems.map((b) => ({ name: b.name, href: b.path }))} />
+
+      {isCoreFamily && coreCollection && framework ? (
+        <RecordProgressVisit collectionSlug={coreCollection.slug} frameworkSlug={framework.slug} outputType="template" />
+      ) : null}
 
       <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-[3fr_2fr]">
         <div className="space-y-10">

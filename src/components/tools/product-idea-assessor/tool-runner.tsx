@@ -15,6 +15,7 @@ import type {
 } from "@/lib/tools/product-idea-assessor/schema";
 import { ToolResultSummary } from "@/components/tools/tool-result-summary";
 import { SaveRunButton } from "@/components/tools/save-run-button";
+import { RecordProgressCompletion } from "@/components/collections/record-progress";
 
 type StepKey = "classification" | "problemEvidence" | "behaviourEvidence" | "differentiationClarity" | "targetSpecificity";
 
@@ -269,6 +270,7 @@ export function ProductIdeaAssessorRunner({ copy: copyOverrides }: { copy?: Reco
   if (state.phase === "result") {
     return (
       <div className="space-y-4">
+        <RecordProgressCompletion collectionSlug="start-a-product" frameworkSlug="product-idea-assessor" outputType="tool" />
         <ToolResultSummary result={state.result} onRestart={() => dispatch({ type: "restart" })} headingRef={resultHeadingRef} />
         <SaveRunButton toolKey="product-idea-assessor" input={state.input} result={state.result} />
       </div>

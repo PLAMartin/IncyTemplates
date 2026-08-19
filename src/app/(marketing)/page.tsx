@@ -8,6 +8,7 @@ import { CoverPlaceholder } from "@/components/product/cover-placeholder";
 import { HeroResultPreview } from "@/components/home/hero-result-preview";
 import { NewsletterSignup } from "@/components/content/newsletter-signup";
 import { CollectionSteps } from "@/components/collections/collection-steps";
+import { ContinueJourney } from "@/components/collections/continue-journey";
 
 export const metadata: Metadata = {
   alternates: { canonical: canonicalUrl("/") },
@@ -82,6 +83,13 @@ export default async function HomePage() {
           </div>
           <CollectionSteps collection={collection} className="mt-6" />
         </section>
+      ) : null}
+
+      {/* 3. Continue your product journey — client-rendered, only appears with real local progress */}
+      {collection ? (
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <ContinueJourney collection={collection} />
+        </div>
       ) : null}
 
       {/* 3. How each capability helps */}

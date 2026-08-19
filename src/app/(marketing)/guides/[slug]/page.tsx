@@ -11,6 +11,7 @@ import {
   getFrameworkOutputs,
   getGuideBySlug,
   getProductBySlug,
+  getActiveCoreCollection,
 } from "@/server/queries";
 import { canonicalUrl } from "@/lib/seo/canonical";
 import { articleJsonLd, breadcrumbJsonLd } from "@/lib/seo/structured-data";
@@ -19,6 +20,7 @@ import { Breadcrumbs } from "@/components/product/breadcrumbs";
 import { TableOfContents } from "@/components/content/table-of-contents";
 import { ProductCard } from "@/components/catalogue/product-card";
 import { GuideCard } from "@/components/content/guide-card";
+import { RecordProgressVisit } from "@/components/collections/record-progress";
 import type { ProductSummary } from "@/types/catalogue";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -66,6 +68,9 @@ export default async function GuidePage({ params }: Props) {
   const framework = guide.frameworkSlug ? await getFrameworkBySlug(guide.frameworkSlug) : null;
   const sameFamilyOutputs = framework ? (await getFrameworkOutputs(framework.id)).filter((o) => o.slug !== guide.slug) : [];
 
+  const coreCollection = framework ? await getActiveCoreCollection() : null;
+  const isCoreFamily = Boolean(coreCollection?.members.some((m) => m.framework.slug === framework?.slug));
+
   const toc = extractToc(guide.content);
 
   const path = `/guides/${slug}`;
@@ -81,6 +86,10 @@ export default async function GuidePage({ params }: Props) {
       <JsonLd data={breadcrumbJsonLd(breadcrumbItems)} />
 
       <Breadcrumbs items={breadcrumbItems.map((b) => ({ name: b.name, href: b.path }))} />
+
+      {isCoreFamily && coreCollection && framework ? (
+        <RecordProgressVisit collectionSlug={coreCollection.slug} frameworkSlug={framework.slug} outputType="guide" />
+      ) : null}
 
       <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-[3fr_1fr]">
         <article>

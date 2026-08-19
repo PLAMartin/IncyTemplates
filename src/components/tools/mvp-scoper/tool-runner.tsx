@@ -6,6 +6,7 @@ import { mvpScoperCopySchema } from "@/lib/tools/mvp-scoper/copy";
 import { resolveToolCopy } from "@/lib/tools/copy";
 import type { BuildEffort, Fakeability, MvpScoperInput, MvpScoperResult, Necessity, RiskyQuestionRelevance } from "@/lib/tools/mvp-scoper/schema";
 import { MvpScoperResultSummary } from "@/components/tools/mvp-scoper/tool-result-summary";
+import { RecordProgressCompletion } from "@/components/collections/record-progress";
 
 type StepKey = "necessity" | "riskyQuestionRelevance" | "buildEffort" | "fakeability";
 
@@ -230,7 +231,12 @@ export function MvpScoperRunner({ copy: copyOverrides }: { copy?: Record<string,
   }
 
   if (state.phase === "result") {
-    return <MvpScoperResultSummary result={state.result} onRestart={() => dispatch({ type: "restart" })} headingRef={resultHeadingRef} />;
+    return (
+      <div className="space-y-4">
+        <RecordProgressCompletion collectionSlug="start-a-product" frameworkSlug="mvp-scoper" outputType="tool" />
+        <MvpScoperResultSummary result={state.result} onRestart={() => dispatch({ type: "restart" })} headingRef={resultHeadingRef} />
+      </div>
+    );
   }
 
   return null;
