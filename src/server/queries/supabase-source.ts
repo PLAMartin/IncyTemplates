@@ -38,6 +38,7 @@ import type {
   ProductFile,
   ProductSummary,
   Stage,
+  TemplateContent,
 } from "@/types/catalogue";
 import type { CatalogueSource } from "./types";
 
@@ -130,6 +131,7 @@ type ProductRow = {
     is_current: boolean;
     it_files?: { id: string; file_role: string; file_format: string; display_name: string; is_public_preview: boolean }[] | null;
   }[] | null;
+  content_revision?: { content_data: { template?: Partial<Record<string, string>> } } | null;
 };
 
 function mapCategory(row: CategoryRow): Category {
@@ -231,6 +233,19 @@ function mapProduct(row: ProductRow): Product {
     files,
     seo_title: row.seo_title,
     seo_description: row.seo_description,
+    templateContent: row.product_type === "template" ? mapTemplateContent(row.content_revision?.content_data.template) : null,
+  };
+}
+
+function mapTemplateContent(template: Partial<Record<string, string>> | undefined): TemplateContent | null {
+  if (!template) return null;
+  return {
+    instructionsMarkdown: template.instructions_markdown ?? "",
+    requiredInputs: template.required_inputs ?? "",
+    whatsIncluded: template.whats_included ?? "",
+    exampleMarkdown: template.example_markdown ?? "",
+    interpretationGuidance: template.interpretation_guidance ?? "",
+    ctaCopy: template.cta_copy ?? "",
   };
 }
 
@@ -264,7 +279,8 @@ const PRODUCT_SELECT = `
   licence:it_licences ( id, name, slug, summary, commercial_use_allowed, client_work_allowed, redistribution_allowed ),
   it_product_categories ( category:it_categories ( id, name, slug, description, display_order ) ),
   it_product_stages ( stage:it_stages ( id, name, slug, description, display_order ) ),
-  it_product_versions ( is_current, it_files ( id, file_role, file_format, display_name, is_public_preview ) )
+  it_product_versions ( is_current, it_files ( id, file_role, file_format, display_name, is_public_preview ) ),
+  content_revision:it_product_content_revisions!current_content_revision_id ( content_data )
 `;
 
 // TODO(verify-against-live-schema): confirm the embed alias for journey_stage

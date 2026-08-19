@@ -11,7 +11,7 @@ seoDescription: "How to scope a minimum viable product: necessity, your riskiest
 frameworkSlug: "mvp-scoper"
 ---
 
-Better Decision Maker gets you a decision to proceed. The next failure mode is scope creep: every feature seems reasonable on its own, and the pile of reasonable features quietly becomes a six-month build instead of a two-week one. Scoping an MVP isn't about building less for its own sake — it's about building only what actually earns its place before you've learned anything.
+A real demand signal from Customer Demand Test gets you a reason to proceed. The next failure mode is scope creep: every feature seems reasonable on its own, and the pile of reasonable features quietly becomes a six-month build instead of a two-week one. Scoping an MVP isn't about building less for its own sake — it's about building only what actually earns its place before you've learned anything.
 
 ## Start from your riskiest open question
 
@@ -33,4 +33,16 @@ Before committing engineering time to anything, ask whether you could deliver it
 
 The **MVP Scope in One Page** template forces the whole exercise onto a single page for your entire first release: what's in, what's explicitly out, and the one question it needs to answer. The **Scope Decider** Tool applies the same four questions — necessity, relevance to your riskiest question, build effort, and fakeability — to one candidate feature at a time, and gives you a Keep, Defer or Remove verdict plus a concrete next step. Run it once per feature you're unsure about; the one-page template is where the resulting list actually lives.
 
-Once your scope is locked, the next step is usually working out what to call the thing you're about to build — that's what Product Naming System is for.
+## Worked example: Shift Swap
+
+Priya's demand test cleared her bar, but it also surfaced her riskiest open question directly: will people actually post and accept swaps through a new tool, or will they quietly keep texting each other the way they always have? Everything else — calendar sync, payroll integration, rolling the board out across multiple locations — is a candidate for cutting, however reasonable each one sounds.
+
+Running the necessary/nice-to-have split: a shared, notified swap-request board is necessary — it's the entire product. Calendar sync would be nice but the product still works without it. She weighs effort honestly too: multi-location roll-up feels "basically free" to add now, but it doesn't touch her riskiest question at all, so it's deferred regardless of how cheap it looks.
+
+The fake-it question does the most work: rather than building an automated import from whatever scheduling tool each café already uses — the single most expensive and least-tested part of the idea — she manually types each pilot café's shifts into the board herself for the first few weeks. That lets her test the actual risky question (will people use the board) without spending any engineering time on an integration she hasn't even confirmed is necessary yet.
+
+Her one-page scope: a shared, notified swap-request board for a single location, in — calendar sync, payroll integration and multi-location roll-up, explicitly out — with "will people request and accept swaps through the board instead of texting" as the one question this release needs to answer.
+
+## Next step
+
+Once your scope is locked, the next step is working out how you'll actually reach the people who'll use it — that's what **First Customers Planner** is for.

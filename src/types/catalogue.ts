@@ -232,6 +232,24 @@ export type ProductSummary = {
   tool_key: string | null;
 };
 
+/**
+ * Spec v8 §10.11.4's Template-specific editorial fields (instructions/required-inputs/
+ * what's-included/completed-example/interpretation/CTA), published via the admin Template
+ * "Editorial content" editor. Optional on `Product` because it's only ever populated for
+ * `product_type: "template"` rows with a published `it_product_content_revisions` row — and
+ * not modelled in fixtures at all (no admin UI acts on fixture data to publish it), same
+ * "not modelled, only one real source" reasoning FixtureCatalogueSource's header comment
+ * gives for `public_visibility`.
+ */
+export type TemplateContent = {
+  instructionsMarkdown: string;
+  requiredInputs: string;
+  whatsIncluded: string;
+  exampleMarkdown: string;
+  interpretationGuidance: string;
+  ctaCopy: string;
+};
+
 export type Product = ProductSummary & {
   full_description: string | null;
   target_audience: string | null;
@@ -250,6 +268,8 @@ export type Product = ProductSummary & {
    * getProductBySlug, never a catalogue-listing summary.
    */
   stripe_price_id?: string | null;
+  /** Published Template editorial content, template products only. See `TemplateContent`. */
+  templateContent?: TemplateContent | null;
 };
 
 export type BundleItem = {

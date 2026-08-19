@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { MDXRemote } from "next-mdx-remote/rsc";
 import { getFeaturedBundle, getFrameworkById, getFrameworkOutputs, getProductBySlug, getRelatedProducts } from "@/server/queries";
 import { canonicalUrl } from "@/lib/seo/canonical";
 import { productJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo/structured-data";
@@ -150,6 +151,22 @@ export default async function ProductPage({ params }: Props) {
             </div>
           ) : null}
 
+          {product.templateContent?.instructionsMarkdown ? (
+            <div>
+              <h2 className="text-lg font-semibold text-ink-900">Instructions</h2>
+              <div className="guide-prose mt-2 text-sm text-ink-700">
+                <MDXRemote source={product.templateContent.instructionsMarkdown} />
+              </div>
+            </div>
+          ) : null}
+
+          {product.templateContent?.requiredInputs ? (
+            <div>
+              <h2 className="text-lg font-semibold text-ink-900">What you&apos;ll need</h2>
+              <p className="mt-2 text-sm text-ink-700">{product.templateContent.requiredInputs}</p>
+            </div>
+          ) : null}
+
           {product.target_audience ? (
             <div>
               <h2 className="text-lg font-semibold text-ink-900">Who it&apos;s for</h2>
@@ -174,16 +191,21 @@ export default async function ProductPage({ params }: Props) {
             </div>
           ) : null}
 
-          {product.files.length > 0 ? (
+          {product.files.length > 0 || product.templateContent?.whatsIncluded ? (
             <div>
               <h2 className="text-lg font-semibold text-ink-900">What&apos;s included</h2>
-              <ul className="mt-2 space-y-1">
-                {product.files.map((file) => (
-                  <li key={file.id} className="text-sm text-ink-700">
-                    {file.display_name} <span className="text-ink-500">({file.file_format})</span>
-                  </li>
-                ))}
-              </ul>
+              {product.templateContent?.whatsIncluded ? (
+                <p className="mt-2 text-sm text-ink-700">{product.templateContent.whatsIncluded}</p>
+              ) : null}
+              {product.files.length > 0 ? (
+                <ul className="mt-2 space-y-1">
+                  {product.files.map((file) => (
+                    <li key={file.id} className="text-sm text-ink-700">
+                      {file.display_name} <span className="text-ink-500">({file.file_format})</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
           ) : null}
 
@@ -197,7 +219,14 @@ export default async function ProductPage({ params }: Props) {
             </div>
           ) : null}
 
-          {exampleFile ? (
+          {product.templateContent?.exampleMarkdown ? (
+            <div>
+              <h2 className="text-lg font-semibold text-ink-900">Completed example</h2>
+              <div className="guide-prose mt-2 text-sm text-ink-700">
+                <MDXRemote source={product.templateContent.exampleMarkdown} />
+              </div>
+            </div>
+          ) : exampleFile ? (
             <div>
               <h2 className="text-lg font-semibold text-ink-900">Completed example</h2>
               <p className="mt-2 text-sm text-ink-700">
@@ -207,13 +236,26 @@ export default async function ProductPage({ params }: Props) {
             </div>
           ) : null}
 
-          {instructionsFile ? (
+          {!product.templateContent?.instructionsMarkdown && instructionsFile ? (
             <div>
               <h2 className="text-lg font-semibold text-ink-900">Step-by-step instructions</h2>
               <p className="mt-2 text-sm text-ink-700">
                 Written instructions are included (&ldquo;{instructionsFile.display_name}&rdquo;) to walk you through
                 each step.
               </p>
+            </div>
+          ) : null}
+
+          {product.templateContent?.interpretationGuidance ? (
+            <div>
+              <h2 className="text-lg font-semibold text-ink-900">Interpreting your result</h2>
+              <p className="mt-2 text-sm text-ink-700">{product.templateContent.interpretationGuidance}</p>
+            </div>
+          ) : null}
+
+          {product.templateContent?.ctaCopy ? (
+            <div className="rounded-md border border-brand-500 bg-brand-100 p-4">
+              <p className="text-sm font-medium text-brand-700">{product.templateContent.ctaCopy}</p>
             </div>
           ) : null}
 
