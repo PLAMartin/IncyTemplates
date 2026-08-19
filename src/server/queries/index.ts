@@ -49,3 +49,5 @@ export const getProductByToolKey = catalogueSource.getProductByToolKey.bind(cata
 export const getAllGuides = catalogueSource.getAllGuides.bind(catalogueSource);
 export const getGuideBySlug = catalogueSource.getGuideBySlug.bind(catalogueSource);
 export const getFrameworkVisual = catalogueSource.getFrameworkVisual.bind(catalogueSource);
+export const getCollectionBySlug = catalogueSource.getCollectionBySlug.bind(catalogueSource);
+export const getActiveCoreCollection = catalogueSource.getActiveCoreCollection.bind(catalogueSource);

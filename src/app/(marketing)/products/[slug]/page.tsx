@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getFrameworkBySlug, getFrameworkOutputs, getFrameworks, getFrameworkTeasers, getFrameworkVisual } from "@/server/queries";
+import {
+  getFrameworkBySlug,
+  getFrameworkOutputs,
+  getFrameworks,
+  getFrameworkTeasers,
+  getFrameworkVisual,
+  getActiveCoreCollection,
+} from "@/server/queries";
 import { canonicalUrl } from "@/lib/seo/canonical";
 import { breadcrumbJsonLd } from "@/lib/seo/structured-data";
 import { JsonLd } from "@/components/content/json-ld";
@@ -9,6 +16,7 @@ import { Breadcrumbs } from "@/components/product/breadcrumbs";
 import { AccessBadge } from "@/components/ui/badge";
 import { ProductCard } from "@/components/catalogue/product-card";
 import { FrameworkCard } from "@/components/framework/framework-card";
+import { CollectionStepBadge } from "@/components/collections/collection-steps";
 import type { ProductSummary } from "@/types/catalogue";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -74,10 +82,11 @@ export default async function FrameworkPage({ params }: Props) {
     );
   }
 
-  const [outputs, nextStepTeasers, heroVisual] = await Promise.all([
+  const [outputs, nextStepTeasers, heroVisual, coreCollection] = await Promise.all([
     getFrameworkOutputs(framework.id),
     framework.next_step_framework_slug ? getFrameworkTeasers() : Promise.resolve([]),
     getFrameworkVisual(framework.id, "family_hero"),
+    getActiveCoreCollection(),
   ]);
   // Absence must never block the rest of the page (spec §44 item 29) — heroVisual/heroVariant
   // are simply null until a visual is published for this family.
@@ -102,6 +111,11 @@ export default async function FrameworkPage({ params }: Props) {
 
       <div className={`mt-6 ${heroVariant ? "grid grid-cols-1 items-center gap-8 lg:grid-cols-[3fr_2fr]" : ""}`}>
         <div className="max-w-3xl">
+          {coreCollection ? (
+            <div className="mb-2">
+              <CollectionStepBadge collection={coreCollection} frameworkSlug={framework.slug} />
+            </div>
+          ) : null}
           {framework.journey_stage ? (
             <span className="text-xs font-semibold uppercase tracking-wide text-brand-600">
               {framework.journey_stage.name}

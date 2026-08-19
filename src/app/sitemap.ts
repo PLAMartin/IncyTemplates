@@ -7,6 +7,7 @@ import type { ProductSummary } from "@/types/catalogue";
 const STATIC_PATHS = [
   "/",
   "/products",
+  "/collections/start-a-product",
   "/journey",
   "/templates",
   "/templates/free",

@@ -23,14 +23,13 @@ export type NavLink = {
   href: string;
 };
 
-// Spec v3 §8.1's recommended 6-item primary nav. "Free templates" and "Bundles" drop out
-// of the primary row (still reachable via /templates/free, /bundles and the footer) to make
-// room for the new Products/Tools entries without crowding the header.
+// Spec v9 §8.1: the curated-launch primary nav leads with the Core Collection journey rather
+// than giving Guide/Template/Tool catalogue routes equal top-level billing — those remain
+// reachable via family pages, the Products destination, search and the footer, just not the
+// header. Supersedes v3 §8.1's 6-item nav (Products/Guides/Templates/Tools/How it works/About).
 export const primaryNav: NavLink[] = [
+  { label: "Start here", href: "/collections/start-a-product" },
   { label: "Products", href: "/products" },
-  { label: "Guides", href: "/guides" },
-  { label: "Templates", href: "/templates" },
-  { label: "Tools", href: "/tools" },
   { label: "How it works", href: "/how-it-works" },
   { label: "About", href: "/about" },
 ];
@@ -54,6 +53,7 @@ export const footerNav: { heading: string; links: NavLink[] }[] = [
   {
     heading: "Browse",
     links: [
+      { label: "Start a Product", href: "/collections/start-a-product" },
       { label: "All products", href: "/products" },
       { label: "Guides", href: "/guides" },
       { label: "Templates", href: "/templates" },
