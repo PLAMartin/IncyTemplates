@@ -4,6 +4,7 @@ import { useId, useState, useTransition } from "react";
 import { CircleCheck, CircleAlert, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
+import { trackEvent } from "@/lib/analytics/track";
 
 type ViewFormProps = {
   productId: string;
@@ -63,6 +64,7 @@ export function ViewForm({ productId, fileId, slug, source, className }: ViewFor
         }
 
         setState({ kind: "success" });
+        trackEvent("start_free_download", { product_slug: slug, source_page: source });
         window.location.href = `/templates/${slug}/view`;
       } catch {
         setState({ kind: "error", message: "Something went wrong. Please try again." });

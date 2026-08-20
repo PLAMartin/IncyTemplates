@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Source_Serif_4 } from "next/font/google";
-import Script from "next/script";
 import { site } from "@/config/site";
 import { clientEnv } from "@/lib/env/client";
+import { AnalyticsScripts } from "@/components/analytics/analytics-scripts";
+import { CookieConsentBanner } from "@/components/analytics/cookie-consent-banner";
 import "./globals.css";
 
 const inter = Inter({
@@ -52,20 +53,12 @@ export default function RootLayout({
           Skip to content
         </a>
         {children}
-        {process.env.NODE_ENV === "production" && clientEnv.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
+        {clientEnv.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
           <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${clientEnv.NEXT_PUBLIC_GA_MEASUREMENT_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script id="ga4" strategy="afterInteractive">
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${clientEnv.NEXT_PUBLIC_GA_MEASUREMENT_ID}');
-              `}
-            </Script>
+            {process.env.NODE_ENV === "production" && (
+              <AnalyticsScripts measurementId={clientEnv.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
+            )}
+            <CookieConsentBanner />
           </>
         )}
       </body>

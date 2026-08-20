@@ -7,6 +7,7 @@ import { resolveToolCopy } from "@/lib/tools/copy";
 import type { CustomerDemandTestInput, CustomerDemandTestResult } from "@/lib/tools/customer-demand-test/schema";
 import { CustomerDemandTestResultSummary } from "@/components/tools/customer-demand-test/tool-result-summary";
 import { RecordProgressCompletion } from "@/components/collections/record-progress";
+import { trackEvent } from "@/lib/analytics/track";
 
 type StepKey = "explainability" | "manualFulfilment" | "existingPlatform" | "reachNeeded";
 
@@ -132,7 +133,10 @@ export function CustomerDemandTestRunner({ copy: copyOverrides }: { copy?: Recor
         </ul>
         <button
           type="button"
-          onClick={() => dispatch({ type: "begin" })}
+          onClick={() => {
+            trackEvent("start_tool", { framework_slug: "customer-demand-test" });
+            dispatch({ type: "begin" });
+          }}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
           {copy.intro_cta}

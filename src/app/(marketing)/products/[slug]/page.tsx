@@ -17,6 +17,8 @@ import { AccessBadge } from "@/components/ui/badge";
 import { ProductCard } from "@/components/catalogue/product-card";
 import { FrameworkCard } from "@/components/framework/framework-card";
 import { CollectionStepBadge } from "@/components/collections/collection-steps";
+import { TrackView } from "@/components/analytics/track-view";
+import { TrackedClick } from "@/components/analytics/tracked-click";
 import type { ProductSummary } from "@/types/catalogue";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -107,6 +109,7 @@ export default async function FrameworkPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <JsonLd data={breadcrumbJsonLd(breadcrumbItems)} />
+      <TrackView event="view_framework" properties={{ framework_slug: framework.slug }} />
       <Breadcrumbs items={breadcrumbItems.map((b) => ({ name: b.name, href: b.path }))} />
 
       <div className={`mt-6 ${heroVariant ? "grid grid-cols-1 items-center gap-8 lg:grid-cols-[3fr_2fr]" : ""}`}>
@@ -214,7 +217,12 @@ export default async function FrameworkPage({ params }: Props) {
         <div className="mt-10 max-w-sm">
           <h2 className="text-lg font-semibold text-ink-900">Next step</h2>
           <div className="mt-3">
-            <FrameworkCard framework={nextStep} />
+            <TrackedClick
+              event="click_next_step"
+              properties={{ framework_slug: framework.slug, product_slug: nextStep.slug }}
+            >
+              <FrameworkCard framework={nextStep} />
+            </TrackedClick>
           </div>
         </div>
       ) : null}

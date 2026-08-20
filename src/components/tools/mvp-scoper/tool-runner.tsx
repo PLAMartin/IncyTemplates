@@ -7,6 +7,7 @@ import { resolveToolCopy } from "@/lib/tools/copy";
 import type { BuildEffort, Fakeability, MvpScoperInput, MvpScoperResult, Necessity, RiskyQuestionRelevance } from "@/lib/tools/mvp-scoper/schema";
 import { MvpScoperResultSummary } from "@/components/tools/mvp-scoper/tool-result-summary";
 import { RecordProgressCompletion } from "@/components/collections/record-progress";
+import { trackEvent } from "@/lib/analytics/track";
 
 type StepKey = "necessity" | "riskyQuestionRelevance" | "buildEffort" | "fakeability";
 
@@ -161,7 +162,10 @@ export function MvpScoperRunner({ copy: copyOverrides }: { copy?: Record<string,
         </ul>
         <button
           type="button"
-          onClick={() => dispatch({ type: "begin" })}
+          onClick={() => {
+            trackEvent("start_tool", { framework_slug: "mvp-scoper" });
+            dispatch({ type: "begin" });
+          }}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
           {copy.intro_cta}

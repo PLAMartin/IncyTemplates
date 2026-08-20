@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { useCollectionProgress, type CollectionProgress } from "@/lib/progress/collection-progress";
+import { trackEvent } from "@/lib/analytics/track";
+import { TrackView } from "@/components/analytics/track-view";
 import type { Collection } from "@/types/catalogue";
 
 const OUTPUT_TYPE_LABEL: Record<CollectionProgress["last_output_type"], string> = {
@@ -38,6 +40,7 @@ export function ContinueJourney({ collection }: { collection: Collection }) {
   if (lastCompleted && !nextMember) {
     return (
       <section className="rounded-md border border-brand-500 bg-brand-100 p-6">
+        <TrackView event="continue_journey_shown" properties={{ journey_stage: "all_complete" }} />
         <p className="text-xs font-semibold uppercase tracking-wide text-brand-700">Continue your product journey</p>
         <h2 className="mt-2 font-serif text-xl font-semibold text-ink-900">
           You&apos;ve worked through all five steps of {collection.name}.
@@ -52,11 +55,16 @@ export function ContinueJourney({ collection }: { collection: Collection }) {
   if (lastCompleted && nextMember) {
     return (
       <section className="rounded-md border border-brand-500 bg-brand-100 p-6">
+        <TrackView event="continue_journey_shown" properties={{ framework_slug: nextMember.framework.slug }} />
         <p className="text-xs font-semibold uppercase tracking-wide text-brand-700">Continue your product journey</p>
         <h2 className="mt-2 font-serif text-xl font-semibold text-ink-900">
           You completed {lastCompleted.stepLabel}. Next: {nextMember.stepLabel}.
         </h2>
-        <ButtonLink href={`/products/${nextMember.framework.slug}`} className="mt-4">
+        <ButtonLink
+          href={`/products/${nextMember.framework.slug}`}
+          className="mt-4"
+          onClick={() => trackEvent("continue_journey_clicked", { framework_slug: nextMember.framework.slug })}
+        >
           Continue: {nextMember.stepLabel}
         </ButtonLink>
       </section>
@@ -67,6 +75,7 @@ export function ContinueJourney({ collection }: { collection: Collection }) {
   if (lastVisited) {
     return (
       <section className="rounded-md border border-ink-200 bg-paper-raised p-6">
+        <TrackView event="continue_journey_shown" properties={{ framework_slug: lastVisited.framework.slug }} />
         <p className="text-xs font-semibold uppercase tracking-wide text-ink-500">Continue where you left off</p>
         <h2 className="mt-2 font-serif text-xl font-semibold text-ink-900">
           {lastVisited.stepLabel} — {OUTPUT_TYPE_LABEL[progress.last_output_type]}
@@ -74,6 +83,7 @@ export function ContinueJourney({ collection }: { collection: Collection }) {
         <Link
           href={`/products/${lastVisited.framework.slug}`}
           className="mt-3 inline-block font-medium text-brand-600 hover:text-brand-700"
+          onClick={() => trackEvent("continue_journey_clicked", { framework_slug: lastVisited.framework.slug })}
         >
           Continue with {lastVisited.framework.name}
         </Link>

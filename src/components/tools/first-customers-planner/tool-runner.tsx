@@ -5,6 +5,7 @@ import { getToolDefinition } from "@/lib/tools/registry";
 import type { ChannelType, FirstCustomersPlannerInput, FirstCustomersPlannerResult, Rating } from "@/lib/tools/first-customers-planner/schema";
 import { FirstCustomersPlannerResultSummary } from "@/components/tools/first-customers-planner/tool-result-summary";
 import { RecordProgressCompletion } from "@/components/collections/record-progress";
+import { trackEvent } from "@/lib/analytics/track";
 import { firstCustomersPlannerCopySchema } from "@/lib/tools/first-customers-planner/copy";
 import { resolveToolCopy } from "@/lib/tools/copy";
 
@@ -161,7 +162,10 @@ export function FirstCustomersPlannerRunner({ copy: copyOverrides }: { copy?: Re
         </ul>
         <button
           type="button"
-          onClick={() => dispatch({ type: "begin" })}
+          onClick={() => {
+            trackEvent("start_tool", { framework_slug: "first-customers-planner" });
+            dispatch({ type: "begin" });
+          }}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
           {copy.intro_cta}

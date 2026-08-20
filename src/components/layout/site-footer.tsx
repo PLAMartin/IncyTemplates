@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { company, footerNav, site } from "@/config/site";
+import { CookiePreferencesLink } from "@/components/analytics/cookie-preferences-link";
 
 export function SiteFooter() {
   return (
@@ -31,6 +32,9 @@ export function SiteFooter() {
           </p>
           <p className="mt-1">
             © {new Date().getFullYear()} {site.name}. All rights reserved.
+          </p>
+          <p className="mt-2">
+            <CookiePreferencesLink />
           </p>
         </div>
       </div>

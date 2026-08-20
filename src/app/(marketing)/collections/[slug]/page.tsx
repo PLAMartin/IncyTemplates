@@ -8,6 +8,7 @@ import { Breadcrumbs } from "@/components/product/breadcrumbs";
 import { ButtonLink } from "@/components/ui/button";
 import { CollectionSteps } from "@/components/collections/collection-steps";
 import { ContinueJourney } from "@/components/collections/continue-journey";
+import { TrackView } from "@/components/analytics/track-view";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -44,6 +45,7 @@ export default async function CollectionPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <JsonLd data={breadcrumbJsonLd(breadcrumbItems)} />
+      <TrackView event="view_collection" properties={{ collection_slug: collection.slug }} />
       <Breadcrumbs items={breadcrumbItems.map((b) => ({ name: b.name, href: b.path }))} />
 
       <div className="mt-6 max-w-2xl">

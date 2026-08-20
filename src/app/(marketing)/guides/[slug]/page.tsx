@@ -21,6 +21,7 @@ import { TableOfContents } from "@/components/content/table-of-contents";
 import { ProductCard } from "@/components/catalogue/product-card";
 import { GuideCard } from "@/components/content/guide-card";
 import { RecordProgressVisit } from "@/components/collections/record-progress";
+import { TrackedClick } from "@/components/analytics/tracked-click";
 import type { ProductSummary } from "@/types/catalogue";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -128,9 +129,19 @@ export default async function GuidePage({ params }: Props) {
               <h2 className="text-lg font-semibold text-ink-900">Ready to apply this?</h2>
               <p className="mt-1 text-sm text-ink-500">Same family, different depth — pick whichever fits what you need right now.</p>
               <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {sameFamilyOutputs.map((output) => (
-                  <ProductCard key={output.id} product={output} />
-                ))}
+                {sameFamilyOutputs.map((output) =>
+                  output.product_type === "template" || output.product_type === "tool" ? (
+                    <TrackedClick
+                      key={output.id}
+                      event={output.product_type === "template" ? "click_guide_to_template" : "click_guide_to_tool"}
+                      properties={{ framework_slug: framework?.slug, product_slug: output.slug }}
+                    >
+                      <ProductCard product={output} />
+                    </TrackedClick>
+                  ) : (
+                    <ProductCard key={output.id} product={output} />
+                  ),
+                )}
               </div>
             </div>
           ) : null}

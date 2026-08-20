@@ -13,6 +13,7 @@ import type {
 } from "@/lib/tools/customer-discovery-kit/schema";
 import { CustomerDiscoveryKitResultSummary } from "@/components/tools/customer-discovery-kit/tool-result-summary";
 import { RecordProgressCompletion } from "@/components/collections/record-progress";
+import { trackEvent } from "@/lib/analytics/track";
 import { customerDiscoveryKitCopySchema } from "@/lib/tools/customer-discovery-kit/copy";
 import { resolveToolCopy } from "@/lib/tools/copy";
 
@@ -195,7 +196,10 @@ export function CustomerDiscoveryKitRunner({ copy: copyOverrides }: { copy?: Rec
         </ul>
         <button
           type="button"
-          onClick={() => dispatch({ type: "begin" })}
+          onClick={() => {
+            trackEvent("start_tool", { framework_slug: "customer-discovery-kit" });
+            dispatch({ type: "begin" });
+          }}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
           {copy.intro_cta}

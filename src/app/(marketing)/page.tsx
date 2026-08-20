@@ -9,6 +9,7 @@ import { HeroResultPreview } from "@/components/home/hero-result-preview";
 import { NewsletterSignup } from "@/components/content/newsletter-signup";
 import { CollectionSteps } from "@/components/collections/collection-steps";
 import { ContinueJourney } from "@/components/collections/continue-journey";
+import { TrackView } from "@/components/analytics/track-view";
 
 export const metadata: Metadata = {
   alternates: { canonical: canonicalUrl("/") },
@@ -40,6 +41,7 @@ export default async function HomePage() {
 
   return (
     <div>
+      <TrackView event="view_home" />
       {/* 1. Hero */}
       <section className="border-b border-ink-200 bg-paper-raised">
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-24">

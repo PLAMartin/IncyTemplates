@@ -16,6 +16,7 @@ import type {
 import { ToolResultSummary } from "@/components/tools/tool-result-summary";
 import { SaveRunButton } from "@/components/tools/save-run-button";
 import { RecordProgressCompletion } from "@/components/collections/record-progress";
+import { trackEvent } from "@/lib/analytics/track";
 
 type StepKey = "classification" | "problemEvidence" | "behaviourEvidence" | "differentiationClarity" | "targetSpecificity";
 
@@ -198,7 +199,10 @@ export function ProductIdeaAssessorRunner({ copy: copyOverrides }: { copy?: Reco
         </ul>
         <button
           type="button"
-          onClick={() => dispatch({ type: "begin" })}
+          onClick={() => {
+            trackEvent("start_tool", { framework_slug: "product-idea-assessor" });
+            dispatch({ type: "begin" });
+          }}
           className="mt-6 inline-flex min-h-11 items-center rounded-md bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-focus-ring"
         >
           {copy.intro_cta}

@@ -16,6 +16,7 @@ import { Breadcrumbs } from "@/components/product/breadcrumbs";
 import { AccessBadge } from "@/components/ui/badge";
 import { FrameworkCard } from "@/components/framework/framework-card";
 import { RecordProgressVisit } from "@/components/collections/record-progress";
+import { TrackedClick } from "@/components/analytics/tracked-click";
 import { ProductCard } from "@/components/catalogue/product-card";
 import { ProductIdeaAssessorRunner } from "@/components/tools/product-idea-assessor/tool-runner";
 import { CustomerDiscoveryKitRunner } from "@/components/tools/customer-discovery-kit/tool-runner";
@@ -196,7 +197,12 @@ export default async function ToolPage({ params }: Props) {
         <div className="mt-10 max-w-sm">
           <h2 className="text-lg font-semibold text-ink-900">Next step</h2>
           <div className="mt-3">
-            <FrameworkCard framework={nextStep} />
+            <TrackedClick
+              event="click_next_step"
+              properties={{ framework_slug: framework?.slug, product_slug: nextStep.slug }}
+            >
+              <FrameworkCard framework={nextStep} />
+            </TrackedClick>
           </div>
         </div>
       ) : null}
