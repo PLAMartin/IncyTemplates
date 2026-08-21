@@ -3,7 +3,6 @@ import { Inter, Source_Serif_4 } from "next/font/google";
 import { site } from "@/config/site";
 import { clientEnv } from "@/lib/env/client";
 import { AnalyticsScripts } from "@/components/analytics/analytics-scripts";
-import { CookieConsentBanner } from "@/components/analytics/cookie-consent-banner";
 import "./globals.css";
 
 const inter = Inter({
@@ -53,13 +52,8 @@ export default function RootLayout({
           Skip to content
         </a>
         {children}
-        {clientEnv.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
-          <>
-            {process.env.NODE_ENV === "production" && (
-              <AnalyticsScripts measurementId={clientEnv.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
-            )}
-            <CookieConsentBanner />
-          </>
+        {clientEnv.NEXT_PUBLIC_GA_MEASUREMENT_ID && process.env.NODE_ENV === "production" && (
+          <AnalyticsScripts measurementId={clientEnv.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
         )}
       </body>
     </html>

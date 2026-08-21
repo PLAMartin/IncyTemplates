@@ -1,5 +1,3 @@
-import { getStoredConsent } from "@/lib/analytics/consent";
-
 type EventProperties = Record<string, string | number | boolean | undefined>;
 
 declare global {
@@ -10,7 +8,7 @@ declare global {
 
 let measurementId: string | null = null;
 
-/** Called by AnalyticsScripts once it knows the GA4 property — cheap, idempotent, safe pre-consent. */
+/** Called by AnalyticsScripts once it knows the GA4 property. */
 export function registerAnalyticsId(id: string): void {
   measurementId = id;
 }
@@ -38,16 +36,11 @@ export function ensureDataLayer(): boolean {
  * (`function gtag(){dataLayer.push(arguments)}`), so this works whether or not the external
  * gtag.js file has finished downloading yet: it drains whatever was already queued once loaded.
  *
- * Checks consent itself, via a plain synchronous read (see getStoredConsent's own comment for
- * why not the reactive hook) — spec §25.1: no optional tracking before consent, checked fresh at
- * the moment of the event rather than trusting some other component to have gated rendering.
- *
  * Never pass email, names, interview notes, Tool free text/results, Visual Brief content,
  * generation prompts or provider asset IDs — spec §25.3 forbids all of it.
  */
 export function trackEvent(name: string, properties?: EventProperties): void {
   if (typeof window === "undefined") return;
-  if (getStoredConsent() !== "granted") return;
   if (!ensureDataLayer()) return;
   window.dataLayer!.push(["event", name, properties ?? {}]);
 }
