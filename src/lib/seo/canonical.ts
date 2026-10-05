@@ -3,7 +3,7 @@ import { site } from "@/config/site";
 /** Build an absolute canonical URL from a site-relative path (must start with "/"). */
 export function canonicalUrl(path: string): string {
   const normalisedPath = path.startsWith("/") ? path : `/${path}`;
-  return new URL(normalisedPath, site.url).toString();
+  return new URL(normalisedPath, site.canonicalOrigin).toString();
 }
 
 /**

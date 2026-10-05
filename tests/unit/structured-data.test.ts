@@ -8,6 +8,7 @@ import {
   websiteJsonLd,
 } from "@/lib/seo/structured-data";
 import type { Guide, Product } from "@/types/catalogue";
+import { canonicalUrl } from "@/lib/seo/canonical";
 
 const product: Product = {
   id: "p1",
@@ -111,5 +112,20 @@ describe("structured-data builders", () => {
     expect(data["@type"]).toBe("FAQPage");
     expect(data.mainEntity).toHaveLength(1);
     expect(data.mainEntity[0]!.acceptedAnswer.text).toBe("Yes.");
+  });
+});
+
+describe("Incyworks attribution and canonical host", () => {
+  it("links the organization to Incyworks by URL", () => {
+    expect(organizationJsonLd().parentOrganization).toEqual({
+      "@type": "Organization",
+      name: "Incyworks Ltd",
+      url: "https://www.incyworks.com/",
+    });
+  });
+
+  it("uses the www host that production serves, not the redirecting bare domain", () => {
+    expect(organizationJsonLd().url).toBe("https://www.incytemplates.com");
+    expect(canonicalUrl("/about")).toBe("https://www.incytemplates.com/about");
   });
 });

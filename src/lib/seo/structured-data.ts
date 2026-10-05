@@ -15,7 +15,12 @@ export function organizationJsonLd() {
     "@type": "Organization",
     name: company.tradingName,
     legalName: company.legalName,
-    url: site.url,
+    url: site.canonicalOrigin,
+    parentOrganization: {
+      "@type": "Organization",
+      name: company.legalName,
+      url: company.legalUrl,
+    },
   };
 }
 
@@ -24,10 +29,10 @@ export function websiteJsonLd() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: site.name,
-    url: site.url,
+    url: site.canonicalOrigin,
     potentialAction: {
       "@type": "SearchAction",
-      target: `${site.url}/templates?q={search_term_string}`,
+      target: `${site.canonicalOrigin}/templates?q={search_term_string}`,
       "query-input": "required name=search_term_string",
     },
   };

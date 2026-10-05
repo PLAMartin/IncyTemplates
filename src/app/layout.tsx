@@ -18,7 +18,7 @@ const sourceSerif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
+  metadataBase: new URL(site.canonicalOrigin),
   title: {
     default: `${site.name} — ${site.tagline}`,
     template: `%s — ${site.name}`,
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     siteName: site.name,
     type: "website",
-    url: site.url,
+    url: site.canonicalOrigin,
   },
   twitter: {
     card: "summary_large_image",

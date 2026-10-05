@@ -57,32 +57,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const now = new Date();
   const entries: MetadataRoute.Sitemap = STATIC_PATHS.map((path) => ({
-    url: `${site.url}${path}`,
+    url: `${site.canonicalOrigin}${path}`,
     lastModified: now,
   }));
 
   for (const category of categories) {
-    entries.push({ url: `${site.url}/templates/categories/${category.slug}`, lastModified: now });
+    entries.push({ url: `${site.canonicalOrigin}/templates/categories/${category.slug}`, lastModified: now });
   }
   for (const stage of stages) {
-    entries.push({ url: `${site.url}/templates/stages/${stage.slug}`, lastModified: now });
-    entries.push({ url: `${site.url}/journey/${stage.slug}`, lastModified: now });
+    entries.push({ url: `${site.canonicalOrigin}/templates/stages/${stage.slug}`, lastModified: now });
+    entries.push({ url: `${site.canonicalOrigin}/journey/${stage.slug}`, lastModified: now });
   }
   for (const framework of frameworks) {
     entries.push({
-      url: `${site.url}/products/${framework.slug}`,
+      url: `${site.canonicalOrigin}/products/${framework.slug}`,
       lastModified: framework.published_at ? new Date(framework.published_at) : now,
     });
   }
   for (const guide of guides) {
-    entries.push({ url: `${site.url}/guides/${guide.slug}`, lastModified: new Date(guide.updatedAt) });
+    entries.push({ url: `${site.canonicalOrigin}/guides/${guide.slug}`, lastModified: new Date(guide.updatedAt) });
   }
   for (const item of catalogueItems) {
     // Guide-type it_products rows are intentionally skipped here — their canonical URL and
     // lastModified come from the MDX front matter via `guides` above, not the DB row.
     if (item.product_type === "guide") continue;
     entries.push({
-      url: `${site.url}${productHref(item)}`,
+      url: `${site.canonicalOrigin}${productHref(item)}`,
       lastModified: item.published_at ? new Date(item.published_at) : now,
     });
   }

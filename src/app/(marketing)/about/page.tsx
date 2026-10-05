@@ -14,7 +14,7 @@ export default function AboutPage() {
       <h1 className="font-serif text-3xl font-semibold text-ink-900 sm:text-4xl">About {site.name}</h1>
       <div className="guide-prose mt-6">
         <p>
-          {site.name} is operated by {company.legalName}, based in the {company.country}. We build practical
+          {site.name} is operated by <a href={company.legalUrl}>{company.legalName}</a>, an independent software product studio based in the {company.country}. We build practical
           product families for founders and small product teams — each one a reusable method with up to three
           ways to use it: a Guide to learn how, a Template to do it yourself, and a Tool to do it interactively.
         </p>

@@ -6,6 +6,8 @@
 
 export const company = {
   legalName: "Incyworks Ltd",
+  /** Linked wherever the company is named, so search engines connect the portfolio. */
+  legalUrl: "https://www.incyworks.com/",
   tradingName: "Incy Templates",
   country: "United Kingdom",
   supportEmail: "phil@incytemplates.com",
@@ -16,6 +18,13 @@ export const site = {
   name: "Incy Templates",
   tagline: "Practical tools for turning ideas into products.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://incytemplates.com",
+  /**
+   * The host search engines should index. Production redirects the bare
+   * domain to www, so canonical tags, the sitemap, robots and JSON-LD use
+   * this. `url` stays on the bare domain for auth callbacks, which must
+   * match Supabase's exact redirect allow-list.
+   */
+  canonicalOrigin: "https://www.incytemplates.com",
 } as const;
 
 export type NavLink = {
