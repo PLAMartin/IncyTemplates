@@ -1098,7 +1098,7 @@ export const START_A_PRODUCT_COLLECTION_ID = "collection-start-a-product";
 export const collections: CollectionSeed[] = [
   {
     id: START_A_PRODUCT_COLLECTION_ID,
-    name: "Start a Product",
+    name: "Create a Product",
     slug: "start-a-product",
     status: "published",
     headline: "Five connected steps from assessing your idea to finding your first customers.",
@@ -1106,7 +1106,7 @@ export const collections: CollectionSeed[] = [
       "The launch Core Collection (spec v9 §3.4): a curated, ordered sequence through Product Idea Assessor, Customer Discovery Kit, Customer Demand Test, MVP Scoper and First Customers Planner.",
     display_order: 1,
     is_core: true,
-    seo_title: "Start a Product — five steps from idea to first customers",
+    seo_title: "Create a Product — five steps from idea to first customers",
     seo_description:
       "Assess your idea, understand your customers, test demand, scope your MVP and find your first customers — five connected, practical steps.",
     published_at: "2026-08-19T09:00:00Z",

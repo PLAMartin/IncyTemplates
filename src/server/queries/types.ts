@@ -78,6 +78,6 @@ export type CatalogueSource = {
    * found, not published, or not public.
    */
   getCollectionBySlug(slug: string): Promise<Collection | null>;
-  /** The current active `is_core = true` published Collection, if any (the launch "Start a Product" collection). */
+  /** The current active `is_core = true` published Collection, if any (the launch "Create a Product" collection). */
   getActiveCoreCollection(): Promise<Collection | null>;
 };

@@ -3,18 +3,18 @@ import { getStaffAuthConfig, STAFF_AUTH_SKIP_REASON } from "./helpers/admin-auth
 
 /**
  * Covers the v9 Collection admin surface (spec v9 §14.3.1, §10.11-equivalent admin editorial
- * parity, docs/decisions/0062) against the real seeded "Start a Product" collection.
+ * parity, docs/decisions/0062) against the real seeded "Create a Product" collection.
  *
  * Deliberately read-only: every assertion here only reads the live-seeded collection, never
  * creates/edits/publishes/reorders. Unlike the Template editor's e2e spec (which is safe to
  * mutate because it only ever saves a draft revision, leaving published content untouched),
  * this admin UI writes directly to `it_collections`/`it_collection_frameworks` with no draft
  * state — a create/edit/reorder e2e test would either leave throwaway rows in the live project
- * or risk mutating the real "Start a Product" collection's live copy. Read-only assertions give
+ * or risk mutating the real "Create a Product" collection's live copy. Read-only assertions give
  * genuine end-to-end coverage of the admin list/detail rendering without either risk.
  */
 
-const COLLECTION_NAME = "Start a Product";
+const COLLECTION_NAME = "Create a Product";
 const EXPECTED_STEPS = [
   { label: "Assess the idea", frameworkName: "Product Idea Assessor", slug: "product-idea-assessor" },
   { label: "Understand customers", frameworkName: "Customer Discovery Kit", slug: "customer-discovery-kit" },
@@ -27,7 +27,7 @@ test.beforeEach(() => {
   test.skip(!getStaffAuthConfig(), STAFF_AUTH_SKIP_REASON);
 });
 
-test("admin Collections list shows the seeded Start a Product collection as published/public/core with 5 members", async ({ page }) => {
+test("admin Collections list shows the seeded Create a Product collection as published/public/core with 5 members", async ({ page }) => {
   await page.goto("/admin/collections");
 
   const row = page.getByRole("row").filter({ has: page.getByRole("link", { name: COLLECTION_NAME } ) });

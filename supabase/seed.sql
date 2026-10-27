@@ -586,7 +586,7 @@ update public.it_frameworks set next_step_framework_id = null where id = 'e7e8f8
 insert into public.it_collections (
   id, name, slug, status, public_visibility, headline, short_description, display_order, is_core, seo_title, seo_description, published_at
 ) values (
-  '9c0bf640-7801-0fd5-2082-15d1a502f89a', 'Start a Product', 'start-a-product', 'published', 'public', 'Five connected steps from assessing your idea to finding your first customers.', 'The launch Core Collection (spec v9 §3.4): a curated, ordered sequence through Product Idea Assessor, Customer Discovery Kit, Customer Demand Test, MVP Scoper and First Customers Planner.', 1, true, 'Start a Product — five steps from idea to first customers', 'Assess your idea, understand your customers, test demand, scope your MVP and find your first customers — five connected, practical steps.', '2026-08-19T09:00:00Z'
+  '9c0bf640-7801-0fd5-2082-15d1a502f89a', 'Create a Product', 'start-a-product', 'published', 'public', 'Five connected steps from assessing your idea to finding your first customers.', 'The launch Core Collection (spec v9 §3.4): a curated, ordered sequence through Product Idea Assessor, Customer Discovery Kit, Customer Demand Test, MVP Scoper and First Customers Planner.', 1, true, 'Create a Product — five steps from idea to first customers', 'Assess your idea, understand your customers, test demand, scope your MVP and find your first customers — five connected, practical steps.', '2026-08-19T09:00:00Z'
 )
 on conflict (id) do update set name = excluded.name, slug = excluded.slug, status = excluded.status,
   public_visibility = excluded.public_visibility, headline = excluded.headline,

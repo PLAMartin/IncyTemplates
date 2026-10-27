@@ -19,7 +19,7 @@ function member(overrides: Partial<AdminCollectionMember> = {}): AdminCollection
 function coreCollection(overrides: Partial<AdminCollectionDetail> = {}): AdminCollectionDetail {
   return {
     id: "collection-1",
-    name: "Start a Product",
+    name: "Create a Product",
     slug: "start-a-product",
     status: "draft",
     public_visibility: "public",

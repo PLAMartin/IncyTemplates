@@ -62,7 +62,7 @@ export const footerNav: { heading: string; links: NavLink[] }[] = [
   {
     heading: "Browse",
     links: [
-      { label: "Start a Product", href: "/collections/start-a-product" },
+      { label: "Create a Product", href: "/collections/start-a-product" },
       { label: "All products", href: "/products" },
       { label: "Guides", href: "/guides" },
       { label: "Templates", href: "/templates" },

@@ -157,7 +157,7 @@ export type FrameworkTeaser = {
 
 /**
  * A curated, ordered editorial grouping of frameworks (spec v9 §14.3.1/§12.3.2), e.g. the
- * launch "Start a Product" collection. Deliberately separate from `flagship`/`next_step_*`:
+ * launch "Create a Product" collection. Deliberately separate from `flagship`/`next_step_*`:
  * a Collection is explicit editorial state, not a byproduct of a single framework field.
  * `member` only ever contains frameworks that are themselves public/published — a collection
  * fetched through `CatalogueSource` never surfaces an unlisted/hidden member.

@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Collection } from "@/types/catalogue";
 
 /**
- * The five-step "Start a Product" journey (spec v9 §3.4/§10.1) — one connected system, not a
+ * The five-step "Create a Product" journey (spec v9 §3.4/§10.1) — one connected system, not a
  * grid of unrelated cards. Used on the homepage, `/products` and the Collection page itself so
  * the visual language stays identical everywhere a visitor meets it.
  */
@@ -35,7 +35,7 @@ export function CollectionSteps({ collection, className }: { collection: Collect
   );
 }
 
-/** Compact inline version for a family page's "Part of Start a Product" context badge. */
+/** Compact inline version for a family page's "Part of Create a Product" context badge. */
 export function CollectionStepBadge({ collection, frameworkSlug }: { collection: Collection; frameworkSlug: string }) {
   const member = collection.members.find((m) => m.framework.slug === frameworkSlug);
   if (!member) return null;

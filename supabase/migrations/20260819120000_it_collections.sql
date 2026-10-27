@@ -1,6 +1,6 @@
 -- Incy Templates v9: it_collections + it_collection_frameworks
 -- Spec v9 §14.3.1: a lightweight editorial Collection layer above frameworks, used to express
--- a curated, ordered visitor journey (the launch "Start a Product" collection) independently of
+-- a curated, ordered visitor journey (the launch "Create a Product" collection) independently of
 -- the existing `flagship` boolean and `next_step_framework_id` chain -- §12.3.2 is explicit that
 -- "Core Collection membership is separate from featured/legacy flagship metadata", and the
 -- current `flagship` set (6 frameworks, includes Better Decision Maker/Product Naming System,

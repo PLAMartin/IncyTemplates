@@ -68,7 +68,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 2. Start a Product — five-step journey */}
+      {/* 2. Create a Product — five-step journey */}
       {collection ? (
         <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
           <div className="flex items-end justify-between gap-4">
@@ -168,7 +168,7 @@ export default async function HomePage() {
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
         <h2 className="font-serif text-2xl font-semibold text-ink-900">Beyond the first five steps</h2>
         <p className="mt-2 max-w-2xl text-ink-700">
-          Start a Product is the beginning, not the whole platform. Incy Templates also covers pricing and
+          Create a Product is the beginning, not the whole platform. Incy Templates also covers pricing and
           positioning, comparing decisions, working with AI, and the recurring habits of running a product once
           you&apos;ve launched it — promoted as its own collection once there&apos;s real evidence people want it
           next.

@@ -86,7 +86,7 @@ describe("FixtureCatalogueSource visibility filtering", () => {
 });
 
 describe("FixtureCatalogueSource collections (spec v9 §14.3.1)", () => {
-  it("getActiveCoreCollection returns the Start a Product collection with all five members in order", async () => {
+  it("getActiveCoreCollection returns the Create a Product collection with all five members in order", async () => {
     const collection = await source.getActiveCoreCollection();
     expect(collection).toBeTruthy();
     expect(collection!.slug).toBe("start-a-product");

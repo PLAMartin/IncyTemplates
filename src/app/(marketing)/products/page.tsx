@@ -7,7 +7,7 @@ import { CollectionSteps } from "@/components/collections/collection-steps";
 
 export const metadata: Metadata = {
   title: "Products",
-  description: "Start a Product: five connected steps from assessing your idea to finding your first customers.",
+  description: "Create a Product: five connected steps from assessing your idea to finding your first customers.",
   alternates: { canonical: canonicalUrl("/products") },
 };
 
@@ -55,7 +55,7 @@ export default async function ProductsIndexPage() {
         <div>
           <h2 className="font-serif text-xl font-semibold text-ink-900">More from Incy Templates</h2>
           <p className="mt-2 max-w-2xl text-sm text-ink-500">
-            Additional capabilities we&apos;ve built and stand behind, alongside Start a Product.
+            Additional capabilities we&apos;ve built and stand behind, alongside Create a Product.
           </p>
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {moreFromIncyTemplates.map((framework) => (
