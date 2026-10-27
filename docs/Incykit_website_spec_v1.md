@@ -2,7 +2,7 @@
 
 **Document status:** Draft v1.0
 **Prepared for:** Incyworks Ltd
-**Canonical domain:** `https://incykit.com`
+**Canonical domain:** `https://www.incykit.com` (bare `incykit.com` redirects to it)
 **Previous brand/domain:** Incy Templates / `https://incytemplates.com` (permanently redirected, §2.1)
 **GitHub repository:** `https://github.com/PLAMartin/IncyTemplates` (repository name unchanged)
 **Default branch:** `main`
@@ -25,7 +25,7 @@ A coding agent must therefore:
 
 Incykit v1 retains the whole of the v9 curated Core Collection strategy and platform model. It changes the following:
 
-- **Rebrand to Incykit.** The public product name changes from **Incy Templates / IncyTemplates** to **Incykit** (one word, capital *I* only). The canonical domain changes from `incytemplates.com` to `incykit.com`; legacy domains redirect permanently with paths preserved (§2.1). Sender identities move to `@incykit.com` (§24.4). The operating company remains **Incyworks Ltd**.
+- **Rebrand to Incykit.** The public product name changes from **Incy Templates / IncyTemplates** to **Incykit** (one word, capital *I* only). The canonical host changes from `www.incytemplates.com` to `www.incykit.com`; legacy domains redirect permanently with paths preserved (§2.1). Sender identities move to `@incykit.com` (§24.4). The operating company remains **Incyworks Ltd**.
 - **Internal identifiers are unchanged.** The GitHub repository name (`PLAMartin/IncyTemplates`), the `it_` database table prefix, the Supabase project, migration filenames and environment variable names are not renamed as part of the rebrand. Do not rename them incidentally; any future rename needs its own ADR.
 - **Launch collection renamed.** The launch Core Collection's display name changes from **Start a Product** to **Create a Product**. Its slug (`start-a-product`) and URL (`/collections/start-a-product`) are unchanged so that existing links, analytics and progress state keep working (§44 records the optional slug decision).
 - **Analytics consent gate removed.** Since 21 August 2026 (commit `597bb6c`), GA4 loads unconditionally in production; there is no cookie banner, consent store or cookie-preferences control. §25.1, §27.3 and §28 now describe this behaviour, and it supersedes the consent-gating mechanism in ADR `0066`. A superseding ADR must be recorded, and the position must pass legal review before public launch (§25.1, §44).
@@ -113,11 +113,12 @@ The coding agent should proceed using these assumptions unless explicitly change
 
 ### 2.1 Domain
 
-- `incykit.com` is the canonical production domain.
-- `www.incykit.com` redirects permanently to `incykit.com`.
-- Legacy domains `incytemplates.com` and `www.incytemplates.com` (and `incytemplate.com`, if owned) redirect permanently (301/308) to the **same path and query string** on `https://incykit.com`. Do not send every legacy URL to the homepage.
+- `incykit.com` is the production domain and **`www.incykit.com` is the canonical host** that search engines index.
+- The bare domain `incykit.com` redirects permanently to `www.incykit.com`, preserving path and query string.
+- Legacy domains `incytemplates.com` and `www.incytemplates.com` (and `incytemplate.com`, if owned) redirect permanently (301/308) to the **same path and query string** on `https://www.incykit.com`. Do not send every legacy URL to the homepage.
 - Keep the legacy domains registered and redirecting for as long as they receive meaningful inbound links or search traffic, and in any case for at least 12 months after the switch.
-- Canonical tags, sitemap entries, Open Graph URLs, structured data and email links must use `https://incykit.com`.
+- Canonical tags, sitemap entries, robots, Open Graph URLs, structured data and email links must use `https://www.incykit.com`. In code this is `site.canonicalOrigin` in `src/config/site.ts`; `canonicalUrl()` builds from it.
+- Auth callbacks keep using `site.url` (`NEXT_PUBLIC_SITE_URL`), which stays on the bare domain `https://incykit.com` because it must exactly match an entry in Supabase's redirect allow-list. Keep `canonicalOrigin` and `site.url` as separate settings; do not merge them.
 - When the domain switches, update every dependent configuration: Vercel domains, `NEXT_PUBLIC_SITE_URL` (or equivalent), Supabase Auth site URL and redirect allow-list, Stripe Checkout success/cancel URLs and webhook endpoint, email sending domain (SPF/DKIM/DMARC, §24), the GA4 web data stream URL, and a Google Search Console change of address.
 
 ### 2.1a Brand
@@ -5058,7 +5059,7 @@ Deliver:
 
 - Brand name, legal entity and domain read from site configuration; replace all public "Incy Templates"/"IncyTemplates" strings in UI, metadata, Open Graph/social cards, emails, legal pages, seed copy and admin-visible labels.
 - Launch collection display name "Create a Product" in seed data, fixtures, tests and copy; slug unchanged.
-- `incykit.com` connected as the primary domain; legacy-domain path-preserving 301/308 redirects (§2.1).
+- `incykit.com` and `www.incykit.com` connected, with `www.incykit.com` as the canonical host; bare-to-www and legacy-domain path-preserving 301/308 redirects (§2.1).
 - Dependent configuration updated: Supabase Auth URLs, Stripe URLs/webhook, email domain authentication and sender identities, GA4 stream, Search Console change of address.
 - Brand assets: logo/wordmark, favicon/app icons, default social image and any Visual Recipe tokens that carry the name.
 - An ADR recording the rebrand and the deliberately unchanged internal identifiers.
@@ -5066,7 +5067,7 @@ Deliver:
 Exit:
 
 - No public surface (pages, metadata, sitemap, robots, emails, PDFs/downloads produced from current templates) shows the old brand or domain, except historical/legal notes that deliberately refer to it.
-- A sample of legacy URLs, including deep family/output URLs, redirects to the matching `incykit.com` path.
+- A sample of legacy URLs, including deep family/output URLs, redirects to the matching `www.incykit.com` path.
 - Sign-in, magic-link/OAuth callbacks, checkout and transactional email work end to end on `incykit.com`.
 
 ### Phase 5 — Launch readiness and measurement
@@ -5177,7 +5178,8 @@ The curated-launch milestone is complete only when the following conditions are 
 
 ### Brand / domain
 
-- [ ] `incykit.com` serves production; `www` and legacy `incytemplates.com` domains redirect with paths preserved.
+- [ ] `www.incykit.com` serves production; the bare domain and legacy `incytemplates.com` domains redirect to it with paths preserved.
+- [ ] Canonical tags, sitemap, robots and structured data use `https://www.incykit.com`; auth callbacks use the bare domain and are in the Supabase allow-list.
 - [ ] No public page, metadata, email or generated asset shows "Incy Templates"/"IncyTemplates" except deliberate historical notes.
 - [ ] Supabase Auth, Stripe, email-domain authentication, GA4 stream and Search Console updated for `incykit.com`.
 - [ ] Legacy email addresses forward to the new mailboxes.
@@ -5434,7 +5436,7 @@ This specification resolves the near-term collection strategy and five-family la
 
 Resolved in prior versions and retained unless explicitly changed:
 
-- `incykit.com` is the canonical domain (Incykit v1); `incytemplates.com` redirects to it.
+- `www.incykit.com` is the canonical host (Incykit v1); the bare domain and `incytemplates.com` redirect to it.
 - Guide / Template / Tool remain first-class output types.
 - Public / Unlisted / Hidden semantics remain.
 - OpenAI remains an optional provider behind a provider-neutral visual architecture.
