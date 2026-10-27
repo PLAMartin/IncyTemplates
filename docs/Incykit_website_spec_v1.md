@@ -1,14 +1,14 @@
 # Incykit — Technical Development Specification
 
-**Document status:** Draft v1.0
-**Prepared for:** Incyworks Ltd
-**Canonical domain:** `https://www.incykit.com` (bare `incykit.com` redirects to it)
-**Previous brand/domain:** Incy Templates / `https://incytemplates.com` (permanently redirected, §2.1)
-**GitHub repository:** `https://github.com/PLAMartin/IncyTemplates` (repository name unchanged)
-**Default branch:** `main`
-**Primary purpose:** Canonical implementation specification for an AI coding agent
-**Supersedes:** `Incytemplates-website-spec-v9.md`
-**Last updated:** 27 October 2026
+**Document status:** Draft v1.0  
+**Prepared for:** Incyworks Ltd  
+**Canonical domain:** `https://www.incykit.com` (bare `incykit.com` redirects to it)  
+**Previous brand/domain:** Incy Templates / `https://incytemplates.com` (permanently redirected, §2.1)  
+**GitHub repository:** `https://github.com/PLAMartin/IncyTemplates` (repository name unchanged)  
+**Default branch:** `main`  
+**Primary purpose:** Canonical implementation specification for an AI coding agent  
+**Supersedes:** `Incytemplates-website-spec-v9.md`  
+**Last updated:** 27 October 2026  
 
 ### Specification authority
 
